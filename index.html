@@ -71,8 +71,26 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:12px 14px 4px;}
 
 /* ── ステージ選択 ── */
 #scrSelect, #scrQuiz{animation:fadeUp .25s ease;}
-.lead{font-size:12.5px; color:#5a6172; margin:2px 0 10px; line-height:1.6;}
-.lead b{color:var(--red); font-weight:700;}
+
+/* ヒーロー（トップの顔） */
+.hero{
+  background:linear-gradient(135deg, #1a1a2e 0%, #23233f 100%);
+  border-radius:14px; padding:14px 16px 12px; margin:2px 0 12px;
+  box-shadow:0 2px 8px rgba(26,26,46,.18); color:#fff;
+}
+.heroEyebrow{
+  font-family:'Oswald',sans-serif; font-size:.62rem; font-weight:400;
+  letter-spacing:.24em; color:#e05545; text-transform:uppercase; margin-bottom:3px;
+}
+.heroTitle{font-size:19px; font-weight:700; line-height:1.35; text-wrap:balance;}
+.heroTitle b{color:#ffb0a5;}
+.heroSub{font-size:12px; color:rgba(255,255,255,.72); line-height:1.65; margin:5px 0 0;}
+.heroStats{display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;}
+.heroStats span{
+  font-size:11.5px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18);
+  padding:3px 10px; border-radius:999px; color:rgba(255,255,255,.88);
+  font-variant-numeric:tabular-nums;
+}
 .grpTtl{
   font-size:12px; color:var(--navy); margin:16px 0 6px; letter-spacing:1px; font-weight:700;
   border-left:3px solid var(--red); padding-left:8px; line-height:1.4;
@@ -121,6 +139,15 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:12px 14px 4px;}
 #feedback{text-align:center; min-height:26px; font-size:15px; font-weight:700; margin:4px 0;}
 #feedback.ok{color:var(--ok); animation:pop .25s ease;}
 #feedback.ng{color:var(--ng); animation:pop .25s ease;}
+
+/* 答え合わせの五線譜 */
+#staffWrap{
+  background:var(--card); border-radius:12px; box-shadow:var(--shadow);
+  padding:4px 8px 2px; margin:2px 0 6px; text-align:center;
+  animation:fadeUp .25s ease;
+}
+#staffWrap svg{display:block; margin:0 auto; max-width:100%;}
+#staffCap{font-size:12px; color:var(--sub); padding-bottom:4px; font-variant-numeric:tabular-nums;}
 
 #answers{display:grid; grid-template-columns:repeat(4,1fr); gap:7px; margin-top:4px;}
 #answers.chordGrid{grid-template-columns:repeat(2,1fr);}
@@ -226,7 +253,12 @@ footer{
 <main>
   <!-- ステージ選択画面 -->
   <section id="scrSelect">
-    <p class="lead">ルート（基準音）に対する<b>度数</b>で音を聴き取る、相対音感トレーニング。音名の当てっこではなく「キーの中での役割」で聴く耳を作ります。1ラウンド10問。</p>
+    <div class="hero">
+      <div class="heroEyebrow">Relative Pitch Training</div>
+      <div class="heroTitle">「<b>度数</b>」で聴く耳をつくる。</div>
+      <p class="heroSub">音名の当てっこではなく、ルート（基準音）からの距離＝度数で聴き取る実戦派トレーニング。耳コピ・アドリブ・移調に直結します。1ラウンド10問。</p>
+      <div class="heroStats" id="heroStats"></div>
+    </div>
     <div id="stageList"></div>
   </section>
 
@@ -244,6 +276,10 @@ footer{
       <button id="rootBtn" hidden>🔁 ルート</button>
     </div>
     <div id="feedback">&nbsp;</div>
+    <div id="staffWrap" hidden>
+      <div id="staffSvg"></div>
+      <div id="staffCap"></div>
+    </div>
     <div id="answers"></div>
     <button id="nextBtn" hidden>次へ ▶</button>
 
@@ -520,9 +556,116 @@ let answersLog = [];   // [{ok, correct, given}]
 function rnd(n){ return Math.floor(Math.random() * n); }
 function degLabel(c){ return DEG[c].d + '（' + DEG[c].s + '）'; }
 
+// ── 五線譜表示（答え合わせ用） ──────────────────
+// ギターの慣習に合わせ、実音より1オクターブ上に記譜（ト音記号+8vb）
+
+const SHARP_N = ['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
+const FLAT_N  = ['C','D♭','D','E♭','E','F','G♭','G','A♭','A','B♭','B'];
+const LETTER_STEP = {C:0, D:1, E:2, F:3, G:4, A:5, B:6};
+
+// midi→表示情報。stepは全音階インデックス（五線上の縦位置計算用。C#はCの線、D♭はDの線に描く）
+function spellNote(midi, preferFlat){
+  const written = midi + 12;
+  const name = (preferFlat ? FLAT_N : SHARP_N)[written % 12];
+  const letter = name[0];
+  const acc = name.length > 1 ? name[1] : '';
+  const oct = Math.floor(written / 12) - 1;
+  return {name, letter, acc, step: oct * 7 + LETTER_STEP[letter]};
+}
+
+// notes: [{midi, red(答えの音は赤), flat(♭表記優先)}] を五線に描く
+function drawStaff(notes){
+  const GAP = 9, YB = 80, W = 258, H = 116;
+  const y = s => YB - (s - 30) * (GAP / 2); // step30 = E4（第1線）
+  let el = '';
+  for(let i = 0; i < 5; i++){
+    const yy = YB - i * GAP;
+    el += '<line x1="34" y1="' + yy + '" x2="' + (W - 6) + '" y2="' + yy + '" stroke="#8a93a3" stroke-width="1"/>';
+  }
+  el += '<text class="clef" x="0" y="0" font-size="60" fill="#1a1a2e" font-family="&#39;Segoe UI Symbol&#39;,&#39;Noto Music&#39;,&#39;Apple Symbols&#39;,serif">\u{1D11E}</text>';
+  el += '<text x="15" y="' + (YB + 17) + '" font-size="11" fill="#1a1a2e" font-family="serif" text-anchor="middle">8</text>';
+
+  const spelled = notes.map(n => Object.assign({}, n, spellNote(n.midi, n.flat)));
+  // 配置：2音（ルート→答え）は横並び、コードは同じ列に積む（隣接音は右にずらす）
+  const isPair = notes.length === 2 && !notes[1].stack;
+  let prevStep = null;
+  spelled.forEach((n, i) => {
+    let cx = isPair ? (i === 0 ? 120 : 190) : 150;
+    if(!isPair && prevStep !== null && n.step - prevStep <= 1) cx += 12; // sus4等の2度隣接を回避
+    if(!isPair) prevStep = n.step;
+    const cy = y(n.step);
+    // 加線（五線の下=E4未満、上=F5超）
+    for(let l = 28; l >= n.step; l -= 2) el += ledger(cx, y(l));
+    for(let l = 40; l <= n.step; l += 2) el += ledger(cx, y(l));
+    const col = n.red ? '#c0392b' : '#1a1a2e';
+    if(n.acc) el += '<text x="' + (cx - 22) + '" y="' + (cy + 5) + '" font-size="15" fill="' + col + '">' + n.acc + '</text>';
+    el += '<ellipse cx="' + cx + '" cy="' + cy + '" rx="6.8" ry="5" fill="' + col + '" transform="rotate(-14 ' + cx + ' ' + cy + ')"/>';
+  });
+
+  const box = $('staffSvg');
+  box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" xmlns="http://www.w3.org/2000/svg">' + el + '</svg>';
+
+  // ト音記号はフォント差が大きいのでBBox実測で位置・サイズ合わせ（中心=第3線）
+  const svg = box.querySelector('svg');
+  const clef = svg.querySelector('.clef');
+  try{
+    const bb = clef.getBBox();
+    if(bb.height > 10){
+      const k = (GAP * 7.4) / bb.height;
+      const tx = 6 - k * bb.x;
+      const ty = (YB - 2 * GAP) - k * (bb.y + bb.height / 2);
+      clef.setAttribute('transform', 'translate(' + tx + ',' + ty + ') scale(' + k + ')');
+    }else{
+      clef.remove(); // グリフ非対応端末では記号なしで表示
+    }
+  }catch(e){ /* getBBox不可（非表示時など）は位置調整なしで表示 */ }
+}
+
+function ledger(cx, yy){
+  return '<line x1="' + (cx - 11) + '" y1="' + yy + '" x2="' + (cx + 11) + '" y2="' + yy + '" stroke="#8a93a3" stroke-width="1"/>';
+}
+
+function hideStaff(){ $('staffWrap').hidden = true; }
+
+function showStaff(){
+  $('staffWrap').hidden = false; // 先に表示（hidden中はgetBBoxが0になりクレフ調整が失敗するため）
+  let cap;
+  if(curQ.type === 'chord'){
+    const ch = CHORDS[curQ.chord];
+    const flatIv = [3, 6, 10]; // ♭3・♭5・♭7は♭表記
+    drawStaff(ch.iv.map((iv, i) => ({midi: curQ.root + iv, red: i > 0, flat: flatIv.includes(iv), stack: true})));
+    cap = spellNote(curQ.root, false).name + ' ' + ch.label + '（' + ch.sub + '）';
+  }else{
+    const flat = DEG[curQ.cls].d.indexOf('♭') >= 0;
+    const ans = curQ.root + degOffset(curQ.cls, curQ.down);
+    drawStaff([{midi: curQ.root, red: false, flat: false}, {midi: ans, red: true, flat}]);
+    cap = spellNote(curQ.root, false).name + '（ルート）→ ' + spellNote(ans, flat).name + '（' + degLabel(curQ.cls) + '）';
+  }
+  $('staffCap').textContent = cap;
+  $('staffWrap').hidden = false;
+}
+
+// ── トップの達成状況サマリー ──────────────────
+
+function renderHeroStats(){
+  const el = $('heroStats');
+  el.textContent = '';
+  const mk = t => { const s = document.createElement('span'); s.textContent = t; el.appendChild(s); };
+  let cleared = 0, perfect = 0;
+  for(const st of STAGES){
+    const b = progress.best[st.id];
+    if(b !== undefined && b >= 8) cleared++;
+    if(b === QN) perfect++;
+  }
+  mk('🏆 クリア ' + cleared + ' / ' + STAGES.length);
+  if(perfect) mk('💮 パーフェクト ' + perfect);
+  if(!Object.keys(progress.best).length) mk('まずは入門①から！');
+}
+
 // ── ステージ選択画面 ──────────────────────────
 
 function renderStageList(){
+  renderHeroStats();
   stageListEl.textContent = '';
   let lastGrp = null;
   for(const st of STAGES){
@@ -580,6 +723,7 @@ function enterStage(st){
 
 function resetRoundUI(){
   stopAll();
+  hideStaff();
   phase = 'idle';
   qi = 0; score = 0; answersLog = []; lastAnsVal = null; curQ = null;
   qNumEl.textContent = '全' + QN + '問';
@@ -725,6 +869,7 @@ function startRound(){
 // スタート押下時にスコア類だけ初期化（画面はそのまま）
 function resetRoundUIKeepScreen(){
   qi = 0; score = 0; answersLog = []; lastAnsVal = null;
+  hideStaff();
   nextBtn.hidden = true;
   resultEl.hidden = true;
   answersEl.hidden = false;
@@ -735,6 +880,7 @@ function resetRoundUIKeepScreen(){
 function nextQuestion(){
   stopAll();
   clearAnswerHl();
+  hideStaff();
   qi++;
   if(qi > QN){ showResult(); return; }
   curQ = makeQuestion();
@@ -763,13 +909,15 @@ function answer(val){
     phase = 'reveal';
     if(cBtn) cBtn.classList.add('hlOk');
     setFeedback('✅ 正解！ ' + cLabel, 'ok');
-    later(nextQuestion, 1000);
+    showStaff();
+    later(nextQuestion, 1400); // 五線譜を一瞥できる長さ
   }else{
     phase = 'reveal';
     if(cBtn) cBtn.classList.add('hlOk');
     const gBtn = answersEl.querySelector('button[data-val="' + val + '"]');
     if(gBtn) gBtn.classList.add('hlNg');
     setFeedback('❌ 正解は ' + cLabel + '（あなた: ' + gLabel + '）', 'ng');
+    showStaff();
     // 正解をもう一度聴かせてから手動で次へ
     later(() => { if(phase === 'reveal') replayForReveal(); }, 350);
     nextBtn.hidden = false;
@@ -798,6 +946,7 @@ function onNext(){
 
 function showResult(){
   stopAll();
+  hideStaff();
   phase = 'result';
   qNumEl.textContent = '終了';
   setPlayLabel('', false);
