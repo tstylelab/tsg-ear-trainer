@@ -4,76 +4,99 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="ルートに対する度数で音を聴き取る相対音感トレーニングアプリ。単音の度数当てからコードの響き当てまで。ギタースクールTSG提供。">
-<meta name="theme-color" content="#14171c">
+<meta name="theme-color" content="#1a1a2e">
 <title>TSG Ear Trainer｜相対音感トレーナー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#14171c; --card:#1e232b; --card2:#2a313c; --line:#39414e;
-  --txt:#e8eaee; --sub:#8a93a3; --acc:#ff9f3c; --accTxt:#14171c;
-  --ok:#3ecf6f; --ng:#ff5a5a;
+  --bg:#f0f2f5; --card:#ffffff; --navy:#1a1a2e; --red:#c0392b;
+  --txt:#222; --sub:#82889a; --line:#dfe3ea;
+  --ok:#27ae60; --ng:#e74c3c;
+  --shadow:0 1px 4px rgba(26,26,46,.08);
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 html,body{margin:0; padding:0;}
 body{
   background:var(--bg); color:var(--txt);
-  font-family:"Segoe UI","Hiragino Sans","Noto Sans JP",Meiryo,sans-serif;
+  font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",Meiryo,sans-serif;
   min-height:100dvh; display:flex; flex-direction:column;
 }
 button{
-  font-family:inherit; color:var(--txt); background:var(--card2);
+  font-family:inherit; color:var(--txt); background:var(--card);
   border:1px solid var(--line); border-radius:8px; cursor:pointer;
   touch-action:manipulation; user-select:none; -webkit-user-select:none;
 }
-button:active{filter:brightness(1.2);}
+button:active{filter:brightness(.96);}
 
-/* ── ヘッダー（縦幅節約：1行のみ） ── */
+/* ── ヘッダー（TSGブランド共通ロックアップ） ── */
 header{
   display:flex; align-items:center; justify-content:space-between;
-  padding:7px 12px; background:#10131a; border-bottom:1px solid var(--line);
+  padding:7px 14px; background:var(--navy); gap:8px;
 }
-.ttl{font-size:16px; font-weight:700; letter-spacing:.5px;}
-.ttl .b{color:var(--acc);}
-.ttl small{font-size:11px; color:var(--sub); font-weight:400; margin-left:6px;}
+.brand{display:flex; align-items:flex-end; gap:8px;}
+.brand-main{
+  font-family:'Oswald',sans-serif; font-size:1.7rem; font-weight:700;
+  color:#fff; line-height:1; letter-spacing:.02em;
+  display:flex; align-items:flex-end; gap:7px;
+}
+.brand-main svg{display:block; opacity:.92; filter:drop-shadow(0 2px 6px rgba(0,0,0,.3));}
+.brand-right{padding-bottom:2px; border-bottom:2.5px solid var(--red); text-align:left;}
+.brand-sub1{
+  font-family:'Oswald',sans-serif; font-size:.62rem; font-weight:400;
+  letter-spacing:.22em; color:var(--red); text-transform:uppercase; line-height:1.25;
+}
+.brand-sub2{
+  font-family:'Oswald',sans-serif; font-size:.95rem; font-weight:600;
+  letter-spacing:.1em; color:#fff; text-transform:uppercase; line-height:1.2;
+}
 .hbtns{display:flex; gap:8px;}
-.hbtns button{font-size:15px; padding:4px 9px; line-height:1.3;}
+.hbtns button{
+  font-size:15px; padding:5px 10px; line-height:1.3;
+  background:rgba(255,255,255,.15); color:#fff; border:1.5px solid rgba(255,255,255,.3);
+}
+.hbtns button:active{background:rgba(255,255,255,.25); filter:none;}
 
-main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:10px 12px 4px;}
+main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:12px 14px 4px;}
 
 /* ── ステージ選択 ── */
-.lead{font-size:12.5px; color:var(--sub); margin:2px 0 10px; line-height:1.55;}
-.lead b{color:var(--acc); font-weight:700;}
-.grpTtl{font-size:12px; color:var(--sub); margin:12px 0 5px; letter-spacing:1px; font-weight:700;}
+.lead{font-size:12.5px; color:#5a6172; margin:2px 0 10px; line-height:1.6;}
+.lead b{color:var(--red); font-weight:700;}
+.grpTtl{font-size:12px; color:#5a6172; margin:14px 0 6px; letter-spacing:1px; font-weight:700;}
 .stageRow{
   width:100%; display:flex; align-items:center; justify-content:space-between;
-  background:var(--card); padding:10px 12px; margin:5px 0; text-align:left;
-  border-radius:10px; gap:8px;
+  background:var(--card); padding:11px 14px; margin:6px 0; text-align:left;
+  border:none; border-radius:12px; gap:8px; box-shadow:var(--shadow);
 }
-.stageRow .nm{font-size:14.5px; font-weight:700;}
+.stageRow .nm{font-size:14.5px; font-weight:700; color:var(--navy);}
 .stageRow .ds{font-size:11.5px; color:var(--sub); margin-top:2px;}
 .stageRow .bd{font-size:12px; color:var(--sub); white-space:nowrap; flex-shrink:0;}
 .stageRow .bd .st{font-size:14px;}
 
 /* ── クイズ画面 ── */
 .qbar{display:flex; align-items:center; gap:8px; margin-bottom:6px;}
-.qbar button{padding:5px 11px; font-size:13px;}
-#stageName{font-size:13.5px; font-weight:700; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.qbar button{padding:6px 11px; font-size:13px; box-shadow:var(--shadow);}
+#stageName{font-size:13.5px; font-weight:700; color:var(--navy); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 #qNum{font-size:12.5px; color:var(--sub); white-space:nowrap;}
 
 #dots{display:flex; justify-content:center; gap:6px; margin:6px 0;}
-#dots span{width:11px; height:11px; border-radius:50%; border:1.5px solid var(--line); background:transparent;}
-#dots span.cur{border-color:var(--acc);}
+#dots span{width:11px; height:11px; border-radius:50%; border:1.5px solid #c3c9d4; background:transparent;}
+#dots span.cur{border-color:var(--red);}
 #dots span.ok{background:var(--ok); border-color:var(--ok);}
 #dots span.ng{background:var(--ng); border-color:var(--ng);}
 
 #playLabel{text-align:center; min-height:20px; font-size:13px; color:var(--sub); margin:2px 0;}
-#playLabel.hot{color:var(--acc); font-weight:700;}
+#playLabel.hot{color:var(--red); font-weight:700;}
 
 .listenRow{display:flex; gap:8px; margin:6px 0;}
 #listenBtn{
   flex:1; padding:13px; font-size:17px; font-weight:700;
-  background:var(--acc); color:var(--accTxt); border:none; border-radius:10px;
+  background:var(--red); color:#fff; border:none; border-radius:10px;
+  box-shadow:0 2px 6px rgba(192,57,43,.3);
 }
-#rootBtn{padding:13px 14px; font-size:14px; border-radius:10px;}
+#listenBtn:active{filter:brightness(.9);}
+#rootBtn{padding:13px 14px; font-size:14px; border-radius:10px; box-shadow:var(--shadow);}
 
 #feedback{text-align:center; min-height:26px; font-size:15px; font-weight:700; margin:4px 0;}
 #feedback.ok{color:var(--ok);}
@@ -81,46 +104,49 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:10px 12px 4px;}
 
 #answers{display:grid; grid-template-columns:repeat(4,1fr); gap:7px; margin-top:4px;}
 #answers.chordGrid{grid-template-columns:repeat(2,1fr);}
-#answers button{padding:8px 2px 7px; border-radius:9px; line-height:1.25;}
-#answers button .d{font-size:17px; font-weight:700; display:block;}
+#answers button{padding:9px 2px 8px; border-radius:9px; line-height:1.25; box-shadow:var(--shadow);}
+#answers button .d{font-size:17px; font-weight:700; color:var(--navy); display:block;}
 #answers button .s{font-size:10px; color:var(--sub); display:block; margin-top:1px;}
-#answers button.off{opacity:.22; pointer-events:none;}
-#answers button.hlOk{border-color:var(--ok); box-shadow:0 0 0 1.5px var(--ok);}
-#answers button.hlNg{border-color:var(--ng); box-shadow:0 0 0 1.5px var(--ng);}
+#answers button.off{opacity:.4; background:#e7eaef; box-shadow:none; pointer-events:none;}
+#answers button.hlOk{border-color:var(--ok); box-shadow:0 0 0 2px var(--ok);}
+#answers button.hlNg{border-color:var(--ng); box-shadow:0 0 0 2px var(--ng);}
 
-#nextBtn{width:100%; margin-top:10px; padding:12px; font-size:15px; font-weight:700; border-radius:10px;}
+#nextBtn{
+  width:100%; margin-top:10px; padding:12px; font-size:15px; font-weight:700;
+  border-radius:10px; background:var(--navy); color:#fff; border:none;
+}
 
 /* ── 結果 ── */
-#result{background:var(--card); border-radius:12px; padding:16px 14px; text-align:center; margin-top:6px;}
+#result{background:var(--card); border-radius:12px; padding:16px 14px; text-align:center; margin-top:6px; box-shadow:var(--shadow);}
 #resRank{font-size:34px; min-height:44px;}
-#resScore{font-size:24px; font-weight:700; margin:2px 0;}
+#resScore{font-size:24px; font-weight:700; color:var(--navy); margin:2px 0;}
 #resMsg{font-size:13px; color:var(--sub); margin-bottom:8px;}
 #resLog{font-size:12.5px; text-align:left; margin:8px auto 4px; max-width:320px; color:var(--sub); line-height:1.7;}
 #resLog .ngLine{color:var(--txt);}
 .resBtns{display:flex; gap:8px; margin-top:10px;}
 .resBtns button{flex:1; padding:12px; font-size:14.5px; font-weight:700; border-radius:10px;}
-#againBtn{background:var(--acc); color:var(--accTxt); border:none;}
+#againBtn{background:var(--red); color:#fff; border:none;}
 
 /* ── ヘルプモーダル ── */
 #helpModal{
-  position:fixed; inset:0; background:rgba(0,0,0,.66); z-index:50;
+  position:fixed; inset:0; background:rgba(26,26,46,.55); z-index:50;
   display:flex; align-items:center; justify-content:center; padding:16px;
 }
 #helpModal .box{
   background:var(--card); border-radius:14px; padding:18px 16px; max-width:460px;
   width:100%; max-height:82dvh; overflow-y:auto; font-size:13.5px; line-height:1.75;
 }
-#helpModal h3{margin:0 0 6px; font-size:16px; color:var(--acc);}
-#helpModal h4{margin:14px 0 4px; font-size:13.5px;}
+#helpModal h3{margin:0 0 6px; font-size:16px; color:var(--navy);}
+#helpModal h4{margin:14px 0 4px; font-size:13.5px; color:var(--navy);}
 #helpModal p{margin:4px 0;}
-#helpModal a{color:var(--acc);}
-#helpModal .cls{width:100%; margin-top:12px; padding:11px; font-size:14px; border-radius:9px;}
+#helpModal a{color:var(--red);}
+#helpModal .cls{width:100%; margin-top:12px; padding:11px; font-size:14px; border-radius:9px; background:var(--navy); color:#fff; border:none;}
 #helpModal .bkRow{display:flex; gap:8px; margin:6px 0 2px;}
 #helpModal .bkRow button{flex:1; padding:10px; font-size:13.5px; border-radius:9px;}
-#helpModal .bkMsg{min-height:18px; font-size:12.5px; color:var(--acc);}
+#helpModal .bkMsg{min-height:18px; font-size:12.5px; color:var(--red);}
 
 footer{
-  text-align:center; font-size:10px; color:#566070; padding:8px 10px 10px; line-height:1.6;
+  text-align:center; font-size:10px; color:#9aa1af; padding:8px 10px 10px; line-height:1.6;
 }
 [hidden]{display:none !important;}
 </style>
@@ -128,7 +154,39 @@ footer{
 <body>
 
 <header>
-  <div class="ttl">TSG <span class="b">Ear Trainer</span><small>相対音感トレーナー β</small></div>
+  <div class="brand">
+    <div class="brand-main">
+      <svg viewBox="0 0 48 108" width="18" height="40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="17" y="1" width="14" height="13" rx="3" fill="rgba(255,255,255,0.92)"/>
+        <rect x="10" y="3"  width="8" height="3.5" rx="1.75" fill="rgba(255,255,255,0.75)"/>
+        <rect x="10" y="8"  width="8" height="3.5" rx="1.75" fill="rgba(255,255,255,0.75)"/>
+        <rect x="30" y="3"  width="8" height="3.5" rx="1.75" fill="rgba(255,255,255,0.75)"/>
+        <rect x="30" y="8"  width="8" height="3.5" rx="1.75" fill="rgba(255,255,255,0.75)"/>
+        <rect x="17" y="13" width="14" height="2.5" rx="1" fill="rgba(255,255,255,0.6)"/>
+        <rect x="19.5" y="15.5" width="9" height="42" rx="2" fill="rgba(255,255,255,0.92)"/>
+        <rect x="19.5" y="24" width="9" height="1" fill="rgba(26,26,46,0.25)"/>
+        <rect x="19.5" y="33" width="9" height="1" fill="rgba(26,26,46,0.25)"/>
+        <rect x="19.5" y="42" width="9" height="1" fill="rgba(26,26,46,0.25)"/>
+        <rect x="17" y="55" width="14" height="5" rx="2" fill="rgba(255,255,255,0.92)"/>
+        <ellipse cx="24" cy="69" rx="13" ry="11" fill="rgba(255,255,255,0.92)"/>
+        <rect x="17" y="75" width="14" height="8" fill="rgba(255,255,255,0.92)"/>
+        <ellipse cx="24" cy="90" rx="17" ry="16" fill="rgba(255,255,255,0.92)"/>
+        <circle cx="24" cy="87" r="6.5" fill="rgba(26,26,46,0.75)"/>
+        <rect x="18" y="97" width="12" height="3" rx="1.5" fill="rgba(26,26,46,0.45)"/>
+        <line x1="21" y1="16" x2="21" y2="100" stroke="rgba(26,26,46,0.18)" stroke-width="0.6"/>
+        <line x1="22.5" y1="16" x2="22.5" y2="100" stroke="rgba(26,26,46,0.18)" stroke-width="0.6"/>
+        <line x1="24" y1="16" x2="24" y2="100" stroke="rgba(26,26,46,0.18)" stroke-width="0.6"/>
+        <line x1="25.5" y1="16" x2="25.5" y2="100" stroke="rgba(26,26,46,0.18)" stroke-width="0.6"/>
+        <line x1="27" y1="16" x2="27" y2="100" stroke="rgba(26,26,46,0.18)" stroke-width="0.6"/>
+        <line x1="28.5" y1="16" x2="28.5" y2="100" stroke="rgba(26,26,46,0.18)" stroke-width="0.6"/>
+      </svg>
+      TSG
+    </div>
+    <div class="brand-right">
+      <div class="brand-sub1">Guitar School</div>
+      <div class="brand-sub2">Ear Trainer</div>
+    </div>
+  </div>
   <div class="hbtns">
     <button id="soundBtn" title="音色切替">🎸</button>
     <button id="helpBtn" title="使い方">❓</button>
