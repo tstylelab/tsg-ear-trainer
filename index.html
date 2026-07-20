@@ -201,6 +201,15 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:12px 14px 4px;}
 #helpModal .bkRow{display:flex; gap:8px; margin:6px 0 2px;}
 #helpModal .bkRow button{flex:1; padding:10px; font-size:13.5px; border-radius:9px;}
 #helpModal .bkMsg{min-height:18px; font-size:12.5px; color:var(--red);}
+#helpModal .segRow{display:flex; gap:6px; margin:6px 0 4px;}
+#helpModal .segRow button{flex:1; padding:9px 4px; font-size:12.5px; border-radius:9px;}
+#helpModal .segRow button.active{background:var(--navy); color:#fff; border-color:var(--navy);}
+
+#resLog .ngLineBtn{
+  display:block; width:100%; text-align:left; background:none; border:none;
+  box-shadow:none; padding:3px 2px; font-size:12.5px; color:var(--txt); line-height:1.6;
+}
+#resLog .ngLineBtn:active{color:var(--red);}
 
 footer{
   text-align:center; font-size:10px; color:#9aa1af; padding:8px 10px 10px; line-height:1.6;
@@ -309,6 +318,13 @@ footer{
     <p>単音（度数当て）は入門→上級へ段階的に出題範囲が広がります。上級は「ルート省略」：キーの音を最初に1回だけ聴き、あとは連続で答えます。コード（響き当て）はトライアド→セブンスと進みます。</p>
     <h4>🎸 音色</h4>
     <p>ヘッダーのボタンでギター（撥弦）とピアノ系の音色を切り替えられます。楽器の音色に依存しない耳を作るため、両方で練習するのがおすすめです。</p>
+    <h4>🔊 出題の鳴らし方（単音ステージ）</h4>
+    <div class="segRow" id="playModeSeg">
+      <button data-mode="melodic">順番に</button>
+      <button data-mode="harmonic">同時に</button>
+      <button data-mode="both">順番→同時</button>
+    </div>
+    <p>「順番に」＝ルート→課題音。「同時に」＝2音が重なって鳴る上級者向けの聴き方。「順番→同時」＝順番のあとに重ねて確認。※上級（ルート省略）ステージには適用されません。</p>
     <h4>⌨️ キーボード（PC）</h4>
     <p>スペース＝再生／数字キー＝回答ボタン（左上から順に1,2,3…）／Enter＝次へ</p>
     <h4>🎯 ステージの直リンク（講師向け）</h4>
@@ -391,9 +407,10 @@ function lsSet(k, v){ try{ localStorage.setItem(k, v); }catch(e){} }
 
 // 生JSON→検証済み進捗オブジェクト（localStorage・バックアップ読み込みの両方で使う）
 function validateProgress(j){
-  const p = {v:1, best:{}, sound:'guitar', lastStage:null};
+  const p = {v:1, best:{}, sound:'guitar', lastStage:null, playMode:'melodic'};
   if(j && typeof j === 'object'){
     if(j.sound === 'piano') p.sound = 'piano';
+    if(j.playMode === 'harmonic' || j.playMode === 'both') p.playMode = j.playMode;
     if(j.best && typeof j.best === 'object'){
       for(const k in j.best){
         const v = j.best[k];
@@ -627,22 +644,22 @@ function ledger(cx, yy){
 
 function hideStaff(){ $('staffWrap').hidden = true; }
 
-function showStaff(){
+function showStaff(q){
+  q = q || curQ;
   $('staffWrap').hidden = false; // 先に表示（hidden中はgetBBoxが0になりクレフ調整が失敗するため）
   let cap;
-  if(curQ.type === 'chord'){
-    const ch = CHORDS[curQ.chord];
+  if(q.type === 'chord'){
+    const ch = CHORDS[q.chord];
     const flatIv = [3, 6, 10]; // ♭3・♭5・♭7は♭表記
-    drawStaff(ch.iv.map((iv, i) => ({midi: curQ.root + iv, red: i > 0, flat: flatIv.includes(iv), stack: true})));
-    cap = spellNote(curQ.root, false).name + ' ' + ch.label + '（' + ch.sub + '）';
+    drawStaff(ch.iv.map((iv, i) => ({midi: q.root + iv, red: i > 0, flat: flatIv.includes(iv), stack: true})));
+    cap = spellNote(q.root, false).name + ' ' + ch.label + '（' + ch.sub + '）';
   }else{
-    const flat = DEG[curQ.cls].d.indexOf('♭') >= 0;
-    const ans = curQ.root + degOffset(curQ.cls, curQ.down);
-    drawStaff([{midi: curQ.root, red: false, flat: false}, {midi: ans, red: true, flat}]);
-    cap = spellNote(curQ.root, false).name + '（ルート）→ ' + spellNote(ans, flat).name + '（' + degLabel(curQ.cls) + '）';
+    const flat = DEG[q.cls].d.indexOf('♭') >= 0;
+    const ans = q.root + degOffset(q.cls, q.down);
+    drawStaff([{midi: q.root, red: false, flat: false}, {midi: ans, red: true, flat}]);
+    cap = spellNote(q.root, false).name + '（ルート）→ ' + spellNote(ans, flat).name + '（' + degLabel(q.cls) + '）';
   }
   $('staffCap').textContent = cap;
-  $('staffWrap').hidden = false;
 }
 
 // ── トップの達成状況サマリー ──────────────────
@@ -734,7 +751,7 @@ function resetRoundUI(){
   resultEl.hidden = true;
   answersEl.hidden = false;
   setFeedback('', '');
-  setPlayLabel('スタートを押すと出題が始まります', false);
+  setPlayLabel('ボタンで音を試聴できます／▶ スタートで出題開始', false);
   renderDots();
   renderAnswers();
 }
@@ -761,7 +778,7 @@ function renderAnswers(){
       const s = document.createElement('span');
       s.className = 's'; s.textContent = CHORDS[key].sub;
       b.appendChild(d); b.appendChild(s);
-      b.addEventListener('click', () => answer(key));
+      b.addEventListener('click', () => onAnswerTap(key));
       answersEl.appendChild(b);
     }
   }else{
@@ -776,7 +793,7 @@ function renderAnswers(){
       s.className = 's'; s.textContent = DEG[c].s;
       b.appendChild(d); b.appendChild(s);
       if(!curStage.pool.includes(c)) b.classList.add('off');
-      else b.addEventListener('click', () => answer(c));
+      else b.addEventListener('click', () => onAnswerTap(c));
       answersEl.appendChild(b);
     }
   }
@@ -824,6 +841,28 @@ function degOffset(cls, down){
   return cls === 0 ? 12 : cls;
 }
 
+// ルート＋度数の再生（設定「鳴らし方」に従う）。出題・答え合わせ・練習試聴・復習で共通
+function playDegPhrase(root, off, t0){
+  const mode = progress.playMode;
+  if(mode === 'harmonic'){
+    playNote(root, t0, 0.9, 1.9);
+    playNote(root + off, t0, 0.9, 1.9);
+  }else if(mode === 'both'){
+    playNote(root, t0, 1.0, 1.15);
+    playNote(root + off, t0 + 1.25, 0.95, 1.5);
+    playNote(root, t0 + 2.95, 0.85, 1.7);
+    playNote(root + off, t0 + 2.95, 0.85, 1.7);
+  }else{
+    playNote(root, t0, 1.0, 1.15);
+    playNote(root + off, t0 + 1.25, 0.95, 1.6);
+  }
+}
+
+function playChordPhrase(root, chordKey, t0){
+  // ギターのダウンストローク風に少しずらして発音
+  CHORDS[chordKey].iv.forEach((iv, i) => playNote(root + iv, t0 + i * 0.07, 0.85, 1.9));
+}
+
 // 現在の問題を再生（replay=trueでもまったく同じものを鳴らす）
 function playStimulus(){
   ensureAudio();
@@ -831,19 +870,19 @@ function playStimulus(){
   clearAnswerHl();
   const t0 = audioCtx.currentTime + 0.08;
   if(curQ.type === 'chord'){
-    // ギターのダウンストローク風に少しずらして発音
-    CHORDS[curQ.chord].iv.forEach((iv, i) => {
-      playNote(curQ.root + iv, t0 + i * 0.07, 0.85, 1.9);
-    });
+    playChordPhrase(curQ.root, curQ.chord, t0);
     setPlayLabel('♪ この響きは？', true);
   }else if(curStage.rootEvery === false){
     playNote(curQ.root + degOffset(curQ.cls, curQ.down), t0, 0.95, 1.6);
     setPlayLabel('♪ この音は？（キーは冒頭のルート）', true);
   }else{
-    playNote(curQ.root, t0, 1.0, 1.15);
-    playNote(curQ.root + degOffset(curQ.cls, curQ.down), t0 + 1.25, 0.95, 1.6);
-    setPlayLabel('♪ ルート…', true);
-    later(() => setPlayLabel('♪ この音は？', true), 1250);
+    playDegPhrase(curQ.root, degOffset(curQ.cls, curQ.down), t0);
+    if(progress.playMode === 'harmonic'){
+      setPlayLabel('♪ ルートと同時に鳴る音は？', true);
+    }else{
+      setPlayLabel('♪ ルート…', true);
+      later(() => setPlayLabel('♪ この音は？', true), 1250);
+    }
   }
 }
 
@@ -893,13 +932,38 @@ function nextQuestion(){
 
 // ── 回答処理 ──────────────────────────────────
 
+// 回答ボタン共通ハンドラ：出題中は回答、スタート前は練習試聴
+function onAnswerTap(val){
+  if(phase === 'q') answer(val);
+  else if(phase === 'idle') practicePlay(val);
+}
+
+// 練習試聴（スタート前）：ボタンの音を採点なしで確認できる。基準はCで固定（響きを覚えやすくするため）
+function practicePlay(val){
+  ensureAudio();
+  stopAll();
+  clearAnswerHl();
+  const t0 = audioCtx.currentTime + 0.05;
+  let q;
+  if(curStage.chords){
+    q = {type:'chord', chord:val, root:48};
+    playChordPhrase(48, val, t0);
+    setPlayLabel('👂 ' + CHORDS[val].label + ' を試聴中（基準C）', true);
+  }else{
+    q = {type:'deg', cls:val, down:false, root:48};
+    playDegPhrase(48, degOffset(val, false), t0);
+    setPlayLabel('👂 ' + degLabel(val) + ' を試聴中（基準C）', true);
+  }
+  showStaff(q);
+}
+
 function answer(val){
   if(phase !== 'q') return;
   const correctVal = curQ.type === 'chord' ? curQ.chord : curQ.cls;
   const ok = val === correctVal;
   const cLabel = curQ.type === 'chord' ? CHORDS[correctVal].label : degLabel(correctVal);
   const gLabel = curQ.type === 'chord' ? CHORDS[val].label : degLabel(val);
-  answersLog.push({ok, correct: cLabel, given: gLabel});
+  answersLog.push({ok, correct: cLabel, given: gLabel, q: Object.assign({}, curQ)});
   if(ok) score++;
   renderDots();
   stopAll();
@@ -929,10 +993,9 @@ function replayForReveal(){
   ensureAudio();
   const t0 = audioCtx.currentTime + 0.05;
   if(curQ.type === 'chord'){
-    CHORDS[curQ.chord].iv.forEach((iv, i) => playNote(curQ.root + iv, t0 + i * 0.07, 0.85, 1.9));
+    playChordPhrase(curQ.root, curQ.chord, t0);
   }else{
-    playNote(curQ.root, t0, 1.0, 1.1);
-    playNote(curQ.root + degOffset(curQ.cls, curQ.down), t0 + 1.2, 0.95, 1.5);
+    playDegPhrase(curQ.root, degOffset(curQ.cls, curQ.down), t0);
   }
 }
 
@@ -972,12 +1035,19 @@ function showResult(){
   const misses = answersLog.filter(a => !a.ok);
   if(misses.length){
     const ttl = document.createElement('div');
-    ttl.textContent = '間違えた問題:';
+    ttl.textContent = '間違えた問題（タップで聴き直し）:';
     log.appendChild(ttl);
     for(const m of misses){
-      const line = document.createElement('div');
-      line.className = 'ngLine';
-      line.textContent = '・正解 ' + m.correct + ' ← あなた ' + m.given;
+      const line = document.createElement('button');
+      line.className = 'ngLineBtn';
+      line.textContent = '▶ 正解 ' + m.correct + ' ← あなた ' + m.given;
+      line.addEventListener('click', () => {
+        ensureAudio();
+        stopAll();
+        const t0 = audioCtx.currentTime + 0.05;
+        if(m.q.type === 'chord') playChordPhrase(m.q.root, m.q.chord, t0);
+        else playDegPhrase(m.q.root, degOffset(m.q.cls, m.q.down), t0);
+      });
       log.appendChild(line);
     }
   }
@@ -1014,6 +1084,18 @@ nextBtn.addEventListener('click', onNext);
 $('backBtn').addEventListener('click', showSelect);
 $('againBtn').addEventListener('click', () => { resetRoundUI(); startRound(); });
 $('selectBtn').addEventListener('click', showSelect);
+
+// 出題の鳴らし方（永続化）
+const segBtns = [...document.querySelectorAll('#playModeSeg button')];
+function renderPlayModeSeg(){
+  segBtns.forEach(b => b.classList.toggle('active', b.dataset.mode === progress.playMode));
+}
+segBtns.forEach(b => b.addEventListener('click', () => {
+  progress.playMode = b.dataset.mode;
+  saveProgress();
+  renderPlayModeSeg();
+}));
+renderPlayModeSeg();
 
 // 音色トグル（永続化）
 const soundBtn = $('soundBtn');
