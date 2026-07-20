@@ -666,7 +666,7 @@ function spellNote(midi, preferFlat){
 
 // notes: [{midi, red(答えの音は赤), flat(♭表記優先)}] を五線に描く
 function drawStaff(notes){
-  const GAP = 9, YB = 80, W = 258, H = 116;
+  const GAP = 9, YB = 80, W = 258, H = 124; // Hは最低音（下行のE2=記譜E3）が欠けない高さ
   const y = s => YB - (s - 30) * (GAP / 2); // step30 = E4（第1線）
   let el = '';
   for(let i = 0; i < 5; i++){
@@ -731,7 +731,8 @@ function showStaff(q){
     const flat = DEG[q.cls].d.indexOf('♭') >= 0;
     const ans = q.root + degOffset(q.cls, q.down);
     drawStaff([{midi: q.root, red: false, flat: false}, {midi: ans, red: true, flat}]);
-    cap = spellNote(q.root, false).name + '（ルート）→ ' + spellNote(ans, flat).name + '（' + degLabel(q.cls) + '）';
+    cap = spellNote(q.root, false).name + '（ルート）→ ' + spellNote(ans, flat).name +
+          '（' + degLabel(q.cls) + (q.down ? '・下行' : '') + '）';
   }
   $('staffCap').textContent = cap;
 }
@@ -1025,6 +1026,7 @@ function startRound(){
 function resetRoundUIKeepScreen(){
   qi = 0; score = 0; answersLog = []; lastAnsVal = null;
   hideStaff();
+  listenBtn.hidden = false; // 結果画面からSpaceキーで再開した場合に再生ボタンが消えたままになるのを防ぐ
   nextBtn.hidden = true;
   resultEl.hidden = true;
   answersEl.hidden = false;
