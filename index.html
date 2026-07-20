@@ -275,6 +275,8 @@ footer{
     <p>ヘッダーのボタンでギター（撥弦）とピアノ系の音色を切り替えられます。楽器の音色に依存しない耳を作るため、両方で練習するのがおすすめです。</p>
     <h4>⌨️ キーボード（PC）</h4>
     <p>スペース＝再生／数字キー＝回答ボタン（左上から順に1,2,3…）／Enter＝次へ</p>
+    <h4>🎯 ステージの直リンク（講師向け）</h4>
+    <p>URLの末尾に <b>?stage=s1</b>〜<b>s7</b>（単音）／<b>c1</b>〜<b>c3</b>（コード）を付けると、そのステージが直接開きます。レッスン課題の指定に便利です。</p>
     <h4>🔗 姉妹アプリ</h4>
     <p>
       <a href="https://metrotuner.tsg-gt.com" target="_blank" rel="noopener">メトロノーム＆チューナー</a> ／
@@ -952,6 +954,18 @@ document.addEventListener('keydown', e => {
 
 renderSoundBtn();
 renderStageList();
+
+// URLパラメータ: ?stage=s3 で該当ステージを直接開く（レッスン課題の共有用・姉妹アプリ共通パターン）
+// 不正値は無視し、適用後はURLからパラメータを除去（Scale Viewer等と同じ流儀）
+(function applyURLParams(){
+  try{
+    const sid = new URLSearchParams(location.search).get('stage');
+    if(!sid) return;
+    const st = STAGES.find(s => s.id === sid);
+    if(st) enterStage(st);
+    history.replaceState(null, '', location.pathname);
+  }catch(e){}
+})();
 </script>
 </body>
 </html>
