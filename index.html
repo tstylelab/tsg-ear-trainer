@@ -122,6 +122,9 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:12px 14px 4px;}
   font-size:10px; font-weight:700; padding:2px 6px; border-radius:6px;
   background:var(--red); color:#fff; flex-shrink:0; line-height:1.3;
 }
+.stageRow.locked{opacity:.55; box-shadow:none; cursor:default;}
+.stageRow.locked::after{content:'';}
+.stageRow.locked:active{filter:none; transform:none;}
 .stageRow .ds{font-size:11.5px; color:var(--sub); margin-top:2px;}
 .stageRow .bd{
   font-size:11.5px; color:var(--sub); white-space:nowrap; flex-shrink:0;
@@ -354,6 +357,12 @@ footer{
       <button data-mode="both">順番→同時</button>
     </div>
     <p>「順番に」＝ルート→課題音。「同時に」＝2音が重なって鳴る上級者向けの聴き方。「順番→同時」＝順番のあとに重ねて確認。※上級（ルート省略）ステージには適用されません。</p>
+    <h4>🔓 ステージの進め方</h4>
+    <div class="segRow" id="unlockSeg">
+      <button data-mode="seq">順番に解放</button>
+      <button data-mode="free">すべて自由</button>
+    </div>
+    <p>「順番に解放」では、各ステージを<b>10問中8問以上の正解でクリア</b>すると次のステージが解放されます（⭐＝クリア、💮＝全問正解）。「ここまでクリア」を目標に挑戦してください。</p>
     <h4>⌨️ キーボード（PC）</h4>
     <p>スペース＝再生／数字キー＝回答ボタン（左上から順に1,2,3…）／Enter＝次へ</p>
     <h4>🎯 ステージの直リンク（講師向け）</h4>
@@ -389,7 +398,8 @@ footer{
 
 // ── 定数 ──────────────────────────────────────
 
-const QN = 10; // 1ラウンドの問題数
+const QN = 10;    // 1ラウンドの問題数
+const CLEAR = 8;  // クリア基準（QN問中）。次ステージ解放・⭐の条件
 
 // 度数定義（半音クラス0〜11）。s は移動ド読み（補助表示）
 const DEG = [
@@ -428,6 +438,16 @@ const STAGES = [
   {id:'c3', grp:'コード（響き当て）', lv:'中級', name:'セブンス',          desc:'maj7 / 7th / m7 / m7♭5',      chords:['maj7','dom7','m7','m7b5']}
 ];
 
+// ステージ解放判定：グループ（単音/コード）ごとの並び順で、前のステージをクリア（CLEAR問以上）すると解放。
+// 「すべて自由」設定なら常に解放。各グループの先頭は常に解放
+function isUnlocked(st){
+  if(progress.unlockMode === 'free') return true;
+  const chain = STAGES.filter(s => !!s.chords === !!st.chords);
+  const idx = chain.findIndex(s => s.id === st.id);
+  if(idx <= 0) return true;
+  return (progress.best[chain[idx - 1].id] || 0) >= CLEAR;
+}
+
 // レベルチップの色分け（先頭2文字で判定）
 function lvClass(lv){
   if(lv.indexOf('入門') === 0) return 'lv-a';
@@ -444,10 +464,27 @@ function lsSet(k, v){ try{ localStorage.setItem(k, v); }catch(e){} }
 
 // 生JSON→検証済み進捗オブジェクト（localStorage・バックアップ読み込みの両方で使う）
 function validateProgress(j){
-  const p = {v:1, best:{}, sound:'guitar', lastStage:null, playMode:'melodic'};
+  const p = {v:1, best:{}, sound:'guitar', lastStage:null, playMode:'melodic',
+             unlockMode:'seq', streak:{last:null, n:0}, stats:{}};
   if(j && typeof j === 'object'){
     if(j.sound === 'piano') p.sound = 'piano';
     if(j.playMode === 'harmonic' || j.playMode === 'both') p.playMode = j.playMode;
+    if(j.unlockMode === 'free') p.unlockMode = 'free';
+    if(j.streak && typeof j.streak === 'object' &&
+       Number.isInteger(j.streak.n) && j.streak.n >= 0 &&
+       (j.streak.last === null || typeof j.streak.last === 'string')){
+      p.streak = {last: j.streak.last || null, n: j.streak.n};
+    }
+    if(j.stats && typeof j.stats === 'object'){
+      for(const k in j.stats){
+        const v = j.stats[k];
+        if((/^d(\d|1[01])$/.test(k) || CHORDS[k]) &&
+           Array.isArray(v) && v.length === 2 &&
+           Number.isInteger(v[0]) && Number.isInteger(v[1]) && v[0] >= 0 && v[1] >= v[0]){
+          p.stats[k] = [v[0], v[1]];
+        }
+      }
+    }
     if(j.best && typeof j.best === 'object'){
       for(const k in j.best){
         const v = j.best[k];
@@ -708,11 +745,12 @@ function renderHeroStats(){
   let cleared = 0, perfect = 0;
   for(const st of STAGES){
     const b = progress.best[st.id];
-    if(b !== undefined && b >= 8) cleared++;
+    if(b !== undefined && b >= CLEAR) cleared++;
     if(b === QN) perfect++;
   }
   mk('🏆 クリア ' + cleared + ' / ' + STAGES.length);
   if(perfect) mk('💮 パーフェクト ' + perfect);
+  if(progress.streak.n > 0) mk('🔥 連続 ' + progress.streak.n + '日');
   if(!Object.keys(progress.best).length) mk('まずは入門①から！');
 }
 
@@ -751,17 +789,23 @@ function renderStageList(){
     left.appendChild(nm); left.appendChild(ds);
     const bd = document.createElement('div');
     bd.className = 'bd';
+    const unlocked = isUnlocked(st);
     const best = progress.best[st.id];
-    if(best !== undefined){
-      const star = best === QN ? ' 💮' : (best >= 8 ? ' ⭐' : '');
+    if(!unlocked){
+      row.classList.add('locked');
+      row.disabled = true;
+      ds.textContent = '前のステージをクリア（' + CLEAR + '/' + QN + '）で解放';
+      bd.textContent = '🔒';
+    }else if(best !== undefined){
+      const star = best === QN ? ' 💮' : (best >= CLEAR ? ' ⭐' : '');
       bd.textContent = 'ベスト ' + best + '/' + QN + star;
       if(best === QN) bd.classList.add('perfect');
-      else if(best >= 8) bd.classList.add('star');
+      else if(best >= CLEAR) bd.classList.add('star');
     }else{
       bd.textContent = '未挑戦';
     }
     row.appendChild(left); row.appendChild(bd);
-    row.addEventListener('click', () => enterStage(st));
+    if(unlocked) row.addEventListener('click', () => enterStage(st));
     stageListEl.appendChild(row);
   }
 }
@@ -1036,6 +1080,12 @@ function answer(val){
   const cLabel = curQ.type === 'chord' ? CHORDS[correctVal].label : degLabel(correctVal);
   const gLabel = curQ.type === 'chord' ? CHORDS[val].label : degLabel(val);
   answersLog.push({ok, correct: cLabel, given: gLabel, q: Object.assign({}, curQ)});
+  // 度数/コード別の累計成績（苦手ランキング用）
+  const statKey = curQ.type === 'chord' ? correctVal : 'd' + correctVal;
+  const stEntry = progress.stats[statKey] || [0, 0];
+  stEntry[1]++; if(ok) stEntry[0]++;
+  progress.stats[statKey] = stEntry;
+  saveProgress();
   if(ok) score++;
   renderDots();
   stopAll();
@@ -1060,15 +1110,40 @@ function answer(val){
   }
 }
 
-// 不正解時の答え合わせ再生（出題と同じ形で正解を確認）
+// 不正解時の答え合わせ再生（出題と同じ形で正解を確認→単音は解決フレーズつき）
 function replayForReveal(){
   ensureAudio();
   const t0 = audioCtx.currentTime + 0.05;
   if(curQ.type === 'chord'){
     playChordPhrase(curQ.root, curQ.chord, t0);
-  }else{
-    playDegPhrase(curQ.root, degOffset(curQ.cls, curQ.down), t0);
+    return;
   }
+  const off = degOffset(curQ.cls, curQ.down);
+  playDegPhrase(curQ.root, off, t0);
+  const phraseDur = progress.playMode === 'harmonic' ? 2.0 : (progress.playMode === 'both' ? 4.8 : 3.0);
+  playResolution(curQ.root, off, t0 + phraseDur);
+}
+
+// 解決再生（FET式）：正解音からスケールに沿ってルートへ着地させ、度数の「役割」を体感させる。
+// 5度（ソ）以上は上のルートへ、4度（ファ）以下は下のルートへ。スケール外の音は隣のスケール音から合流
+function playResolution(root, off, t0){
+  const minorish = curStage && curStage.id === 's4';
+  const scale = minorish ? [0,2,3,5,7,8,10,12] : [0,2,4,5,7,9,11,12];
+  let base = root, s = off;
+  if(s < 0){ base = root - 12; s = off + 12; } // 下行問題は下のオクターブ内で解決
+  if(s <= 0) return;
+  const path = [s];
+  if(s >= 7){
+    for(const t of scale){ if(t > s) path.push(t); }
+    if(path[path.length - 1] !== 12) path.push(12);
+  }else{
+    for(let i = scale.length - 1; i >= 0; i--){ if(scale[i] < s) path.push(scale[i]); }
+    if(path[path.length - 1] !== 0) path.push(0);
+  }
+  path.forEach((t, i) => {
+    const last = i === path.length - 1;
+    playNote(base + t, t0 + i * 0.32, last ? 0.95 : 0.78, last ? 1.6 : 0.5);
+  });
 }
 
 function onNext(){
@@ -1092,13 +1167,23 @@ function showResult(){
   nextBtn.hidden = true;
   resultEl.hidden = false;
 
-  const rank = score === QN ? '💮' : (score >= 8 ? '⭐' : '🎧');
-  const msg  = score === QN ? 'パーフェクト！' : (score >= 8 ? 'クリア！（8問以上正解）' : 'もう少し！繰り返しが耳を作ります');
+  // 練習ストリーク（ラウンド完走で当日をカウント）
+  const now = new Date(); const pad2 = n => String(n).padStart(2, '0');
+  const dstr = now.getFullYear() + '-' + pad2(now.getMonth() + 1) + '-' + pad2(now.getDate());
+  if(progress.streak.last !== dstr){
+    const y = new Date(now.getTime() - 86400000);
+    const ystr = y.getFullYear() + '-' + pad2(y.getMonth() + 1) + '-' + pad2(y.getDate());
+    progress.streak = {last: dstr, n: progress.streak.last === ystr ? progress.streak.n + 1 : 1};
+    saveProgress();
+  }
+
+  const rank = score === QN ? '💮' : (score >= CLEAR ? '⭐' : '🎧');
+  const msg  = score === QN ? 'パーフェクト！' : (score >= CLEAR ? 'クリア！（' + CLEAR + '問以上正解）' : 'あと' + (CLEAR - score) + '問でクリア！繰り返しが耳を作ります');
   $('resRank').textContent = rank;
   $('resScore').textContent = score;
   $('resMax').textContent = '/ ' + QN;
-  // 達成率リング（8問以上=緑、それ未満=オレンジ）
-  const ringColor = score >= 8 ? 'var(--ok)' : '#f39c12';
+  // 達成率リング（クリア以上=緑、それ未満=オレンジ）
+  const ringColor = score >= CLEAR ? 'var(--ok)' : '#f39c12';
   $('scoreRing').style.background = 'conic-gradient(' + ringColor + ' ' + (score / QN * 100) + '%, #e9ecf1 0)';
   $('resMsg').textContent = msg;
 
@@ -1121,6 +1206,25 @@ function showResult(){
         else playDegPhrase(m.q.root, degOffset(m.q.cls, m.q.down), t0);
       });
       log.appendChild(line);
+    }
+  }
+
+  // 苦手ランキング（累計・4回以上出題されたもののうち正解率が低い順に3件）
+  const weak = Object.keys(progress.stats)
+    .map(k => ({k, ok: progress.stats[k][0], tot: progress.stats[k][1]}))
+    .filter(e => e.tot >= 4 && e.ok < e.tot)
+    .sort((a, b) => (a.ok / a.tot) - (b.ok / b.tot))
+    .slice(0, 3);
+  if(weak.length){
+    const ttl2 = document.createElement('div');
+    ttl2.textContent = '📊 苦手ランキング（累計）:';
+    ttl2.style.marginTop = '6px';
+    log.appendChild(ttl2);
+    for(const e of weak){
+      const d = document.createElement('div');
+      const label = e.k.charAt(0) === 'd' && !CHORDS[e.k] ? degLabel(+e.k.slice(1)) : CHORDS[e.k].label;
+      d.textContent = '・' + label + ' 正解率 ' + Math.round(e.ok / e.tot * 100) + '%（' + e.ok + '/' + e.tot + '）';
+      log.appendChild(d);
     }
   }
 
@@ -1169,6 +1273,19 @@ segBtns.forEach(b => b.addEventListener('click', () => {
 }));
 renderPlayModeSeg();
 
+// ステージの進め方（永続化・切替時は一覧のロック表示を更新）
+const unlockBtns = [...document.querySelectorAll('#unlockSeg button')];
+function renderUnlockSeg(){
+  unlockBtns.forEach(b => b.classList.toggle('active', b.dataset.mode === progress.unlockMode));
+}
+unlockBtns.forEach(b => b.addEventListener('click', () => {
+  progress.unlockMode = b.dataset.mode;
+  saveProgress();
+  renderUnlockSeg();
+  renderStageList();
+}));
+renderUnlockSeg();
+
 // 音色トグル（永続化）
 const soundBtn = $('soundBtn');
 function renderSoundBtn(){ soundBtn.textContent = progress.sound === 'piano' ? '🎹' : '🎸'; }
@@ -1215,6 +1332,12 @@ $('impFile').addEventListener('change', e => {
           merged++;
         }
       }
+      // 統計は出題数が多い方を採用（同じファイルを二度読んでも二重加算しない）
+      for(const k in imp.stats){
+        const cur = progress.stats[k];
+        if(!cur || imp.stats[k][1] > cur[1]) progress.stats[k] = imp.stats[k];
+      }
+      if(imp.streak.n > progress.streak.n) progress.streak = imp.streak;
       saveProgress();
       renderStageList();
       setBkMsg(merged ? '✅ 読み込みました（' + merged + '件のベストを反映）' : '✅ 読み込みました（今の記録の方が良いため変更なし）');
