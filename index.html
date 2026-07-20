@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="ルートに対する度数で音を聴き取る相対音感トレーニングアプリ。単音の度数当てからコードの響き当てまで。ギタースクールTSG提供。">
 <meta name="theme-color" content="#1a1a2e">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="%231a1a2e"/><text x="31" y="42" font-size="34" text-anchor="middle" fill="%23ffffff" font-family="serif">♪</text><rect x="15" y="48" width="34" height="5" rx="2.5" fill="%23c0392b"/></svg>'>
 <title>TSG Ear Trainer｜相対音感トレーナー</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -117,6 +118,10 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:12px 14px 4px;}
 .lv-b{background:#e3ecfd; color:#2456c4;}
 .lv-c{background:#fdf0dd; color:#b06a08;}
 .lv-d{background:#fde3e0; color:#b3261e;}
+.lastChip{
+  font-size:10px; font-weight:700; padding:2px 6px; border-radius:6px;
+  background:var(--red); color:#fff; flex-shrink:0; line-height:1.3;
+}
 .stageRow .ds{font-size:11.5px; color:var(--sub); margin-top:2px;}
 .stageRow .bd{
   font-size:11.5px; color:var(--sub); white-space:nowrap; flex-shrink:0;
@@ -735,6 +740,12 @@ function renderStageList(){
     chip.textContent = st.lv;
     nm.appendChild(chip);
     nm.appendChild(document.createTextNode(st.name));
+    if(progress.lastStage === st.id && Object.keys(progress.best).length){
+      const lastC = document.createElement('span');
+      lastC.className = 'lastChip';
+      lastC.textContent = '前回';
+      nm.appendChild(lastC);
+    }
     const ds = document.createElement('div');
     ds.className = 'ds'; ds.textContent = st.desc;
     left.appendChild(nm); left.appendChild(ds);
@@ -1234,7 +1245,7 @@ document.addEventListener('keydown', e => {
     onNext();
     return;
   }
-  if(phase !== 'q') return;
+  if(phase !== 'q' && phase !== 'idle') return; // idle中は練習試聴として鳴る
   const keys = '1234567890';
   const idx = keys.indexOf(e.key);
   if(idx < 0) return;
