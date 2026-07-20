@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="ルートに対する度数で音を聴き取る相対音感トレーニングアプリ。単音の度数当てからコードの響き当てまで。ギタースクールTSG提供。">
+<meta name="theme-color" content="#14171c">
+<title>TSG Ear Trainer｜相対音感トレーナー</title>
+<style>
+:root{
+  --bg:#14171c; --card:#1e232b; --card2:#2a313c; --line:#39414e;
+  --txt:#e8eaee; --sub:#8a93a3; --acc:#ff9f3c; --accTxt:#14171c;
+  --ok:#3ecf6f; --ng:#ff5a5a;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0; padding:0;}
+body{
+  background:var(--bg); color:var(--txt);
+  font-family:"Segoe UI","Hiragino Sans","Noto Sans JP",Meiryo,sans-serif;
+  min-height:100dvh; display:flex; flex-direction:column;
+}
+button{
+  font-family:inherit; color:var(--txt); background:var(--card2);
+  border:1px solid var(--line); border-radius:8px; cursor:pointer;
+  touch-action:manipulation; user-select:none; -webkit-user-select:none;
+}
+button:active{filter:brightness(1.2);}
+
+/* ── ヘッダー（縦幅節約：1行のみ） ── */
+header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:7px 12px; background:#10131a; border-bottom:1px solid var(--line);
+}
+.ttl{font-size:16px; font-weight:700; letter-spacing:.5px;}
+.ttl .b{color:var(--acc);}
+.ttl small{font-size:11px; color:var(--sub); font-weight:400; margin-left:6px;}
+.hbtns{display:flex; gap:8px;}
+.hbtns button{font-size:15px; padding:4px 9px; line-height:1.3;}
+
+main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:10px 12px 4px;}
+
+/* ── ステージ選択 ── */
+.lead{font-size:12.5px; color:var(--sub); margin:2px 0 10px; line-height:1.55;}
+.lead b{color:var(--acc); font-weight:700;}
+.grpTtl{font-size:12px; color:var(--sub); margin:12px 0 5px; letter-spacing:1px; font-weight:700;}
+.stageRow{
+  width:100%; display:flex; align-items:center; justify-content:space-between;
+  background:var(--card); padding:10px 12px; margin:5px 0; text-align:left;
+  border-radius:10px; gap:8px;
+}
+.stageRow .nm{font-size:14.5px; font-weight:700;}
+.stageRow .ds{font-size:11.5px; color:var(--sub); margin-top:2px;}
+.stageRow .bd{font-size:12px; color:var(--sub); white-space:nowrap; flex-shrink:0;}
+.stageRow .bd .st{font-size:14px;}
+
+/* ── クイズ画面 ── */
+.qbar{display:flex; align-items:center; gap:8px; margin-bottom:6px;}
+.qbar button{padding:5px 11px; font-size:13px;}
+#stageName{font-size:13.5px; font-weight:700; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+#qNum{font-size:12.5px; color:var(--sub); white-space:nowrap;}
+
+#dots{display:flex; justify-content:center; gap:6px; margin:6px 0;}
+#dots span{width:11px; height:11px; border-radius:50%; border:1.5px solid var(--line); background:transparent;}
+#dots span.cur{border-color:var(--acc);}
+#dots span.ok{background:var(--ok); border-color:var(--ok);}
+#dots span.ng{background:var(--ng); border-color:var(--ng);}
+
+#playLabel{text-align:center; min-height:20px; font-size:13px; color:var(--sub); margin:2px 0;}
+#playLabel.hot{color:var(--acc); font-weight:700;}
+
+.listenRow{display:flex; gap:8px; margin:6px 0;}
+#listenBtn{
+  flex:1; padding:13px; font-size:17px; font-weight:700;
+  background:var(--acc); color:var(--accTxt); border:none; border-radius:10px;
+}
+#rootBtn{padding:13px 14px; font-size:14px; border-radius:10px;}
+
+#feedback{text-align:center; min-height:26px; font-size:15px; font-weight:700; margin:4px 0;}
+#feedback.ok{color:var(--ok);}
+#feedback.ng{color:var(--ng);}
+
+#answers{display:grid; grid-template-columns:repeat(4,1fr); gap:7px; margin-top:4px;}
+#answers.chordGrid{grid-template-columns:repeat(2,1fr);}
+#answers button{padding:8px 2px 7px; border-radius:9px; line-height:1.25;}
+#answers button .d{font-size:17px; font-weight:700; display:block;}
+#answers button .s{font-size:10px; color:var(--sub); display:block; margin-top:1px;}
+#answers button.off{opacity:.22; pointer-events:none;}
+#answers button.hlOk{border-color:var(--ok); box-shadow:0 0 0 1.5px var(--ok);}
+#answers button.hlNg{border-color:var(--ng); box-shadow:0 0 0 1.5px var(--ng);}
+
+#nextBtn{width:100%; margin-top:10px; padding:12px; font-size:15px; font-weight:700; border-radius:10px;}
+
+/* ── 結果 ── */
+#result{background:var(--card); border-radius:12px; padding:16px 14px; text-align:center; margin-top:6px;}
+#resRank{font-size:34px; min-height:44px;}
+#resScore{font-size:24px; font-weight:700; margin:2px 0;}
+#resMsg{font-size:13px; color:var(--sub); margin-bottom:8px;}
+#resLog{font-size:12.5px; text-align:left; margin:8px auto 4px; max-width:320px; color:var(--sub); line-height:1.7;}
+#resLog .ngLine{color:var(--txt);}
+.resBtns{display:flex; gap:8px; margin-top:10px;}
+.resBtns button{flex:1; padding:12px; font-size:14.5px; font-weight:700; border-radius:10px;}
+#againBtn{background:var(--acc); color:var(--accTxt); border:none;}
+
+/* ── ヘルプモーダル ── */
+#helpModal{
+  position:fixed; inset:0; background:rgba(0,0,0,.66); z-index:50;
+  display:flex; align-items:center; justify-content:center; padding:16px;
+}
+#helpModal .box{
+  background:var(--card); border-radius:14px; padding:18px 16px; max-width:460px;
+  width:100%; max-height:82dvh; overflow-y:auto; font-size:13.5px; line-height:1.75;
+}
+#helpModal h3{margin:0 0 6px; font-size:16px; color:var(--acc);}
+#helpModal h4{margin:14px 0 4px; font-size:13.5px;}
+#helpModal p{margin:4px 0;}
+#helpModal a{color:var(--acc);}
+#helpModal .cls{width:100%; margin-top:12px; padding:11px; font-size:14px; border-radius:9px;}
+
+footer{
+  text-align:center; font-size:10px; color:#566070; padding:8px 10px 10px; line-height:1.6;
+}
+[hidden]{display:none !important;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="ttl">TSG <span class="b">Ear Trainer</span><small>相対音感トレーナー β</small></div>
+  <div class="hbtns">
+    <button id="soundBtn" title="音色切替">🎸</button>
+    <button id="helpBtn" title="使い方">❓</button>
+  </div>
+</header>
+
+<main>
+  <!-- ステージ選択画面 -->
+  <section id="scrSelect">
+    <p class="lead">ルート（基準音）に対する<b>度数</b>で音を聴き取る、相対音感トレーニング。音名の当てっこではなく「キーの中での役割」で聴く耳を作ります。1ラウンド10問。</p>
+    <div id="stageList"></div>
+  </section>
+
+  <!-- クイズ画面 -->
+  <section id="scrQuiz" hidden>
+    <div class="qbar">
+      <button id="backBtn">◀ ステージ</button>
+      <span id="stageName"></span>
+      <span id="qNum"></span>
+    </div>
+    <div id="dots"></div>
+    <div id="playLabel">&nbsp;</div>
+    <div class="listenRow">
+      <button id="listenBtn">▶ スタート</button>
+      <button id="rootBtn" hidden>🔁 ルート</button>
+    </div>
+    <div id="feedback">&nbsp;</div>
+    <div id="answers"></div>
+    <button id="nextBtn" hidden>次へ ▶</button>
+
+    <div id="result" hidden>
+      <div id="resRank"></div>
+      <div id="resScore"></div>
+      <div id="resMsg"></div>
+      <div id="resLog"></div>
+      <div class="resBtns">
+        <button id="againBtn">もう一度</button>
+        <button id="selectBtn">ステージ選択</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>© 2026 ギタースクールTSG — All Rights Reserved. 無断複製・転載を禁じます</footer>
+
+<!-- ヘルプ -->
+<div id="helpModal" hidden>
+  <div class="box">
+    <h3>TSG Ear Trainer の使い方</h3>
+    <p>「ルート音 → 課題音」の順に鳴ります。課題音がルートから見て<b>何度</b>にあたるかをボタンで答えてください。</p>
+    <h4>🎯 度数で聴くとは</h4>
+    <p>絶対的な音名（CやAなど）ではなく、キーの中心＝ルートからの距離（1・♭3・5…）で音を捉える聴き方です。耳コピ・アドリブ・移調に直結する、実戦的な相対音感が身につきます。</p>
+    <h4>📚 ステージ構成</h4>
+    <p>単音（度数当て）は入門→上級へ段階的に出題範囲が広がります。上級は「ルート省略」：キーの音を最初に1回だけ聴き、あとは連続で答えます。コード（響き当て）はトライアド→セブンスと進みます。</p>
+    <h4>🎸 音色</h4>
+    <p>ヘッダーのボタンでギター（撥弦）とピアノ系の音色を切り替えられます。楽器の音色に依存しない耳を作るため、両方で練習するのがおすすめです。</p>
+    <h4>⌨️ キーボード（PC）</h4>
+    <p>スペース＝再生／数字キー＝回答ボタン（左上から順に1,2,3…）／Enter＝次へ</p>
+    <h4>🔗 姉妹アプリ</h4>
+    <p>
+      <a href="https://metrotuner.tsg-gt.com" target="_blank" rel="noopener">メトロノーム＆チューナー</a> ／
+      <a href="https://rhythm.tsg-gt.com" target="_blank" rel="noopener">リズムトレーナー</a> ／
+      <a href="https://scale.tsg-gt.com" target="_blank" rel="noopener">スケールビューワー</a>
+    </p>
+    <h4>📄 著作権・利用について</h4>
+    <p>本アプリの著作権はギタースクールTSGに帰属します。無断複製・転載・再配布・改変を禁じます。</p>
+    <button class="cls" id="helpClose">閉じる</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ============================================================
+   TSG Ear Trainer — 相対音感トレーナー
+   単一HTMLファイル・ビルドなし・外部依存なし
+   音源: Karplus-Strong（Scale Viewerから移植）＋加算合成ピアノ系
+   ============================================================ */
+
+// ── 定数 ──────────────────────────────────────
+
+const QN = 10; // 1ラウンドの問題数
+
+// 度数定義（半音クラス0〜11）。s は移動ド読み（補助表示）
+const DEG = [
+  {d:'1',  s:'ド'},   {d:'♭2', s:'レ♭'}, {d:'2',  s:'レ'},   {d:'♭3', s:'ミ♭'},
+  {d:'3',  s:'ミ'},   {d:'4',  s:'ファ'}, {d:'♭5', s:'ソ♭'}, {d:'5',  s:'ソ'},
+  {d:'♭6', s:'ラ♭'}, {d:'6',  s:'ラ'},   {d:'♭7', s:'シ♭'}, {d:'7',  s:'シ'}
+];
+
+// コード定義（iv＝ルートからの半音）。sub は構成度数（補助表示）
+const CHORDS = {
+  maj:  {label:'メジャー', sub:'1・3・5',        iv:[0,4,7]},
+  min:  {label:'マイナー', sub:'1・♭3・5',       iv:[0,3,7]},
+  sus4: {label:'sus4',     sub:'1・4・5',         iv:[0,5,7]},
+  dim:  {label:'dim',      sub:'1・♭3・♭5',      iv:[0,3,6]},
+  maj7: {label:'maj7',     sub:'1・3・5・7',      iv:[0,4,7,11]},
+  dom7: {label:'7th',      sub:'1・3・5・♭7',    iv:[0,4,7,10]},
+  m7:   {label:'m7',       sub:'1・♭3・5・♭7',  iv:[0,3,7,10]},
+  m7b5: {label:'m7♭5',    sub:'1・♭3・♭5・♭7',iv:[0,3,6,10]}
+};
+
+const ALL12 = [0,1,2,3,4,5,6,7,8,9,10,11];
+
+// ステージ定義
+//  pool: 出題する度数クラス／dir:'both'で下行あり／rootEvery:falseでルートは最初だけ
+//  chords: コードステージ（出題するコードタイプ）
+const STAGES = [
+  {id:'s1', grp:'単音（度数当て）', name:'入門① ド・ミ・ソ',        desc:'1・3・5度だけ（上行）',        pool:[0,4,7]},
+  {id:'s2', grp:'単音（度数当て）', name:'入門② ドレミファソ',      desc:'1〜5度（上行）',               pool:[0,2,4,5,7]},
+  {id:'s3', grp:'単音（度数当て）', name:'初級① メジャースケール',  desc:'長音階の7音（上行）',          pool:[0,2,4,5,7,9,11]},
+  {id:'s4', grp:'単音（度数当て）', name:'初級② マイナー系',        desc:'♭3・♭6・♭7を含む7音',      pool:[0,2,3,5,7,8,10]},
+  {id:'s5', grp:'単音（度数当て）', name:'中級① 12度数すべて',      desc:'半音階の全度数（上行）',       pool:ALL12},
+  {id:'s6', grp:'単音（度数当て）', name:'中級② 下行ミックス',      desc:'全度数・ルートの下側も出題',   pool:ALL12, dir:'both'},
+  {id:'s7', grp:'単音（度数当て）', name:'上級 ルート省略',          desc:'キーの音は最初の1回だけ',      pool:ALL12, rootEvery:false},
+  {id:'c1', grp:'コード（響き当て）', name:'コード入門',             desc:'メジャー / マイナー',          chords:['maj','min']},
+  {id:'c2', grp:'コード（響き当て）', name:'コード初級 トライアド',  desc:'maj / min / sus4 / dim',       chords:['maj','min','sus4','dim']},
+  {id:'c3', grp:'コード（響き当て）', name:'コード中級 セブンス',    desc:'maj7 / 7th / m7 / m7♭5',      chords:['maj7','dom7','m7','m7b5']}
+];
+
+// ── localStorage（キー名で他アプリと分離・読み込みは必ず検証） ──
+
+const LS_KEY = 'tsg-ear-v1';
+
+function lsSet(k, v){ try{ localStorage.setItem(k, v); }catch(e){} }
+
+function loadProgress(){
+  const p = {v:1, best:{}, sound:'guitar', lastStage:null};
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw){
+      const j = JSON.parse(raw);
+      if(j && typeof j === 'object'){
+        if(j.sound === 'piano') p.sound = 'piano';
+        if(j.best && typeof j.best === 'object'){
+          for(const k in j.best){
+            const v = j.best[k];
+            if(STAGES.some(s => s.id === k) && Number.isInteger(v) && v >= 0 && v <= QN) p.best[k] = v;
+          }
+        }
+        if(typeof j.lastStage === 'string' && STAGES.some(s => s.id === j.lastStage)) p.lastStage = j.lastStage;
+      }
+    }
+  }catch(e){}
+  return p;
+}
+
+let progress = loadProgress();
+function saveProgress(){ lsSet(LS_KEY, JSON.stringify(progress)); }
+
+// ── 音声エンジン ──────────────────────────────
+
+let audioCtx = null;
+let masterGain = null;
+let limiterNode = null;
+let liveNodes = [];    // 再生中/予約中ノード（停止用）
+let timers = [];       // setTimeout管理（画面表示・自動進行）
+
+// iOS対策: ユーザー操作の同期処理内で生成・resumeする（awaitを挟まない）
+function ensureAudio(){
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 0.9;
+    // コード（4音重なり）でピークが1.0を超えて音割れするため、リミッターを通す
+    limiterNode = audioCtx.createDynamicsCompressor();
+    limiterNode.threshold.value = -6;
+    limiterNode.knee.value = 4;
+    limiterNode.ratio.value = 12;
+    limiterNode.attack.value = 0.002;
+    limiterNode.release.value = 0.15;
+    masterGain.connect(limiterNode);
+    limiterNode.connect(audioCtx.destination);
+  }
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+}
+
+// 電話・タブ切替などの割り込み後に自動復旧（Metronome Tunerの教訓）
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible' && audioCtx && audioCtx.state === 'suspended'){
+    audioCtx.resume().catch(()=>{});
+  }
+});
+
+function midiToFreq(m){ return 440 * Math.pow(2, (m - 69) / 12); }
+
+// Karplus-Strong ギター撥弦音（Scale Viewer移植・バッファはMIDIノート別にキャッシュ）
+const pluckCache = {};
+function getPluckBuffer(midi){
+  if(pluckCache[midi]) return pluckCache[midi];
+  const sr = audioCtx.sampleRate;
+  const duration = 2.5;
+  const total = Math.floor(sr * duration);
+  const freq = midiToFreq(midi);
+  const delayLen = Math.max(2, Math.round(sr / freq));
+  const delayLine = new Float32Array(delayLen);
+  for(let i = 0; i < delayLen; i++) delayLine[i] = Math.random() * 2 - 1;
+  const out = new Float32Array(total);
+  let pos = 0;
+  for(let i = 0; i < total; i++){
+    const next = (pos + 1) % delayLen;
+    out[i] = delayLine[pos];
+    delayLine[pos] = (delayLine[pos] + delayLine[next]) * 0.498;
+    pos = next;
+  }
+  const buf = audioCtx.createBuffer(1, total, sr);
+  buf.getChannelData(0).set(out);
+  pluckCache[midi] = buf;
+  return buf;
+}
+
+function playPluck(midi, t, gain, dur){
+  const src = audioCtx.createBufferSource();
+  src.buffer = getPluckBuffer(midi);
+  const g = audioCtx.createGain();
+  g.gain.setValueAtTime(gain * 0.7, t);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  src.connect(g); g.connect(masterGain);
+  src.start(t); src.stop(t + dur);
+  liveNodes.push({src, g});
+}
+
+// ピアノ系（加算合成・軽量）
+function playPiano(midi, t, gain, dur){
+  const f = midiToFreq(midi);
+  const partials = [[1, 1], [2, 0.32], [3, 0.14], [4, 0.07], [5, 0.04]];
+  for(const [mul, amp] of partials){
+    const o = audioCtx.createOscillator();
+    o.type = 'sine';
+    o.frequency.value = f * mul;
+    const g = audioCtx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain * 0.6 * amp, t + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(masterGain);
+    o.start(t); o.stop(t + dur + 0.05);
+    liveNodes.push({src: o, g});
+  }
+}
+
+function playNote(midi, t, gain, dur){
+  if(progress.sound === 'piano') playPiano(midi, t, gain, dur);
+  else playPluck(midi, t, gain, dur);
+}
+
+// すべての再生・予約・タイマーを停止（次の出題や画面遷移の前に呼ぶ）
+function stopAll(){
+  if(audioCtx){
+    const now = audioCtx.currentTime;
+    for(const n of liveNodes){
+      try{
+        n.g.gain.cancelScheduledValues(now);
+        n.g.gain.setValueAtTime(Math.max(n.g.gain.value, 0.0001), now);
+        n.g.gain.linearRampToValueAtTime(0.0001, now + 0.05);
+        n.src.stop(now + 0.06);
+      }catch(e){}
+    }
+  }
+  liveNodes = [];
+  for(const t of timers) clearTimeout(t);
+  timers = [];
+}
+
+function later(fn, ms){ timers.push(setTimeout(fn, ms)); }
+
+// ── DOM取得 ──────────────────────────────────
+
+const $ = id => document.getElementById(id);
+const scrSelect = $('scrSelect'), scrQuiz = $('scrQuiz');
+const stageListEl = $('stageList');
+const stageNameEl = $('stageName'), qNumEl = $('qNum');
+const dotsEl = $('dots'), playLabelEl = $('playLabel');
+const listenBtn = $('listenBtn'), rootBtn = $('rootBtn');
+const feedbackEl = $('feedback'), answersEl = $('answers');
+const nextBtn = $('nextBtn'), resultEl = $('result');
+
+// ── ゲーム状態 ────────────────────────────────
+
+let curStage = null;
+let phase = 'select';  // select | idle | listen | q | reveal | result
+let qi = 0;            // 現在の問題番号（1〜QN）
+let score = 0;
+let curQ = null;       // {type:'deg', cls, down, root} | {type:'chord', chord, root}
+let lastAnsVal = null; // 直前の出題（連続同一を避ける）
+let roundRoot = null;  // ルート省略ステージ用の固定ルート
+let answersLog = [];   // [{ok, correct, given}]
+
+function rnd(n){ return Math.floor(Math.random() * n); }
+function degLabel(c){ return DEG[c].d + '（' + DEG[c].s + '）'; }
+
+// ── ステージ選択画面 ──────────────────────────
+
+function renderStageList(){
+  stageListEl.textContent = '';
+  let lastGrp = null;
+  for(const st of STAGES){
+    if(st.grp !== lastGrp){
+      const h = document.createElement('div');
+      h.className = 'grpTtl';
+      h.textContent = st.grp;
+      stageListEl.appendChild(h);
+      lastGrp = st.grp;
+    }
+    const row = document.createElement('button');
+    row.className = 'stageRow';
+    const left = document.createElement('div');
+    const nm = document.createElement('div');
+    nm.className = 'nm'; nm.textContent = st.name;
+    const ds = document.createElement('div');
+    ds.className = 'ds'; ds.textContent = st.desc;
+    left.appendChild(nm); left.appendChild(ds);
+    const bd = document.createElement('div');
+    bd.className = 'bd';
+    const best = progress.best[st.id];
+    if(best !== undefined){
+      const star = best === QN ? ' 💮' : (best >= 8 ? ' ⭐' : '');
+      bd.textContent = 'ベスト ' + best + '/' + QN + star;
+    }else{
+      bd.textContent = '未挑戦';
+    }
+    row.appendChild(left); row.appendChild(bd);
+    row.addEventListener('click', () => enterStage(st));
+    stageListEl.appendChild(row);
+  }
+}
+
+function showSelect(){
+  stopAll();
+  phase = 'select';
+  scrQuiz.hidden = true;
+  scrSelect.hidden = false;
+  renderStageList();
+}
+
+// ── クイズ画面 ────────────────────────────────
+
+function enterStage(st){
+  curStage = st;
+  progress.lastStage = st.id;
+  saveProgress();
+  scrSelect.hidden = true;
+  scrQuiz.hidden = false;
+  stageNameEl.textContent = st.name;
+  resetRoundUI();
+}
+
+function resetRoundUI(){
+  stopAll();
+  phase = 'idle';
+  qi = 0; score = 0; answersLog = []; lastAnsVal = null; curQ = null;
+  qNumEl.textContent = '全' + QN + '問';
+  listenBtn.textContent = '▶ スタート';
+  listenBtn.hidden = false;
+  rootBtn.hidden = true;
+  nextBtn.hidden = true;
+  resultEl.hidden = true;
+  answersEl.hidden = false;
+  setFeedback('', '');
+  setPlayLabel('スタートを押すと出題が始まります', false);
+  renderDots();
+  renderAnswers();
+}
+
+function renderDots(){
+  dotsEl.textContent = '';
+  for(let i = 1; i <= QN; i++){
+    const s = document.createElement('span');
+    if(i <= answersLog.length) s.className = answersLog[i-1].ok ? 'ok' : 'ng';
+    else if(i === qi) s.className = 'cur';
+    dotsEl.appendChild(s);
+  }
+}
+
+function renderAnswers(){
+  answersEl.textContent = '';
+  if(curStage.chords){
+    answersEl.classList.add('chordGrid');
+    for(const key of curStage.chords){
+      const b = document.createElement('button');
+      b.dataset.val = key;
+      const d = document.createElement('span');
+      d.className = 'd'; d.textContent = CHORDS[key].label;
+      const s = document.createElement('span');
+      s.className = 's'; s.textContent = CHORDS[key].sub;
+      b.appendChild(d); b.appendChild(s);
+      b.addEventListener('click', () => answer(key));
+      answersEl.appendChild(b);
+    }
+  }else{
+    answersEl.classList.remove('chordGrid');
+    // 12度数を常に同じ配置で表示（ポール外はグレーアウト＝ボタン位置の記憶を壊さない）
+    for(let c = 0; c < 12; c++){
+      const b = document.createElement('button');
+      b.dataset.val = String(c);
+      const d = document.createElement('span');
+      d.className = 'd'; d.textContent = DEG[c].d;
+      const s = document.createElement('span');
+      s.className = 's'; s.textContent = DEG[c].s;
+      b.appendChild(d); b.appendChild(s);
+      if(!curStage.pool.includes(c)) b.classList.add('off');
+      else b.addEventListener('click', () => answer(c));
+      answersEl.appendChild(b);
+    }
+  }
+}
+
+function setFeedback(text, cls){
+  feedbackEl.textContent = text || ' ';
+  feedbackEl.className = cls || '';
+}
+
+function setPlayLabel(text, hot){
+  playLabelEl.textContent = text || ' ';
+  playLabelEl.className = hot ? 'hot' : '';
+}
+
+function clearAnswerHl(){
+  for(const b of answersEl.querySelectorAll('button')) b.classList.remove('hlOk','hlNg');
+}
+
+// ── 出題ロジック ──────────────────────────────
+
+function makeQuestion(){
+  if(curStage.chords){
+    let c;
+    do{ c = curStage.chords[rnd(curStage.chords.length)]; }
+    while(curStage.chords.length > 1 && c === lastAnsVal);
+    lastAnsVal = c;
+    return {type:'chord', chord:c, root: 45 + rnd(11)};
+  }
+  let c;
+  do{ c = curStage.pool[rnd(curStage.pool.length)]; }
+  while(curStage.pool.length > 1 && c === lastAnsVal);
+  lastAnsVal = c;
+  const down = curStage.dir === 'both' && Math.random() < 0.5;
+  // 下行はルートを高めに取り、ギター音域（E2≒MIDI40）を下回らないようにする
+  const root = (curStage.rootEvery === false) ? roundRoot
+             : (down ? 52 + rnd(9) : 45 + rnd(11));
+  return {type:'deg', cls:c, down, root};
+}
+
+// 度数クラス→実際の半音オフセット（クラス0は1オクターブとして鳴らす）
+function degOffset(cls, down){
+  if(down) return cls === 0 ? -12 : cls - 12;
+  return cls === 0 ? 12 : cls;
+}
+
+// 現在の問題を再生（replay=trueでもまったく同じものを鳴らす）
+function playStimulus(){
+  ensureAudio();
+  stopAll();
+  clearAnswerHl();
+  const t0 = audioCtx.currentTime + 0.08;
+  if(curQ.type === 'chord'){
+    // ギターのダウンストローク風に少しずらして発音
+    CHORDS[curQ.chord].iv.forEach((iv, i) => {
+      playNote(curQ.root + iv, t0 + i * 0.07, 0.85, 1.9);
+    });
+    setPlayLabel('♪ この響きは？', true);
+  }else if(curStage.rootEvery === false){
+    playNote(curQ.root + degOffset(curQ.cls, curQ.down), t0, 0.95, 1.6);
+    setPlayLabel('♪ この音は？（キーは冒頭のルート）', true);
+  }else{
+    playNote(curQ.root, t0, 1.0, 1.15);
+    playNote(curQ.root + degOffset(curQ.cls, curQ.down), t0 + 1.25, 0.95, 1.6);
+    setPlayLabel('♪ ルート…', true);
+    later(() => setPlayLabel('♪ この音は？', true), 1250);
+  }
+}
+
+function startRound(){
+  ensureAudio();
+  resetRoundUIKeepScreen();
+  listenBtn.textContent = '🔊 もう一度聴く';
+  if(curStage.rootEvery === false){
+    // ラウンド共通の固定ルートを最初に1回だけ聴かせる
+    roundRoot = 48 + rnd(8);
+    rootBtn.hidden = false;
+    phase = 'listen';
+    stopAll();
+    const t0 = audioCtx.currentTime + 0.08;
+    playNote(roundRoot, t0, 1.0, 1.7);
+    setPlayLabel('♪ このキーのルート音を覚えてください', true);
+    later(nextQuestion, 2000);
+  }else{
+    nextQuestion();
+  }
+}
+
+// スタート押下時にスコア類だけ初期化（画面はそのまま）
+function resetRoundUIKeepScreen(){
+  qi = 0; score = 0; answersLog = []; lastAnsVal = null;
+  nextBtn.hidden = true;
+  resultEl.hidden = true;
+  answersEl.hidden = false;
+  setFeedback('', '');
+  renderDots();
+}
+
+function nextQuestion(){
+  stopAll();
+  clearAnswerHl();
+  qi++;
+  if(qi > QN){ showResult(); return; }
+  curQ = makeQuestion();
+  phase = 'q';
+  qNumEl.textContent = qi + ' / ' + QN + ' 問';
+  setFeedback('', '');
+  renderDots();
+  playStimulus();
+}
+
+// ── 回答処理 ──────────────────────────────────
+
+function answer(val){
+  if(phase !== 'q') return;
+  const correctVal = curQ.type === 'chord' ? curQ.chord : curQ.cls;
+  const ok = val === correctVal;
+  const cLabel = curQ.type === 'chord' ? CHORDS[correctVal].label : degLabel(correctVal);
+  const gLabel = curQ.type === 'chord' ? CHORDS[val].label : degLabel(val);
+  answersLog.push({ok, correct: cLabel, given: gLabel});
+  if(ok) score++;
+  renderDots();
+  stopAll();
+
+  const cBtn = answersEl.querySelector('button[data-val="' + correctVal + '"]');
+  if(ok){
+    phase = 'reveal';
+    if(cBtn) cBtn.classList.add('hlOk');
+    setFeedback('✅ 正解！ ' + cLabel, 'ok');
+    later(nextQuestion, 1000);
+  }else{
+    phase = 'reveal';
+    if(cBtn) cBtn.classList.add('hlOk');
+    const gBtn = answersEl.querySelector('button[data-val="' + val + '"]');
+    if(gBtn) gBtn.classList.add('hlNg');
+    setFeedback('❌ 正解は ' + cLabel + '（あなた: ' + gLabel + '）', 'ng');
+    // 正解をもう一度聴かせてから手動で次へ
+    later(() => { if(phase === 'reveal') replayForReveal(); }, 350);
+    nextBtn.hidden = false;
+  }
+}
+
+// 不正解時の答え合わせ再生（出題と同じ形で正解を確認）
+function replayForReveal(){
+  ensureAudio();
+  const t0 = audioCtx.currentTime + 0.05;
+  if(curQ.type === 'chord'){
+    CHORDS[curQ.chord].iv.forEach((iv, i) => playNote(curQ.root + iv, t0 + i * 0.07, 0.85, 1.9));
+  }else{
+    playNote(curQ.root, t0, 1.0, 1.1);
+    playNote(curQ.root + degOffset(curQ.cls, curQ.down), t0 + 1.2, 0.95, 1.5);
+  }
+}
+
+function onNext(){
+  if(phase !== 'reveal') return;
+  nextBtn.hidden = true;
+  nextQuestion();
+}
+
+// ── 結果 ──────────────────────────────────────
+
+function showResult(){
+  stopAll();
+  phase = 'result';
+  qNumEl.textContent = '終了';
+  setPlayLabel('', false);
+  setFeedback('', '');
+  answersEl.hidden = true;
+  listenBtn.hidden = true;
+  rootBtn.hidden = true;
+  nextBtn.hidden = true;
+  resultEl.hidden = false;
+
+  const rank = score === QN ? '💮' : (score >= 8 ? '⭐' : '🎧');
+  const msg  = score === QN ? 'パーフェクト！' : (score >= 8 ? 'クリア！（8問以上正解）' : 'もう少し！繰り返しが耳を作ります');
+  $('resRank').textContent = rank;
+  $('resScore').textContent = score + ' / ' + QN;
+  $('resMsg').textContent = msg;
+
+  const log = $('resLog');
+  log.textContent = '';
+  const misses = answersLog.filter(a => !a.ok);
+  if(misses.length){
+    const ttl = document.createElement('div');
+    ttl.textContent = '間違えた問題:';
+    log.appendChild(ttl);
+    for(const m of misses){
+      const line = document.createElement('div');
+      line.className = 'ngLine';
+      line.textContent = '・正解 ' + m.correct + ' ← あなた ' + m.given;
+      log.appendChild(line);
+    }
+  }
+
+  const prev = progress.best[curStage.id];
+  if(prev === undefined || score > prev){
+    progress.best[curStage.id] = score;
+    saveProgress();
+    if(prev !== undefined){
+      const up = document.createElement('div');
+      up.textContent = '🎉 ベスト更新！（' + prev + ' → ' + score + '）';
+      log.appendChild(up);
+    }
+  }
+}
+
+// ── イベント ──────────────────────────────────
+
+listenBtn.addEventListener('click', () => {
+  ensureAudio(); // ユーザー操作内で同期的にresume（iOS対策）
+  if(phase === 'idle' || phase === 'result') startRound();
+  else if(phase === 'q' || phase === 'reveal') playStimulus();
+});
+
+rootBtn.addEventListener('click', () => {
+  if(roundRoot === null) return;
+  ensureAudio();
+  stopAll();
+  playNote(roundRoot, audioCtx.currentTime + 0.05, 1.0, 1.5);
+  setPlayLabel('♪ キーのルート音', true);
+});
+
+nextBtn.addEventListener('click', onNext);
+$('backBtn').addEventListener('click', showSelect);
+$('againBtn').addEventListener('click', () => { resetRoundUI(); startRound(); });
+$('selectBtn').addEventListener('click', showSelect);
+
+// 音色トグル（永続化）
+const soundBtn = $('soundBtn');
+function renderSoundBtn(){ soundBtn.textContent = progress.sound === 'piano' ? '🎹' : '🎸'; }
+soundBtn.addEventListener('click', () => {
+  progress.sound = progress.sound === 'piano' ? 'guitar' : 'piano';
+  saveProgress();
+  renderSoundBtn();
+});
+
+// ヘルプ
+$('helpBtn').addEventListener('click', () => { $('helpModal').hidden = false; });
+$('helpClose').addEventListener('click', () => { $('helpModal').hidden = true; });
+$('helpModal').addEventListener('click', e => { if(e.target === $('helpModal')) $('helpModal').hidden = true; });
+
+// キーボード（PC）: 数字=回答（有効ボタンの左上から順）／Space=再生／Enter=次へ
+document.addEventListener('keydown', e => {
+  if(!scrQuiz || scrQuiz.hidden) return;
+  if(!$('helpModal').hidden) return;
+  if(e.key === ' '){
+    e.preventDefault();
+    listenBtn.click();
+    return;
+  }
+  if(e.key === 'Enter' && phase === 'reveal' && !nextBtn.hidden){
+    e.preventDefault();
+    onNext();
+    return;
+  }
+  if(phase !== 'q') return;
+  const keys = '1234567890';
+  const idx = keys.indexOf(e.key);
+  if(idx < 0) return;
+  const btns = [...answersEl.querySelectorAll('button:not(.off)')];
+  if(btns[idx]) btns[idx].click();
+});
+
+// ── 初期化 ────────────────────────────────────
+
+renderSoundBtn();
+renderStageList();
+</script>
+</body>
+</html>
