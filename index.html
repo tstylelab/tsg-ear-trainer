@@ -115,6 +115,9 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:10px 12px 4px;}
 #helpModal p{margin:4px 0;}
 #helpModal a{color:var(--acc);}
 #helpModal .cls{width:100%; margin-top:12px; padding:11px; font-size:14px; border-radius:9px;}
+#helpModal .bkRow{display:flex; gap:8px; margin:6px 0 2px;}
+#helpModal .bkRow button{flex:1; padding:10px; font-size:13.5px; border-radius:9px;}
+#helpModal .bkMsg{min-height:18px; font-size:12.5px; color:var(--acc);}
 
 footer{
   text-align:center; font-size:10px; color:#566070; padding:8px 10px 10px; line-height:1.6;
@@ -190,6 +193,14 @@ footer{
       <a href="https://rhythm.tsg-gt.com" target="_blank" rel="noopener">リズムトレーナー</a> ／
       <a href="https://scale.tsg-gt.com" target="_blank" rel="noopener">スケールビューワー</a>
     </p>
+    <h4>💾 データのバックアップ</h4>
+    <p>成績はこの端末のブラウザに保存されます。ブラウザのデータ削除や機種変更に備えて、ファイルに書き出しておけます。</p>
+    <div class="bkRow">
+      <button id="expBtn">⬇ 書き出し</button>
+      <button id="impBtn">⬆ 読み込み</button>
+    </div>
+    <p id="bkMsg" class="bkMsg"></p>
+    <input type="file" id="impFile" accept=".json,application/json" hidden>
     <h4>📄 著作権・利用について</h4>
     <p>本アプリの著作権はギタースクールTSGに帰属します。無断複製・転載・再配布・改変を禁じます。</p>
     <button class="cls" id="helpClose">閉じる</button>
@@ -252,25 +263,28 @@ const LS_KEY = 'tsg-ear-v1';
 
 function lsSet(k, v){ try{ localStorage.setItem(k, v); }catch(e){} }
 
-function loadProgress(){
+// 生JSON→検証済み進捗オブジェクト（localStorage・バックアップ読み込みの両方で使う）
+function validateProgress(j){
   const p = {v:1, best:{}, sound:'guitar', lastStage:null};
-  try{
-    const raw = localStorage.getItem(LS_KEY);
-    if(raw){
-      const j = JSON.parse(raw);
-      if(j && typeof j === 'object'){
-        if(j.sound === 'piano') p.sound = 'piano';
-        if(j.best && typeof j.best === 'object'){
-          for(const k in j.best){
-            const v = j.best[k];
-            if(STAGES.some(s => s.id === k) && Number.isInteger(v) && v >= 0 && v <= QN) p.best[k] = v;
-          }
-        }
-        if(typeof j.lastStage === 'string' && STAGES.some(s => s.id === j.lastStage)) p.lastStage = j.lastStage;
+  if(j && typeof j === 'object'){
+    if(j.sound === 'piano') p.sound = 'piano';
+    if(j.best && typeof j.best === 'object'){
+      for(const k in j.best){
+        const v = j.best[k];
+        if(STAGES.some(s => s.id === k) && Number.isInteger(v) && v >= 0 && v <= QN) p.best[k] = v;
       }
     }
-  }catch(e){}
+    if(typeof j.lastStage === 'string' && STAGES.some(s => s.id === j.lastStage)) p.lastStage = j.lastStage;
+  }
   return p;
+}
+
+function loadProgress(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(raw) return validateProgress(JSON.parse(raw));
+  }catch(e){}
+  return validateProgress(null);
 }
 
 let progress = loadProgress();
@@ -764,8 +778,56 @@ soundBtn.addEventListener('click', () => {
   renderSoundBtn();
 });
 
+// ── バックアップ（書き出し／読み込み） ──────────
+// 読み込みは上書きではなくマージ：ベストは高い方を残す（新しい端末の成果を消さない）
+
+function setBkMsg(text){ $('bkMsg').textContent = text || ''; }
+
+$('expBtn').addEventListener('click', () => {
+  const d = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const name = 'TSG-EarTrainer_' + d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + '.json';
+  const blob = new Blob([JSON.stringify(progress, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  setBkMsg('✅ 書き出しました（' + name + '）');
+});
+
+$('impBtn').addEventListener('click', () => { $('impFile').click(); });
+
+$('impFile').addEventListener('change', e => {
+  const file = e.target.files && e.target.files[0];
+  e.target.value = ''; // 同じファイルを再選択してもchangeが発火するように
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try{
+      const imp = validateProgress(JSON.parse(reader.result));
+      let merged = 0;
+      for(const k in imp.best){
+        if(progress.best[k] === undefined || imp.best[k] > progress.best[k]){
+          progress.best[k] = imp.best[k];
+          merged++;
+        }
+      }
+      saveProgress();
+      renderStageList();
+      setBkMsg(merged ? '✅ 読み込みました（' + merged + '件のベストを反映）' : '✅ 読み込みました（今の記録の方が良いため変更なし）');
+    }catch(err){
+      setBkMsg('❌ 読み込めませんでした。このアプリで書き出したファイルか確認してください');
+    }
+  };
+  reader.onerror = () => setBkMsg('❌ ファイルを読み込めませんでした');
+  reader.readAsText(file);
+});
+
 // ヘルプ
-$('helpBtn').addEventListener('click', () => { $('helpModal').hidden = false; });
+$('helpBtn').addEventListener('click', () => { setBkMsg(''); $('helpModal').hidden = false; });
 $('helpClose').addEventListener('click', () => { $('helpModal').hidden = true; });
 $('helpModal').addEventListener('click', e => { if(e.target === $('helpModal')) $('helpModal').hidden = true; });
 
