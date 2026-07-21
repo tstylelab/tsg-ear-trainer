@@ -150,6 +150,8 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:12px 14px 4px;}
 /* ── クイズ画面 ── */
 .qbar{display:flex; align-items:center; gap:8px; margin-bottom:6px;}
 .qbar button{padding:6px 11px; font-size:13px; box-shadow:var(--shadow);}
+.qbar #cadBtn{font-size:11.5px; padding:6px 8px; white-space:nowrap;}
+.qbar #cadBtn.dim{opacity:.55;}
 #stageName{font-size:13.5px; font-weight:700; color:var(--navy); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 #qNum{font-size:12.5px; color:var(--sub); white-space:nowrap; font-variant-numeric:tabular-nums;}
 
@@ -333,6 +335,7 @@ footer{
       <button id="backBtn">◀ ステージ</button>
       <span id="stageName"></span>
       <span id="qNum"></span>
+      <button id="cadBtn" title="ラウンド開始時にキーの響き（カデンツ）を鳴らすか切り替え">🎼 ON</button>
     </div>
     <div id="dots"></div>
     <div id="playLabel">&nbsp;</div>
@@ -372,7 +375,7 @@ footer{
     <h4>🎯 度数で聴くとは</h4>
     <p>絶対的な音名（CやAなど）ではなく、キーの中心＝ルートからの距離（1・♭3・5…）で音を捉える聴き方です。耳コピ・アドリブ・移調に直結する、実戦的な相対音感が身につきます。</p>
     <h4>📚 ステージ構成</h4>
-    <p>単音（度数当て）は入門→上級へ段階的に出題範囲が広がります。<b>各ラウンドはまずキーの響き（カデンツ）が鳴り、調性感を作ってから出題開始</b>。入門〜初級はキーC固定でじっくり音の響きを覚え、中級からはキーがラウンドごとにランダムに変わって、どの調でも通用する耳を鍛えます。上級は「ルート省略」：カデンツとルート音を最初に聴き、あとは連続で答えます。コード（響き当て）はトライアド→セブンスと進みます。</p>
+    <p>単音（度数当て）は入門→上級へ段階的に出題範囲が広がります。<b>各ラウンドはまずキーの響き（カデンツ）が鳴り、調性感を作ってから出題開始</b>。入門〜初級はキーC固定でじっくり音の響きを覚え、中級からはキーがラウンドごとにランダムに変わって、どの調でも通用する耳を鍛えます。カデンツを鳴らすかどうかは、クイズ画面の<b>🎼ボタン</b>でいつでも切り替えられます（OFFのときはルート音だけ鳴らして開始）。上級は「ルート省略」：カデンツとルート音を最初に聴き、あとは連続で答えます。コード（響き当て）はトライアド→セブンスと進みます。</p>
     <h4>🎸 音色</h4>
     <p>ヘッダーのボタンでギター（撥弦）とピアノ系の音色を切り替えられます。楽器の音色に依存しない耳を作るため、両方で練習するのがおすすめです。</p>
     <h4>⌨️ キーボード（PC）</h4>
@@ -498,9 +501,10 @@ function lsSet(k, v){ try{ localStorage.setItem(k, v); }catch(e){} }
 // 生JSON→検証済み進捗オブジェクト（localStorage・バックアップ読み込みの両方で使う）
 function validateProgress(j){
   const p = {v:1, best:{}, sound:'guitar', lastStage:null, playMode:'melodic',
-             unlockMode:'seq', streak:{last:null, n:0}, stats:{}};
+             unlockMode:'seq', cadence:'on', streak:{last:null, n:0}, stats:{}};
   if(j && typeof j === 'object'){
     if(j.sound === 'piano') p.sound = 'piano';
+    if(j.cadence === 'off') p.cadence = 'off';
     if(j.playMode === 'harmonic' || j.playMode === 'both') p.playMode = j.playMode;
     if(j.unlockMode === 'free') p.unlockMode = 'free';
     if(j.streak && typeof j.streak === 'object' &&
@@ -881,6 +885,7 @@ function enterStage(st){
   scrSelect.hidden = true;
   scrQuiz.hidden = false;
   stageNameEl.textContent = st.lv + ' ' + st.name;
+  $('cadBtn').hidden = !!st.chords; // コードはカデンツを使わないため非表示
   resetRoundUI();
 }
 
@@ -1064,8 +1069,20 @@ function startRound(){
             : 45 + rnd(11);
   const minor = curStage.id === 's4'; // マイナー系ステージはマイナーカデンツ
   const t0 = audioCtx.currentTime + 0.08;
-  playCadence(roundRoot, minor, t0);
   phase = 'listen';
+  if(progress.cadence === 'off'){
+    // カデンツOFF（🎼ボタン）：ルート音だけでキーを提示して短く開始
+    playNote(roundRoot, t0, 1.0, 1.6);
+    if(curStage.rootEvery === false){
+      rootBtn.hidden = false;
+      setPlayLabel('♪ ルート音（キー）を覚えてください', true);
+    }else{
+      setPlayLabel('♪ キーのルート音 → 出題が始まります', true);
+    }
+    later(nextQuestion, 2000);
+    return;
+  }
+  playCadence(roundRoot, minor, t0);
   if(curStage.rootEvery === false){
     rootBtn.hidden = false;
     playNote(roundRoot, t0 + 3.3, 1.0, 1.6);
@@ -1363,6 +1380,24 @@ unlockBtns.forEach(b => b.addEventListener('click', () => {
   renderStageList();
 }));
 renderUnlockSeg();
+
+// カデンツON/OFF（永続化・次のラウンドから適用）
+const cadBtn = $('cadBtn');
+function renderCadBtn(){
+  cadBtn.textContent = progress.cadence === 'off' ? '🎼 OFF' : '🎼 ON';
+  cadBtn.classList.toggle('dim', progress.cadence === 'off');
+}
+cadBtn.addEventListener('click', () => {
+  progress.cadence = progress.cadence === 'off' ? 'on' : 'off';
+  saveProgress();
+  renderCadBtn();
+  if(phase === 'idle'){
+    setPlayLabel(progress.cadence === 'off'
+      ? 'カデンツOFF：ルート音だけ鳴らして開始します'
+      : 'カデンツON：キーの響きを鳴らしてから開始します', false);
+  }
+});
+renderCadBtn();
 
 // 音色トグル（永続化）
 const soundBtn = $('soundBtn');
