@@ -3,337 +3,587 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="ルートに対する度数で音を聴き取る相対音感トレーニングアプリ。単音の度数当てからコードの響き当てまで。ギタースクールTSG提供。">
-<meta name="theme-color" content="#1a1a2e">
-<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="%231a1a2e"/><text x="31" y="42" font-size="34" text-anchor="middle" fill="%23ffffff" font-family="serif">♪</text><rect x="15" y="48" width="34" height="5" rx="2.5" fill="%23c0392b"/></svg>'>
+<meta name="description" content="キーの響きの中で音を『度数』で聴き取る相対音感トレーナー。単音・コード・メロディ聴音を、足場を少しずつ外しながら鍛えます。ギタースクールTSG提供。">
+<meta name="theme-color" content="#0d0d16">
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%230d0d16"/><circle cx="24" cy="42" r="8" fill="%23f1f2f8"/><rect x="30" y="12" width="4" height="30" fill="%23f1f2f8"/><rect x="30" y="12" width="18" height="4" rx="2" fill="%23ef5340"/></svg>'>
 <title>TSG Ear Trainer｜相対音感トレーナー</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+/* ============================================================
+   デザインシステム（2026-07-27 全面刷新）
+   規律：
+   ・面は明度差で階層を作る。box-shadowは使わない（発光を除く）
+   ・色はアクセント1色＋グレー階調。正誤の2色だけは意味として許可
+   ・文字サイズは --f1〜--f5 の5段階のみ。直接pxを書かない
+   ・角丸は --r1 / --r2 / --r3 の3種のみ
+   ・絵文字はUIに使わない。すべてSVGアイコン（#i-*）
+   ============================================================ */
 :root{
-  --bg:#f0f2f5; --card:#ffffff; --navy:#1a1a2e; --red:#c0392b;
-  --txt:#222; --sub:#82889a; --line:#dfe3ea;
-  --ok:#27ae60; --ng:#e74c3c;
-  --shadow:0 1px 4px rgba(26,26,46,.08);
+  /* 面（数字が大きいほど手前＝明るい） */
+  --s0:#0d0d16;  /* ページ背景 */
+  --s1:#171728;  /* カード */
+  --s2:#212137;  /* カード内の要素・ボタン */
+  --s3:#2d2d49;  /* 押した面・強調された要素 */
+  --line:rgba(255,255,255,.07);
+  --line2:rgba(255,255,255,.16);
+
+  /* 文字 */
+  --t1:#f1f2f8;  /* 主 */
+  --t2:#a5aac1;  /* 副 */
+  --t3:#70758b;  /* 補助・無効 */
+
+  /* アクセント（ブランド赤をダーク面用に明度調整） */
+  --acc:#ef5340;
+  --accd:#c0392b;
+  --acct:rgba(239,83,64,.13);
+
+  /* 正誤（装飾ではなく意味。これ以外に色を足さない） */
+  --ok:#3ddc97;
+  --okt:rgba(61,220,151,.13);
+  --ng:#ff6b6b;
+  --ngt:rgba(255,107,107,.13);
+
+  /* タイポ5段階 */
+  --f1:28px;  /* 数値・スコア */
+  --f2:19px;  /* 見出し */
+  --f3:15px;  /* 本文（強） */
+  --f4:13px;  /* 本文 */
+  --f5:11px;  /* ラベル・キャプション */
+
+  /* 角丸3種 */
+  --r1:10px; --r2:16px; --r3:999px;
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
 html,body{margin:0; padding:0;}
 body{
-  background:var(--bg); color:var(--txt);
+  background:var(--s0); color:var(--t1);
   font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",Meiryo,sans-serif;
+  font-size:var(--f4);
   min-height:100dvh; display:flex; flex-direction:column;
+  -webkit-font-smoothing:antialiased;
 }
 button{
-  font-family:inherit; color:var(--txt); background:var(--card);
-  border:1px solid var(--line); border-radius:8px; cursor:pointer;
+  font-family:inherit; font-size:var(--f4); color:var(--t1);
+  background:var(--s2); border:1px solid var(--line);
+  border-radius:var(--r1); cursor:pointer;
   touch-action:manipulation; user-select:none; -webkit-user-select:none;
-  transition:transform .08s ease, filter .12s ease;
+  transition:transform .08s ease, background .14s ease, border-color .14s ease, color .14s ease;
 }
-button:active{filter:brightness(.96); transform:scale(.97);}
-button:focus-visible{outline:2px solid var(--red); outline-offset:2px;}
+button:active{transform:scale(.975); background:var(--s3);}
+button:focus-visible{outline:2px solid var(--acc); outline-offset:2px;}
+button[disabled]{cursor:default;}
 
-@keyframes fadeUp{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
-@keyframes pop{0%{transform:scale(.85);} 60%{transform:scale(1.06);} 100%{transform:scale(1);}}
-@keyframes bump{0%{transform:scale(1);} 40%{transform:scale(1.08);} 100%{transform:scale(1);}}
+/* ── アイコン ── */
+.sprite{position:absolute; width:0; height:0; overflow:hidden;}
+.ic{
+  width:1.15em; height:1.15em; flex:none; display:block;
+  fill:none; stroke:currentColor; stroke-width:1.9;
+  stroke-linecap:round; stroke-linejoin:round;
+}
+.ic.f{fill:currentColor; stroke:none;}
+.ic.b{stroke-width:2.4;}
+
+@keyframes fadeUp{from{opacity:0; transform:translateY(7px);} to{opacity:1; transform:none;}}
+@keyframes pop{0%{transform:scale(.86);} 60%{transform:scale(1.05);} 100%{transform:scale(1);}}
+@keyframes bump{0%{transform:scale(1);} 40%{transform:scale(1.07);} 100%{transform:scale(1);}}
+@keyframes ringPulse{
+  0%{transform:scale(.82); opacity:.55;}
+  70%{transform:scale(1.28); opacity:0;}
+  100%{transform:scale(1.28); opacity:0;}
+}
+@keyframes glowBreath{
+  0%,100%{box-shadow:0 0 0 1px var(--acc), 0 0 26px -6px var(--acc);}
+  50%{box-shadow:0 0 0 1px var(--acc), 0 0 40px -4px var(--acc);}
+}
 @media (prefers-reduced-motion: reduce){
   *{animation:none !important; transition:none !important;}
 }
 
-/* ── ヘッダー（TSGブランド共通ロックアップ） ── */
-header{display:flex; justify-content:center; padding:7px 14px; background:var(--navy);}
-/* PCの広い画面でロゴが左端・ボタンが右端に散らばらないよう、中身をmainと同じ幅に揃える */
+/* ── ヘッダー ── */
+header{
+  display:flex; justify-content:center; padding:9px 14px;
+  background:var(--s0); border-bottom:1px solid var(--line);
+  position:sticky; top:0; z-index:20;
+}
 .hwrap{
   width:100%; max-width:560px; display:flex; align-items:center;
   justify-content:space-between; gap:8px;
 }
 .brand{display:flex; align-items:flex-end; gap:8px;}
 .brand-main{
-  font-family:'Oswald',sans-serif; font-size:1.7rem; font-weight:700;
-  color:#fff; line-height:1; letter-spacing:.02em;
+  font-family:'Oswald',sans-serif; font-size:1.62rem; font-weight:700;
+  color:var(--t1); line-height:1; letter-spacing:.02em;
   display:flex; align-items:flex-end; gap:7px;
 }
-.brand-main svg{display:block; opacity:.92; filter:drop-shadow(0 2px 6px rgba(0,0,0,.3));}
-.brand-right{padding-bottom:2px; border-bottom:2.5px solid var(--red); text-align:left;}
+.brand-main svg{display:block; opacity:.9;}
+.brand-right{padding-bottom:2px; border-bottom:2px solid var(--acc); text-align:left;}
 .brand-sub1{
-  font-family:'Oswald',sans-serif; font-size:.62rem; font-weight:400;
-  letter-spacing:.22em; color:var(--red); text-transform:uppercase; line-height:1.25;
+  font-family:'Oswald',sans-serif; font-size:var(--f5); font-weight:400;
+  letter-spacing:.2em; color:var(--acc); text-transform:uppercase; line-height:1.2;
+  transform:scale(.86); transform-origin:left center;
 }
 .brand-sub2{
-  font-family:'Oswald',sans-serif; font-size:.95rem; font-weight:600;
-  letter-spacing:.1em; color:#fff; text-transform:uppercase; line-height:1.2;
+  font-family:'Oswald',sans-serif; font-size:var(--f4); font-weight:600;
+  letter-spacing:.1em; color:var(--t1); text-transform:uppercase; line-height:1.25;
 }
-.hbtns{display:flex; gap:8px;}
-.hbtns button{
-  font-size:15px; padding:5px 10px; line-height:1.3;
-  background:rgba(255,255,255,.15); color:#fff; border:1.5px solid rgba(255,255,255,.3);
+.hbtns{display:flex; gap:7px;}
+.iconBtn{
+  width:36px; height:36px; display:flex; align-items:center; justify-content:center;
+  background:var(--s1); border:1px solid var(--line); border-radius:var(--r1);
+  color:var(--t2); font-size:var(--f3);
 }
-.hbtns button:active{background:rgba(255,255,255,.25); filter:none;}
+.iconBtn:active{background:var(--s3); color:var(--t1);}
 
-main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:12px 14px 4px;}
+main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
 
-/* ── ステージ選択 ── */
-#scrSelect, #scrQuiz{animation:fadeUp .25s ease;}
+#scrSelect, #scrQuiz, #scrReport{animation:fadeUp .26s ease;}
 
-/* ヒーロー（トップの顔） */
+/* ── ヒーロー ── */
 .hero{
-  background:linear-gradient(135deg, #1a1a2e 0%, #23233f 100%);
-  border-radius:14px; padding:14px 16px 12px; margin:2px 0 12px;
-  box-shadow:0 2px 8px rgba(26,26,46,.18); color:#fff;
+  background:var(--s1); border:1px solid var(--line);
+  border-radius:var(--r2); padding:18px 16px 16px; margin:0 0 16px;
   position:relative; overflow:hidden;
 }
+.hero::before{
+  content:''; position:absolute; inset:-40% 30% auto -20%; height:170px;
+  background:radial-gradient(closest-side, var(--acct), transparent 70%);
+  pointer-events:none;
+}
 .hero > *{position:relative;}
-.heroArt{
-  position:absolute; right:-14px; top:-4px; width:190px; height:auto;
-  opacity:.12; pointer-events:none;
-}
 .heroEyebrow{
-  font-family:'Oswald',sans-serif; font-size:.62rem; font-weight:400;
-  letter-spacing:.24em; color:#e05545; text-transform:uppercase; margin-bottom:3px;
+  font-family:'Oswald',sans-serif; font-size:var(--f5); font-weight:500;
+  letter-spacing:.22em; color:var(--acc); text-transform:uppercase; margin-bottom:6px;
 }
-.heroTitle{font-size:19px; font-weight:700; line-height:1.35; text-wrap:balance;}
-.heroTitle b{color:#ffb0a5;}
-.heroSub{font-size:12px; color:rgba(255,255,255,.72); line-height:1.65; margin:5px 0 0;}
-.heroStats{display:flex; gap:6px; margin-top:10px; flex-wrap:wrap;}
+.heroTitle{font-size:var(--f2); font-weight:700; line-height:1.4; letter-spacing:.01em;}
+.heroTitle b{color:var(--acc);}
+.heroSub{font-size:var(--f4); color:var(--t2); line-height:1.7; margin:7px 0 0;}
+.heroStats{display:flex; gap:6px; margin-top:13px; flex-wrap:wrap;}
 .heroStats span{
-  font-size:11.5px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18);
-  padding:3px 10px; border-radius:999px; color:rgba(255,255,255,.88);
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:var(--f5); background:var(--s2); border:1px solid var(--line);
+  padding:5px 11px; border-radius:var(--r3); color:var(--t2);
   font-variant-numeric:tabular-nums;
 }
+.heroStats span .ic{color:var(--t3);}
 #heroCta{
-  display:block; width:100%; margin-top:11px; padding:11px; font-size:14.5px; font-weight:700;
-  background:var(--red); color:#fff; border:none; border-radius:10px;
-  box-shadow:0 2px 6px rgba(0,0,0,.28); text-align:center;
-  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  width:100%; margin-top:14px; padding:14px; font-size:var(--f3); font-weight:700;
+  background:var(--acc); color:#fff; border:none; border-radius:var(--r1);
+  box-shadow:0 0 30px -12px var(--acc);
 }
-.heroTools{display:flex; gap:8px; margin-top:8px;}
+#heroCta:active{background:var(--accd); transform:scale(.985);}
+#heroCta .lb{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.heroTools{display:flex; gap:8px; margin-top:9px;}
 .heroTools button{
-  flex:1; padding:9px 4px; font-size:13px; font-weight:700;
-  background:rgba(255,255,255,.14); color:#fff;
-  border:1px solid rgba(255,255,255,.26); border-radius:9px;
-  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+  padding:11px 4px; font-size:var(--f4); font-weight:600; color:var(--t2);
+  background:var(--s2); border:1px solid var(--line); border-radius:var(--r1);
+  overflow:hidden; white-space:nowrap;
 }
+.heroTools button .ic{color:var(--t3);}
+.heroTools button:active{color:var(--t1);}
 
-/* ── マイレポート ── */
-#scrReport{animation:fadeUp .25s ease;}
-.repTitle{font-size:13.5px; font-weight:700; color:var(--navy); flex:1;}
-.repCard{background:var(--card); border-radius:12px; padding:12px 14px; margin:8px 0; box-shadow:var(--shadow);}
-.repTtl{font-size:13px; font-weight:700; color:var(--navy); margin-bottom:7px;}
-.repSum{display:flex; flex-wrap:wrap; gap:6px;}
-.repSum span{
-  font-size:12px; background:#eef0f4; padding:4px 10px; border-radius:999px;
-  color:var(--txt); font-variant-numeric:tabular-nums;
-}
-.repRow{display:flex; align-items:center; gap:8px; font-size:12px; margin:4px 0;}
-.repLbl{width:88px; flex-shrink:0; color:var(--txt);}
-.repBarWrap{flex:1; height:10px; background:#edf0f4; border-radius:5px; overflow:hidden;}
-.repBar{height:100%; border-radius:5px;}
-.repPct{width:92px; text-align:right; color:var(--sub); font-variant-numeric:tabular-nums; flex-shrink:0; white-space:nowrap;}
-.repStage{display:flex; justify-content:space-between; gap:8px; font-size:12px; margin:4px 0;}
-.repStage .repVal{color:var(--sub); font-variant-numeric:tabular-nums; white-space:nowrap;}
-.repEmpty{font-size:12px; color:var(--sub);}
-.repNote{font-size:11px; color:var(--sub); margin-top:6px; line-height:1.6;}
-
+/* ── ステージ一覧 ── */
 .grpTtl{
-  font-size:12px; color:var(--navy); margin:16px 0 6px; letter-spacing:1px; font-weight:700;
-  border-left:3px solid var(--red); padding-left:8px; line-height:1.4;
   display:flex; align-items:baseline; justify-content:space-between;
+  font-size:var(--f5); font-weight:700; color:var(--t2);
+  letter-spacing:.14em; margin:22px 0 8px; padding-left:10px;
+  border-left:2px solid var(--acc); line-height:1.5;
 }
 .grpTtl .grpCnt{
-  font-weight:400; color:var(--sub); letter-spacing:0; font-size:11.5px;
+  display:inline-flex; align-items:center; gap:4px;
+  font-weight:500; color:var(--t3); letter-spacing:0; font-size:var(--f5);
   font-variant-numeric:tabular-nums;
 }
 .stageRow{
   width:100%; display:flex; align-items:center; justify-content:space-between;
-  background:var(--card); padding:11px 12px 11px 14px; margin:6px 0; text-align:left;
-  border:none; border-radius:12px; gap:8px; box-shadow:var(--shadow);
+  background:var(--s1); border:1px solid var(--line); border-radius:var(--r2);
+  padding:13px 14px; margin:7px 0; text-align:left; gap:10px;
 }
-.stageRow::after{content:'›'; font-size:19px; color:#c3c9d4; line-height:1; flex-shrink:0;}
+.stageRow::after{
+  content:''; width:7px; height:7px; flex:none; margin-right:2px;
+  border-right:1.9px solid var(--t3); border-top:1.9px solid var(--t3);
+  transform:rotate(45deg);
+}
 .stageRow > div:first-child{flex:1; min-width:0;}
-.stageRow .nm{font-size:14.5px; font-weight:700; color:var(--navy); display:flex; align-items:center; gap:7px;}
+.stageRow .nm{
+  font-size:var(--f3); font-weight:700; color:var(--t1);
+  display:flex; align-items:center; gap:7px; flex-wrap:wrap;
+}
 .lvChip{
-  font-size:10.5px; font-weight:700; padding:2.5px 8px; border-radius:6px;
-  letter-spacing:.03em; flex-shrink:0; line-height:1.3;
+  font-family:'Oswald',sans-serif; font-size:var(--f5); font-weight:600;
+  padding:3px 8px; border-radius:6px; letter-spacing:.06em; flex:none; line-height:1.3;
+  background:var(--s3); color:var(--t2); border:1px solid var(--line);
 }
-.lv-a{background:#e0f2ef; color:#0d7a6c;}
-.lv-b{background:#e3ecfd; color:#2456c4;}
-.lv-c{background:#fdf0dd; color:#b06a08;}
-.lv-d{background:#fde3e0; color:#b3261e;}
+/* レベルは色ではなく明度と文字色の濃さで段階を表す（色数を増やさない規律） */
+.lv-a{color:var(--t2);}
+.lv-b{color:var(--t1);}
+.lv-c{color:var(--t1); border-color:var(--line2);}
+.lv-d{color:var(--acc); border-color:rgba(239,83,64,.4); background:var(--acct);}
 .lastChip{
-  font-size:10px; font-weight:700; padding:2px 6px; border-radius:6px;
-  background:var(--red); color:#fff; flex-shrink:0; line-height:1.3;
+  font-size:var(--f5); font-weight:700; padding:3px 8px; border-radius:6px;
+  background:var(--acct); color:var(--acc); border:1px solid rgba(239,83,64,.32);
+  flex:none; line-height:1.3;
 }
-.stageRow.locked{opacity:.55; box-shadow:none; cursor:default;}
-.stageRow.locked::after{content:'';}
-.stageRow.locked:active{filter:none; transform:none;}
-.stageRow .ds{font-size:11.5px; color:var(--sub); margin-top:2px;}
+.stageRow.locked{opacity:.45;}
+.stageRow.locked::after{display:none;}
+.stageRow.locked:active{transform:none; background:var(--s1);}
+.stageRow .ds{font-size:var(--f5); color:var(--t3); margin-top:4px; line-height:1.55;}
 .stageRow .bd{
-  font-size:11.5px; color:var(--sub); white-space:nowrap; flex-shrink:0;
-  background:#eef0f4; padding:4px 9px; border-radius:999px;
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:var(--f5); color:var(--t3); white-space:nowrap; flex:none;
+  background:var(--s2); border:1px solid var(--line);
+  padding:5px 10px; border-radius:var(--r3);
   font-variant-numeric:tabular-nums;
 }
-.stageRow .bd.star{background:#e6f6ec; color:#1e7c46;}
-.stageRow .bd.perfect{background:#fdf3e2; color:#a8702a; font-weight:700;}
+.stageRow .bd.star{color:var(--ok); border-color:rgba(61,220,151,.3); background:var(--okt);}
+.stageRow .bd.perfect{color:var(--acc); border-color:rgba(239,83,64,.34); background:var(--acct); font-weight:700;}
 
 /* ── クイズ画面 ── */
-.qbar{display:flex; align-items:center; gap:8px; margin-bottom:6px;}
-.qbar button{padding:6px 11px; font-size:13px; box-shadow:var(--shadow);}
-.qbar #cadBtn{font-size:11.5px; padding:6px 8px; white-space:nowrap;}
-.qbar #cadBtn.dim{opacity:.55;}
-#stageName{font-size:13.5px; font-weight:700; color:var(--navy); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-#qNum{font-size:12.5px; color:var(--sub); white-space:nowrap; font-variant-numeric:tabular-nums;}
+.qbar{display:flex; align-items:center; gap:7px; margin-bottom:12px;}
+.qbar .navBtn{
+  display:flex; align-items:center; gap:4px; padding:8px 11px 8px 8px;
+  font-size:var(--f5); font-weight:600; color:var(--t2); background:var(--s1);
+}
+#stageName{
+  font-size:var(--f4); font-weight:700; color:var(--t1); flex:1;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+#qNum{
+  font-size:var(--f5); color:var(--t3); white-space:nowrap;
+  font-variant-numeric:tabular-nums; font-family:'Oswald',sans-serif; letter-spacing:.06em;
+}
+#cadBtn{
+  display:flex; align-items:center; gap:5px; padding:8px 10px;
+  font-size:var(--f5); font-weight:600; white-space:nowrap;
+  background:var(--s1); color:var(--t1); border-color:var(--line2);
+}
+#cadBtn.dim{color:var(--t3); border-color:var(--line);}
 
-#dots{display:flex; justify-content:center; gap:6px; margin:6px 0;}
-#dots span{width:11px; height:11px; border-radius:50%; border:1.5px solid #c3c9d4; background:transparent;}
-#dots span.cur{border-color:var(--red);}
+#dots{display:flex; justify-content:center; gap:7px; margin:0 0 14px;}
+#dots span{
+  width:9px; height:9px; border-radius:50%;
+  border:1.5px solid var(--s3); background:transparent; transition:all .18s ease;
+}
+#dots span.cur{border-color:var(--acc); box-shadow:0 0 10px -2px var(--acc);}
 #dots span.ok{background:var(--ok); border-color:var(--ok);}
 #dots span.ng{background:var(--ng); border-color:var(--ng);}
 
-#playLabel{text-align:center; min-height:20px; font-size:13px; color:var(--sub); margin:2px 0;}
-#playLabel.hot{color:var(--red); font-weight:700;}
-
-.listenRow{display:flex; gap:8px; margin:6px 0;}
-#listenBtn{
-  flex:1; padding:13px; font-size:17px; font-weight:700;
-  background:var(--red); color:#fff; border:none; border-radius:10px;
-  box-shadow:0 2px 6px rgba(192,57,43,.3);
+/* サウンドステージ（音が鳴っている状態を可視化する中心） */
+.soundStage{
+  position:relative; display:flex; flex-direction:column; align-items:center;
+  justify-content:center; gap:8px; min-height:104px; margin-bottom:6px;
 }
-#listenBtn:active{filter:brightness(.9);}
-#rootBtn{padding:13px 14px; font-size:14px; border-radius:10px; box-shadow:var(--shadow);}
+.ringWrap{position:relative; width:78px; height:78px; flex:none;}
+.ringCore{
+  position:absolute; inset:0; border-radius:50%;
+  background:var(--s1); border:1px solid var(--line);
+  display:flex; align-items:center; justify-content:center;
+  color:var(--t3); font-size:26px; transition:color .2s ease, border-color .2s ease;
+}
+.ringCore .ic{width:1em; height:1em;}
+.ring{
+  position:absolute; inset:0; border-radius:50%;
+  border:1.5px solid var(--acc); opacity:0; pointer-events:none;
+}
+.soundStage.playing .ringCore{color:var(--acc); border-color:rgba(239,83,64,.45);}
+.soundStage.playing .ring{animation:ringPulse 1.7s ease-out infinite;}
+.soundStage.playing .ring:nth-child(2){animation-delay:.55s;}
+.soundStage.playing .ring:nth-child(3){animation-delay:1.1s;}
+#playLabel{
+  text-align:center; min-height:34px; font-size:var(--f4); color:var(--t3);
+  line-height:1.5; padding:0 6px; display:flex; align-items:center; justify-content:center;
+}
+#playLabel.hot{color:var(--t1); font-weight:600;}
 
-#feedback{text-align:center; min-height:26px; font-size:15px; font-weight:700; margin:4px 0;}
-#feedback.ok{color:var(--ok); animation:pop .25s ease;}
-#feedback.ng{color:var(--ng); animation:pop .25s ease;}
+.listenRow{display:flex; gap:8px; margin:0 0 10px;}
+#listenBtn{
+  flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
+  padding:15px; font-size:var(--f3); font-weight:700;
+  background:var(--acc); color:#fff; border:none; border-radius:var(--r1);
+  box-shadow:0 0 30px -12px var(--acc);
+}
+#listenBtn:active{background:var(--accd);}
+#listenBtn.busy{background:var(--s2); color:var(--t2); box-shadow:none; animation:glowBreath 1.7s ease-in-out infinite;}
+#rootBtn{
+  display:flex; align-items:center; gap:6px; padding:15px 14px;
+  font-size:var(--f4); font-weight:600; color:var(--t2); background:var(--s1);
+}
 
-/* 答え合わせの五線譜 */
+#feedback{
+  text-align:center; min-height:26px; font-size:var(--f3); font-weight:700;
+  margin:0 0 8px; display:flex; align-items:center; justify-content:center; gap:7px;
+}
+#feedback.ok{color:var(--ok); animation:pop .26s ease;}
+#feedback.ng{color:var(--ng); animation:pop .26s ease;}
+
+/* 五線譜（常設。答え合わせで音符が載る。高さは固定してレイアウトを跳ねさせない） */
 #staffWrap{
-  background:var(--card); border-radius:12px; box-shadow:var(--shadow);
-  padding:4px 8px 2px; margin:2px 0 6px; text-align:center;
-  animation:fadeUp .25s ease;
+  background:var(--s1); border:1px solid var(--line); border-radius:var(--r2);
+  padding:10px 10px 8px; margin:0 0 12px; text-align:center;
+  min-height:150px; display:flex; flex-direction:column; align-items:center; justify-content:center;
 }
 #staffWrap svg{display:block; margin:0 auto; max-width:100%;}
-#staffCap{font-size:12px; color:var(--sub); padding-bottom:4px; font-variant-numeric:tabular-nums;}
+#staffWrap.empty svg{opacity:.3;}
+#staffCap{
+  font-size:var(--f5); color:var(--t3); padding-top:6px;
+  height:17px; line-height:17px; overflow:hidden; white-space:nowrap;
+  font-variant-numeric:tabular-nums; letter-spacing:.02em;
+}
+.keyChip{
+  font-family:'Oswald',sans-serif; font-size:var(--f5); font-weight:600;
+  letter-spacing:.1em; color:var(--t3);
+}
 
-#answers{display:grid; grid-template-columns:repeat(4,1fr); gap:7px; margin-top:4px;}
+#answers{display:grid; grid-template-columns:repeat(4,1fr); gap:8px;}
 #answers.chordGrid{grid-template-columns:repeat(2,1fr);}
-#answers button{padding:9px 2px 8px; border-radius:9px; line-height:1.25; box-shadow:var(--shadow);}
-#answers button .d{font-size:17px; font-weight:700; color:var(--navy); display:block;}
-#answers button .s{font-size:10px; color:var(--sub); display:block; margin-top:1px;}
-#answers button.off{opacity:.4; background:#e7eaef; box-shadow:none; pointer-events:none;}
-#answers button.hlOk{border-color:var(--ok); box-shadow:0 0 0 2px var(--ok); animation:bump .3s ease;}
-#answers button.hlNg{border-color:var(--ng); box-shadow:0 0 0 2px var(--ng);}
+#answers button{
+  padding:11px 2px 10px; border-radius:var(--r1); line-height:1.25;
+  background:var(--s1); border:1px solid var(--line);
+}
+#answers button .d{
+  font-size:var(--f3); font-weight:700; color:var(--t1); display:block;
+  font-variant-numeric:tabular-nums;
+}
+#answers button .s{font-size:var(--f5); color:var(--t3); display:block; margin-top:3px;}
+#answers button.off{opacity:.28; background:var(--s0); pointer-events:none;}
+#answers button.hlOk{
+  border-color:var(--ok); background:var(--okt); animation:bump .3s ease;
+  box-shadow:0 0 22px -8px var(--ok);
+}
+#answers button.hlOk .d{color:var(--ok);}
+#answers button.hlNg{border-color:var(--ng); background:var(--ngt);}
+#answers button.hlNg .d{color:var(--ng);}
 
 #nextBtn{
-  width:100%; margin-top:10px; padding:12px; font-size:15px; font-weight:700;
-  border-radius:10px; background:var(--navy); color:#fff; border:none;
+  width:100%; margin-top:12px; padding:14px; font-size:var(--f3); font-weight:700;
+  border-radius:var(--r1); background:var(--s2); color:var(--t1); border:1px solid var(--line2);
+  display:flex; align-items:center; justify-content:center; gap:8px;
 }
 
 /* ── 結果 ── */
-#result{background:var(--card); border-radius:12px; padding:16px 14px; text-align:center; margin-top:6px; box-shadow:var(--shadow); animation:fadeUp .3s ease;}
-#resRank{font-size:34px; min-height:44px;}
+#result{
+  background:var(--s1); border:1px solid var(--line); border-radius:var(--r2);
+  padding:20px 16px; text-align:center; animation:fadeUp .3s ease;
+}
+#resRank{
+  min-height:32px; display:flex; align-items:center; justify-content:center;
+  color:var(--t2);
+}
+#resRank .ic{width:28px; height:28px;}
+#resRank.perfect{color:var(--acc);}
+#resRank.clear{color:var(--ok);}
 #scoreRing{
-  width:104px; height:104px; border-radius:50%; margin:4px auto 8px;
+  width:112px; height:112px; border-radius:50%; margin:10px auto 12px;
   display:flex; align-items:center; justify-content:center;
-  background:conic-gradient(#e9ecf1 100%, #e9ecf1 0);
+  background:conic-gradient(var(--s3) 100%, var(--s3) 0);
 }
 #scoreRing .inner{
-  width:82px; height:82px; border-radius:50%; background:var(--card);
-  display:flex; align-items:center; justify-content:center; gap:3px;
+  width:92px; height:92px; border-radius:50%; background:var(--s1);
+  display:flex; align-items:baseline; justify-content:center; gap:3px;
 }
-#scoreRing b{font-size:30px; color:var(--navy); font-variant-numeric:tabular-nums; line-height:1;}
-#scoreRing span{font-size:13px; color:var(--sub); padding-top:10px;}
-#resMsg{font-size:13px; color:var(--sub); margin-bottom:8px;}
-#resLog{font-size:12.5px; text-align:left; margin:8px auto 4px; max-width:320px; color:var(--sub); line-height:1.7;}
-#resLog .ngLine{color:var(--txt);}
+#scoreRing b{
+  font-family:'Oswald',sans-serif; font-size:var(--f1); color:var(--t1);
+  font-variant-numeric:tabular-nums; line-height:1;
+}
+#scoreRing span{font-size:var(--f4); color:var(--t3);}
+#resMsg{font-size:var(--f4); color:var(--t2); margin-bottom:10px; line-height:1.6;}
+#resLog{
+  font-size:var(--f4); text-align:left; margin:12px auto 4px; max-width:330px;
+  color:var(--t3); line-height:1.7;
+}
+#resLog .logTtl{
+  font-size:var(--f5); font-weight:700; color:var(--t2); letter-spacing:.1em;
+  margin-bottom:6px;
+}
+#resLog .ngLineBtn{
+  display:flex; align-items:center; gap:8px; width:100%; text-align:left;
+  background:var(--s2); border:1px solid var(--line); border-radius:var(--r1);
+  padding:9px 11px; font-size:var(--f4); color:var(--t2); margin:5px 0;
+}
+#resLog .ngLineBtn .ic{color:var(--t3); flex:none;}
+#resLog .ngLineBtn:active{color:var(--t1);}
 #nextStageBtn{
-  width:100%; margin-top:10px; padding:12px; font-size:14.5px; font-weight:700;
-  border-radius:10px; background:var(--red); color:#fff; border:none;
-  box-shadow:0 2px 6px rgba(192,57,43,.3);
-  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  width:100%; margin-top:14px; padding:14px; font-size:var(--f3); font-weight:700;
+  border-radius:var(--r1); background:var(--acc); color:#fff; border:none;
+  box-shadow:0 0 30px -12px var(--acc);
 }
-.resBtns{display:flex; gap:8px; margin-top:9px;}
-.resBtns button{flex:1; padding:12px; font-size:14.5px; font-weight:700; border-radius:10px;}
-#againBtn{background:var(--red); color:#fff; border:none;}
-#againBtn.secondary{background:var(--card); color:var(--txt); border:1px solid var(--line);}
+#nextStageBtn .lb{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+#nextStageBtn:active{background:var(--accd);}
+.resBtns{display:flex; gap:8px; margin-top:10px;}
+.resBtns button{flex:1; padding:14px; font-size:var(--f4); font-weight:700; border-radius:var(--r1);}
+#againBtn{background:var(--acc); color:#fff; border:none;}
+#againBtn.secondary{background:var(--s2); color:var(--t2); border:1px solid var(--line);}
 
-/* ── レベル診断の結果カード ── */
+/* ── レベル診断の結果 ── */
 #diagResult{
-  background:var(--card); border-radius:12px; padding:18px 14px; text-align:center;
-  margin-top:6px; box-shadow:var(--shadow); animation:fadeUp .3s ease;
+  background:var(--s1); border:1px solid var(--line); border-radius:var(--r2);
+  padding:22px 16px; text-align:center; animation:fadeUp .3s ease;
 }
-.diagEmoji{font-size:34px;}
-.diagLead{font-size:13px; color:var(--sub); margin-top:4px;}
-.diagName{font-size:19px; font-weight:700; color:var(--navy); margin:6px 0 2px;}
-.diagMsg{font-size:12.5px; color:var(--sub); line-height:1.7;}
+.diagEmoji{
+  display:flex; align-items:center; justify-content:center; color:var(--acc);
+  margin-bottom:8px;
+}
+.diagEmoji .ic{width:30px; height:30px;}
+.diagLead{font-size:var(--f5); color:var(--t3); letter-spacing:.1em;}
+.diagName{font-size:var(--f2); font-weight:700; color:var(--t1); margin:8px 0 4px;}
+.diagMsg{font-size:var(--f4); color:var(--t2); line-height:1.75;}
 #diagGoBtn{
-  width:100%; margin-top:12px; padding:12px; font-size:14.5px; font-weight:700;
-  border-radius:10px; background:var(--red); color:#fff; border:none;
-  box-shadow:0 2px 6px rgba(192,57,43,.3);
-  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  width:100%; margin-top:16px; padding:14px; font-size:var(--f3); font-weight:700;
+  border-radius:var(--r1); background:var(--acc); color:#fff; border:none;
+  box-shadow:0 0 30px -12px var(--acc);
 }
+#diagGoBtn .lb{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 
-/* ── ヘルプモーダル ── */
+/* ── マイレポート ── */
+.repTitle{
+  font-size:var(--f4); font-weight:700; color:var(--t1); flex:1;
+  display:flex; align-items:center; gap:7px;
+}
+.repCard{
+  background:var(--s1); border:1px solid var(--line); border-radius:var(--r2);
+  padding:14px 15px; margin:10px 0;
+}
+.repTtl{
+  font-size:var(--f5); font-weight:700; color:var(--t2); letter-spacing:.12em;
+  margin-bottom:10px; display:flex; align-items:center; gap:7px;
+}
+.repTtl .ic{color:var(--t3);}
+.repSum{display:flex; flex-wrap:wrap; gap:7px;}
+.repSum span{
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:var(--f5); background:var(--s2); border:1px solid var(--line);
+  padding:5px 11px; border-radius:var(--r3);
+  color:var(--t2); font-variant-numeric:tabular-nums;
+}
+.repRow{display:flex; align-items:center; gap:9px; font-size:var(--f5); margin:7px 0;}
+.repLbl{width:82px; flex:none; color:var(--t2); font-variant-numeric:tabular-nums;}
+.repBarWrap{flex:1; height:8px; background:var(--s2); border-radius:var(--r3); overflow:hidden;}
+.repBar{height:100%; border-radius:var(--r3); transition:width .4s ease;}
+.repPct{
+  width:84px; text-align:right; color:var(--t3);
+  font-variant-numeric:tabular-nums; flex:none; white-space:nowrap;
+}
+.repStage{
+  display:flex; justify-content:space-between; gap:9px;
+  font-size:var(--f5); margin:7px 0; color:var(--t2);
+}
+.repStage .repVal{color:var(--t3); font-variant-numeric:tabular-nums; white-space:nowrap;}
+.repEmpty{font-size:var(--f5); color:var(--t3);}
+.repNote{font-size:var(--f5); color:var(--t3); margin-top:10px; line-height:1.75; padding:0 2px;}
+
+/* ── モーダル ── */
 .modal{
-  position:fixed; inset:0; background:rgba(26,26,46,.55); z-index:50;
+  position:fixed; inset:0; background:rgba(5,5,10,.72); z-index:50;
   display:flex; align-items:center; justify-content:center; padding:16px;
+  backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px);
 }
 .modal .box{
-  background:var(--card); border-radius:14px; padding:18px 16px; max-width:460px;
-  width:100%; max-height:82dvh; overflow-y:auto; font-size:13.5px; line-height:1.75;
+  background:var(--s1); border:1px solid var(--line2); border-radius:var(--r2);
+  padding:20px 18px; max-width:460px; width:100%; max-height:84dvh; overflow-y:auto;
+  font-size:var(--f4); line-height:1.8; color:var(--t2);
 }
-.modal h3{margin:0 0 6px; font-size:16px; color:var(--navy);}
-.modal h4{margin:14px 0 4px; font-size:13.5px; color:var(--navy);}
-.modal p{margin:4px 0;}
-.modal a{color:var(--red);}
-.modal .cls{width:100%; margin-top:12px; padding:11px; font-size:14px; border-radius:9px; background:var(--navy); color:#fff; border:none;}
-.modal .bkRow{display:flex; gap:8px; margin:6px 0 2px;}
-.modal .bkRow button{flex:1; padding:10px; font-size:13.5px; border-radius:9px;}
-.modal .bkMsg{min-height:18px; font-size:12.5px; color:var(--red);}
-.modal .segRow{display:flex; gap:6px; margin:6px 0 4px;}
-.modal .segRow button{flex:1; padding:9px 4px; font-size:12.5px; border-radius:9px;}
-.modal .segRow button.active{background:var(--navy); color:#fff; border-color:var(--navy);}
-
-#resLog .ngLineBtn{
-  display:block; width:100%; text-align:left; background:none; border:none;
-  box-shadow:none; padding:3px 2px; font-size:12.5px; color:var(--txt); line-height:1.6;
+.modal h3{
+  margin:0 0 10px; font-size:var(--f2); color:var(--t1); font-weight:700;
+  display:flex; align-items:center; gap:9px;
 }
-#resLog .ngLineBtn:active{color:var(--red);}
+.modal h3 .ic{color:var(--acc);}
+.modal h4{
+  margin:20px 0 6px; font-size:var(--f5); color:var(--t2); font-weight:700;
+  letter-spacing:.12em; display:flex; align-items:center; gap:7px;
+}
+.modal h4 .ic{color:var(--t3);}
+.modal p{margin:6px 0;}
+.modal b{color:var(--t1);}
+.modal a{color:var(--acc); text-decoration:none; border-bottom:1px solid rgba(239,83,64,.35);}
+.modal .cls{
+  width:100%; margin-top:18px; padding:13px; font-size:var(--f3); font-weight:700;
+  border-radius:var(--r1); background:var(--s2); color:var(--t1); border:1px solid var(--line2);
+}
+.modal .bkRow{display:flex; gap:8px; margin:8px 0 4px;}
+.modal .bkRow button{
+  flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+  padding:12px; font-size:var(--f4); font-weight:600; border-radius:var(--r1);
+}
+.modal .bkMsg{min-height:19px; font-size:var(--f5); color:var(--acc);}
+.modal .segRow{display:flex; gap:6px; margin:8px 0 6px;}
+.modal .segRow button{
+  flex:1; padding:11px 4px; font-size:var(--f5); font-weight:600;
+  border-radius:var(--r1); color:var(--t2);
+}
+.modal .segRow button.active{
+  background:var(--acct); color:var(--acc); border-color:rgba(239,83,64,.42); font-weight:700;
+}
 
 footer{
-  text-align:center; font-size:10px; color:#9aa1af; padding:8px 10px 10px; line-height:1.6;
+  text-align:center; font-size:var(--f5); color:var(--t3);
+  padding:18px 12px 14px; line-height:1.7; opacity:.75;
 }
 [hidden]{display:none !important;}
 </style>
 </head>
 <body>
 
+<!-- ── アイコン定義（絵文字は使わない） ── -->
+<svg class="sprite" aria-hidden="true" focusable="false"><defs>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 4.8v14.4L19.5 12z"/></symbol>
+<symbol id="i-left" viewBox="0 0 24 24"><path d="M14.5 5.5 8 12l6.5 6.5"/></symbol>
+<symbol id="i-right" viewBox="0 0 24 24"><path d="M9.5 5.5 16 12l-6.5 6.5"/></symbol>
+<symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 8h8M16 8h4M4 16h4M12 16h8"/><circle cx="14" cy="8" r="2.2"/><circle cx="9" cy="16" r="2.2"/></symbol>
+<symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M9.7 9.4a2.4 2.4 0 0 1 4.6.9c0 1.6-2.3 1.9-2.3 3.4M12 16.9h.01"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.4"/><circle cx="12" cy="12" r="2.9"/><path d="M12 1.9v2.6M12 19.5v2.6M1.9 12h2.6M19.5 12h2.6"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4.6 20.2V12.4M9.7 20.2V7.6M14.8 20.2v-4.6M19.9 20.2V4.4"/></symbol>
+<symbol id="i-note" viewBox="0 0 24 24"><circle cx="7.4" cy="16.9" r="2.9"/><circle cx="18.1" cy="14.9" r="2.9"/><path d="M10.3 16.9V6.5l10.7-2.2v10.6M10.3 9.8 21 7.6"/></symbol>
+<symbol id="i-repeat" viewBox="0 0 24 24"><path d="M20.2 11.4a8.2 8.2 0 0 0-14-5.4L3.6 8.6M3.3 4.4v4.4h4.4M3.8 12.6a8.2 8.2 0 0 0 14 5.4l2.6-2.6M20.7 19.6v-4.4h-4.4"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="M4.8 12.6 9.6 17.4 19.2 6.8"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+<symbol id="i-lock" viewBox="0 0 24 24"><rect x="4.8" y="10.6" width="14.4" height="9.4" rx="2.6"/><path d="M8.4 10.6V8.2a3.6 3.6 0 0 1 7.2 0v2.4"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.2l2.72 5.66 6.2.86-4.53 4.35 1.13 6.14L12 17.24l-5.52 2.99 1.13-6.14L4.08 9.72l6.2-.86z"/></symbol>
+<symbol id="i-bloom" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.9"/><path d="M12 2.6v3.1M12 18.3v3.1M2.6 12h3.1M18.3 12h3.1M5.4 5.4l2.2 2.2M16.4 16.4l2.2 2.2M18.6 5.4l-2.2 2.2M7.6 16.4l-2.2 2.2"/></symbol>
+<symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 2.8c3.4 3 5.5 5.9 5.5 9a5.5 5.5 0 0 1-11 0c0-2 1-3.7 2.5-5.1.3 1.7 1 2.7 2 3.1.3-2.5.6-4.7 1-7z"/></symbol>
+<symbol id="i-headphones" viewBox="0 0 24 24"><path d="M4.6 15.4v-3a7.4 7.4 0 0 1 14.8 0v3"/><rect x="2.4" y="14.3" width="4.4" height="6.7" rx="2.2"/><rect x="17.2" y="14.3" width="4.4" height="6.7" rx="2.2"/></symbol>
+<symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 9.4h3.4L12 5.4v13.2l-4.6-4H4z"/><path d="M15.6 9.2a4.4 4.4 0 0 1 0 5.6M18.4 6.6a8 8 0 0 1 0 10.8"/></symbol>
+<symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4.2v11.2M7.4 10.9 12 15.4l4.6-4.5M4.6 19.6h14.8"/></symbol>
+<symbol id="i-up" viewBox="0 0 24 24"><path d="M12 15.4V4.2M7.4 8.7 12 4.2l4.6 4.5M4.6 19.6h14.8"/></symbol>
+<symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 4.6h8v4.1a4 4 0 0 1-8 0z"/><path d="M8 5.9H5.4a2.6 2.6 0 0 0 2.6 3.3M16 5.9h2.6a2.6 2.6 0 0 1-2.6 3.3M12 12.8v3.3M8.6 19.4h6.8"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M10.2 13.8a4.2 4.2 0 0 1 0-5.9l2.4-2.4a4.2 4.2 0 0 1 5.9 5.9l-1.2 1.2M13.8 10.2a4.2 4.2 0 0 1 0 5.9l-2.4 2.4a4.2 4.2 0 0 1-5.9-5.9l1.2-1.2"/></symbol>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M4.4 5.2a1.8 1.8 0 0 1 1.8-1.8H10a2.4 2.4 0 0 1 2 1.1 2.4 2.4 0 0 1 2-1.1h3.8a1.8 1.8 0 0 1 1.8 1.8v11.6a1.8 1.8 0 0 1-1.8 1.8H14a2.4 2.4 0 0 0-2 1.1 2.4 2.4 0 0 0-2-1.1H6.2a1.8 1.8 0 0 1-1.8-1.8zM12 6.6v12.9"/></symbol>
+<symbol id="i-save" viewBox="0 0 24 24"><path d="M5.4 4.4h10.2L19.6 8.4v11.2H5.4z"/><path d="M8.6 4.4v5h6.8v-5M8.6 19.6v-5.4h6.8v5.4"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.2 4.8 6v5.6c0 4.3 3 7.5 7.2 9.2 4.2-1.7 7.2-4.9 7.2-9.2V6z"/></symbol>
+<symbol id="i-ear" viewBox="0 0 24 24"><path d="M7.2 8.6a4.8 4.8 0 0 1 9.6 0c0 2.6-2 3.6-3 5-.7 1-.4 2.6-2 2.6a2 2 0 0 1-2-2M8.4 20.4a5.6 5.6 0 0 1-1.8-3"/></symbol>
+</defs></svg>
+
 <header>
 <div class="hwrap">
   <div class="brand">
     <div class="brand-main">
-      <svg viewBox="0 0 48 108" width="18" height="40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect x="17" y="1" width="14" height="13" rx="3" fill="rgba(255,255,255,0.92)"/>
-        <rect x="10" y="3"  width="8" height="3.5" rx="1.75" fill="rgba(255,255,255,0.75)"/>
-        <rect x="10" y="8"  width="8" height="3.5" rx="1.75" fill="rgba(255,255,255,0.75)"/>
-        <rect x="30" y="3"  width="8" height="3.5" rx="1.75" fill="rgba(255,255,255,0.75)"/>
-        <rect x="30" y="8"  width="8" height="3.5" rx="1.75" fill="rgba(255,255,255,0.75)"/>
-        <rect x="17" y="13" width="14" height="2.5" rx="1" fill="rgba(255,255,255,0.6)"/>
-        <rect x="19.5" y="15.5" width="9" height="42" rx="2" fill="rgba(255,255,255,0.92)"/>
-        <rect x="19.5" y="24" width="9" height="1" fill="rgba(26,26,46,0.25)"/>
-        <rect x="19.5" y="33" width="9" height="1" fill="rgba(26,26,46,0.25)"/>
-        <rect x="19.5" y="42" width="9" height="1" fill="rgba(26,26,46,0.25)"/>
-        <rect x="17" y="55" width="14" height="5" rx="2" fill="rgba(255,255,255,0.92)"/>
-        <ellipse cx="24" cy="69" rx="13" ry="11" fill="rgba(255,255,255,0.92)"/>
-        <rect x="17" y="75" width="14" height="8" fill="rgba(255,255,255,0.92)"/>
-        <ellipse cx="24" cy="90" rx="17" ry="16" fill="rgba(255,255,255,0.92)"/>
-        <circle cx="24" cy="87" r="6.5" fill="rgba(26,26,46,0.75)"/>
-        <rect x="18" y="97" width="12" height="3" rx="1.5" fill="rgba(26,26,46,0.45)"/>
-        <line x1="21" y1="16" x2="21" y2="100" stroke="rgba(26,26,46,0.18)" stroke-width="0.6"/>
-        <line x1="22.5" y1="16" x2="22.5" y2="100" stroke="rgba(26,26,46,0.18)" stroke-width="0.6"/>
-        <line x1="24" y1="16" x2="24" y2="100" stroke="rgba(26,26,46,0.18)" stroke-width="0.6"/>
-        <line x1="25.5" y1="16" x2="25.5" y2="100" stroke="rgba(26,26,46,0.18)" stroke-width="0.6"/>
-        <line x1="27" y1="16" x2="27" y2="100" stroke="rgba(26,26,46,0.18)" stroke-width="0.6"/>
-        <line x1="28.5" y1="16" x2="28.5" y2="100" stroke="rgba(26,26,46,0.18)" stroke-width="0.6"/>
+      <svg viewBox="0 0 48 108" width="17" height="38" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="17" y="1" width="14" height="13" rx="3" fill="rgba(241,242,248,0.92)"/>
+        <rect x="10" y="3"  width="8" height="3.5" rx="1.75" fill="rgba(241,242,248,0.7)"/>
+        <rect x="10" y="8"  width="8" height="3.5" rx="1.75" fill="rgba(241,242,248,0.7)"/>
+        <rect x="30" y="3"  width="8" height="3.5" rx="1.75" fill="rgba(241,242,248,0.7)"/>
+        <rect x="30" y="8"  width="8" height="3.5" rx="1.75" fill="rgba(241,242,248,0.7)"/>
+        <rect x="17" y="13" width="14" height="2.5" rx="1" fill="rgba(241,242,248,0.55)"/>
+        <rect x="19.5" y="15.5" width="9" height="42" rx="2" fill="rgba(241,242,248,0.92)"/>
+        <rect x="19.5" y="24" width="9" height="1" fill="rgba(13,13,22,0.4)"/>
+        <rect x="19.5" y="33" width="9" height="1" fill="rgba(13,13,22,0.4)"/>
+        <rect x="19.5" y="42" width="9" height="1" fill="rgba(13,13,22,0.4)"/>
+        <rect x="17" y="55" width="14" height="5" rx="2" fill="rgba(241,242,248,0.92)"/>
+        <ellipse cx="24" cy="69" rx="13" ry="11" fill="rgba(241,242,248,0.92)"/>
+        <rect x="17" y="75" width="14" height="8" fill="rgba(241,242,248,0.92)"/>
+        <ellipse cx="24" cy="90" rx="17" ry="16" fill="rgba(241,242,248,0.92)"/>
+        <circle cx="24" cy="87" r="6.5" fill="rgba(13,13,22,0.8)"/>
+        <rect x="18" y="97" width="12" height="3" rx="1.5" fill="rgba(13,13,22,0.5)"/>
+        <line x1="21" y1="16" x2="21" y2="100" stroke="rgba(13,13,22,0.28)" stroke-width="0.6"/>
+        <line x1="22.5" y1="16" x2="22.5" y2="100" stroke="rgba(13,13,22,0.28)" stroke-width="0.6"/>
+        <line x1="24" y1="16" x2="24" y2="100" stroke="rgba(13,13,22,0.28)" stroke-width="0.6"/>
+        <line x1="25.5" y1="16" x2="25.5" y2="100" stroke="rgba(13,13,22,0.28)" stroke-width="0.6"/>
+        <line x1="27" y1="16" x2="27" y2="100" stroke="rgba(13,13,22,0.28)" stroke-width="0.6"/>
+        <line x1="28.5" y1="16" x2="28.5" y2="100" stroke="rgba(13,13,22,0.28)" stroke-width="0.6"/>
       </svg>
       TSG
     </div>
@@ -343,8 +593,8 @@ footer{
     </div>
   </div>
   <div class="hbtns">
-    <button id="setBtn" title="設定">⚙️</button>
-    <button id="helpBtn" title="使い方">❓</button>
+    <button id="setBtn" class="iconBtn" title="設定" aria-label="設定"><svg class="ic"><use href="#i-sliders"/></svg></button>
+    <button id="helpBtn" class="iconBtn" title="使い方" aria-label="使い方"><svg class="ic"><use href="#i-help"/></svg></button>
   </div>
 </div>
 </header>
@@ -353,24 +603,14 @@ footer{
   <!-- ステージ選択画面 -->
   <section id="scrSelect">
     <div class="hero">
-      <svg class="heroArt" viewBox="0 0 200 96" aria-hidden="true">
-        <line x1="0" y1="18" x2="200" y2="18" stroke="#fff" stroke-width="1.5"/>
-        <line x1="0" y1="33" x2="200" y2="33" stroke="#fff" stroke-width="1.5"/>
-        <line x1="0" y1="48" x2="200" y2="48" stroke="#fff" stroke-width="1.5"/>
-        <line x1="0" y1="63" x2="200" y2="63" stroke="#fff" stroke-width="1.5"/>
-        <line x1="0" y1="78" x2="200" y2="78" stroke="#fff" stroke-width="1.5"/>
-        <ellipse cx="50" cy="78" rx="10" ry="7.5" fill="#fff" transform="rotate(-14 50 78)"/>
-        <ellipse cx="110" cy="55.5" rx="10" ry="7.5" fill="#fff" transform="rotate(-14 110 55.5)"/>
-        <ellipse cx="170" cy="40.5" rx="10" ry="7.5" fill="#fff" transform="rotate(-14 170 40.5)"/>
-      </svg>
-      <div class="heroEyebrow">Ear Training Game</div>
-      <div class="heroTitle">音あてゲームで、<b>いい耳</b>を育てよう🎧</div>
+      <div class="heroEyebrow">Ear Training</div>
+      <div class="heroTitle">音あてゲームで、<b>いい耳</b>を育てよう</div>
       <p class="heroSub">流れてくる音が「ドレミのどれか」を当てるだけ。かんたんな3音から、耳コピできる耳まで一歩ずつ。</p>
       <div class="heroStats" id="heroStats"></div>
       <button id="heroCta" hidden></button>
       <div class="heroTools">
-        <button id="diagBtn">🎯 レベル診断</button>
-        <button id="reportBtn">📊 マイレポート</button>
+        <button id="diagBtn"><svg class="ic"><use href="#i-target"/></svg>レベル診断</button>
+        <button id="reportBtn"><svg class="ic"><use href="#i-chart"/></svg>マイレポート</button>
       </div>
     </div>
     <div id="stageList"></div>
@@ -379,8 +619,8 @@ footer{
   <!-- マイレポート画面 -->
   <section id="scrReport" hidden>
     <div class="qbar">
-      <button id="repBackBtn">◀ もどる</button>
-      <span class="repTitle">📊 マイレポート</span>
+      <button id="repBackBtn" class="navBtn"><svg class="ic"><use href="#i-left"/></svg>もどる</button>
+      <span class="repTitle"><svg class="ic"><use href="#i-chart"/></svg>マイレポート</span>
     </div>
     <div id="repBody"></div>
   </section>
@@ -388,31 +628,39 @@ footer{
   <!-- クイズ画面 -->
   <section id="scrQuiz" hidden>
     <div class="qbar">
-      <button id="backBtn">◀ ステージ</button>
+      <button id="backBtn" class="navBtn"><svg class="ic"><use href="#i-left"/></svg>ステージ</button>
       <span id="stageName"></span>
       <span id="qNum"></span>
-      <button id="cadBtn" title="ラウンド開始時にキーの響き（カデンツ）を鳴らすか切り替え">🎼 ON</button>
+      <button id="cadBtn" title="ラウンド開始時にキーの響き（カデンツ）を鳴らすか切り替え"><svg class="ic"><use href="#i-note"/></svg><span id="cadLbl">ON</span></button>
     </div>
     <div id="dots"></div>
-    <div id="playLabel">&nbsp;</div>
+
+    <div class="soundStage" id="soundStage">
+      <div class="ringWrap">
+        <div class="ring"></div><div class="ring"></div><div class="ring"></div>
+        <div class="ringCore"><svg class="ic"><use href="#i-note"/></svg></div>
+      </div>
+      <div id="playLabel">&nbsp;</div>
+    </div>
+
     <div class="listenRow">
-      <button id="listenBtn">▶ スタート</button>
-      <button id="rootBtn" hidden>🔁 ルート</button>
+      <button id="listenBtn"><svg class="ic"><use href="#i-play"/></svg><span class="lb">スタート</span></button>
+      <button id="rootBtn" hidden><svg class="ic"><use href="#i-repeat"/></svg>ルート</button>
     </div>
     <div id="feedback">&nbsp;</div>
-    <div id="staffWrap" hidden>
+    <div id="staffWrap" class="empty">
       <div id="staffSvg"></div>
       <div id="staffCap"></div>
     </div>
     <div id="answers"></div>
-    <button id="nextBtn" hidden>次へ ▶</button>
+    <button id="nextBtn" hidden><span>次へ</span><svg class="ic"><use href="#i-right"/></svg></button>
 
     <div id="result" hidden>
       <div id="resRank"></div>
       <div id="scoreRing"><div class="inner"><b id="resScore"></b><span id="resMax"></span></div></div>
       <div id="resMsg"></div>
       <div id="resLog"></div>
-      <button id="nextStageBtn" hidden>次のステージへ ▶</button>
+      <button id="nextStageBtn" hidden></button>
       <div class="resBtns">
         <button id="againBtn">もう一度</button>
         <button id="selectBtn">ステージ選択</button>
@@ -420,11 +668,11 @@ footer{
     </div>
 
     <div id="diagResult" hidden>
-      <div class="diagEmoji">🎯</div>
-      <div class="diagLead">あなたへのおすすめは…</div>
+      <div class="diagEmoji"><svg class="ic"><use href="#i-target"/></svg></div>
+      <div class="diagLead">あなたへのおすすめは</div>
       <div id="diagRecName" class="diagName"></div>
       <div id="diagRecMsg" class="diagMsg"></div>
-      <button id="diagGoBtn">▶ おすすめのステージを始める</button>
+      <button id="diagGoBtn"><svg class="ic"><use href="#i-play"/></svg><span class="lb">おすすめのステージを始める</span></button>
       <div class="resBtns">
         <button id="diagSelBtn">ステージ選択へ</button>
       </div>
@@ -437,25 +685,25 @@ footer{
 <!-- ヘルプ -->
 <div id="helpModal" class="modal" hidden>
   <div class="box">
-    <h3>TSG Ear Trainer の使い方</h3>
-    <p>「ルート音 → 課題音」の順に鳴ります。課題音がルートから見て<b>何度</b>にあたるかをボタンで答えてください。出題の鳴らし方・ステージの進め方・バックアップは、ヘッダーの <b>⚙️ 設定</b> から変更できます。</p>
-    <h4>🎯 度数で聴くとは</h4>
+    <h3><svg class="ic"><use href="#i-help"/></svg>TSG Ear Trainer の使い方</h3>
+    <p>「ルート音 → 課題音」の順に鳴ります。課題音がルートから見て<b>何度</b>にあたるかをボタンで答えてください。出題の鳴らし方・ステージの進め方・バックアップは、ヘッダーの<b>設定</b>から変更できます。</p>
+    <h4><svg class="ic"><use href="#i-target"/></svg>度数で聴くとは</h4>
     <p>絶対的な音名（CやAなど）ではなく、キーの中心＝ルートからの距離（1・♭3・5…）で音を捉える聴き方です。耳コピ・アドリブ・移調に直結する、実戦的な相対音感が身につきます。</p>
-    <h4>📚 ステージ構成</h4>
-    <p>単音（度数当て）は入門→上級へ段階的に出題範囲が広がります。<b>各ラウンドはまずキーの響き（カデンツ）が鳴り、調性感を作ってから出題開始</b>。入門〜初級はキーC固定でじっくり音の響きを覚え、中級からはキーがラウンドごとにランダムに変わって、どの調でも通用する耳を鍛えます。カデンツを鳴らすかどうかは、クイズ画面の<b>🎼ボタン</b>でいつでも切り替えられます（OFFのときはルート音だけ鳴らして開始）。上級は「ルート省略」：カデンツとルート音を最初に聴き、あとは連続で答えます。コード（響き当て）はトライアド→セブンスと進みます。腕に自信がある人は、トップの<b>🎯 レベル診断</b>（4〜10問）を受けると、実力に合ったステージまで一気に解放されます。</p>
-    <h4>🎹 音色</h4>
+    <h4><svg class="ic"><use href="#i-book"/></svg>ステージ構成</h4>
+    <p>単音（度数当て）は入門→上級へ段階的に出題範囲が広がります。<b>各ラウンドはまずキーの響き（カデンツ）が鳴り、調性感を作ってから出題開始</b>。入門〜初級はキーC固定でじっくり音の響きを覚え、中級からはキーがラウンドごとにランダムに変わって、どの調でも通用する耳を鍛えます。カデンツを鳴らすかどうかは、クイズ画面の<b>音符ボタン</b>でいつでも切り替えられます（OFFのときはルート音だけ鳴らして開始）。上級は「ルート省略」：カデンツとルート音を最初に聴き、あとは連続で答えます。コード（響き当て）はトライアド→セブンスと進みます。腕に自信がある人は、トップの<b>レベル診断</b>（4〜10問）を受けると、実力に合ったステージまで一気に解放されます。</p>
+    <h4><svg class="ic"><use href="#i-volume"/></svg>音色</h4>
     <p>本物のグランドピアノの録音（FluidR3 GM soundfont / Frank Wen 氏, MIT License）を使用しています。倍音が豊かな実際の楽器の音で、実戦に近い耳を育てられます。</p>
-    <h4>⌨️ キーボード（PC）</h4>
+    <h4><svg class="ic"><use href="#i-sliders"/></svg>キーボード（PC）</h4>
     <p>スペース＝再生／数字キー＝回答ボタン（左上から順に1,2,3…）／Enter＝次へ</p>
-    <h4>🎯 ステージの直リンク（講師向け）</h4>
+    <h4><svg class="ic"><use href="#i-link"/></svg>ステージの直リンク（講師向け）</h4>
     <p>URLの末尾に <b>?stage=s1</b>〜<b>s7</b>（単音）／<b>c1</b>〜<b>c3</b>（コード）を付けると、そのステージが直接開きます。レッスン課題の指定に便利です。</p>
-    <h4>🔗 姉妹アプリ</h4>
+    <h4><svg class="ic"><use href="#i-link"/></svg>姉妹アプリ</h4>
     <p>
       <a href="https://metrotuner.tsg-gt.com" target="_blank" rel="noopener">メトロノーム＆チューナー</a> ／
       <a href="https://rhythm.tsg-gt.com" target="_blank" rel="noopener">リズムトレーナー</a> ／
       <a href="https://scale.tsg-gt.com" target="_blank" rel="noopener">スケールビューワー</a>
     </p>
-    <h4>📄 著作権・利用について</h4>
+    <h4><svg class="ic"><use href="#i-shield"/></svg>著作権・利用について</h4>
     <p>本アプリの著作権はギタースクールTSGに帰属します。無断複製・転載・再配布・改変を禁じます。</p>
     <button class="cls" id="helpClose">閉じる</button>
   </div>
@@ -464,32 +712,31 @@ footer{
 <!-- 設定 -->
 <div id="setModal" class="modal" hidden>
   <div class="box">
-    <h3>⚙️ 設定</h3>
-    <h4>🔊 出題の鳴らし方（単音ステージ）</h4>
+    <h3><svg class="ic"><use href="#i-sliders"/></svg>設定</h3>
+    <h4><svg class="ic"><use href="#i-volume"/></svg>出題の鳴らし方（単音ステージ）</h4>
     <div class="segRow" id="playModeSeg">
       <button data-mode="melodic">順番に</button>
       <button data-mode="harmonic">同時に</button>
       <button data-mode="both">順番→同時</button>
     </div>
     <p>「順番に」＝ルート→課題音。「同時に」＝2音が重なって鳴る上級者向けの聴き方。「順番→同時」＝順番のあとに重ねて確認。※上級（ルート省略）ステージには適用されません。</p>
-    <h4>🔓 ステージの進め方</h4>
+    <h4><svg class="ic"><use href="#i-lock"/></svg>ステージの進め方</h4>
     <div class="segRow" id="unlockSeg">
       <button data-mode="seq">順番に解放</button>
       <button data-mode="free">すべて自由</button>
     </div>
-    <p>「順番に解放」では、各ステージを<b>10問中8問以上の正解でクリア</b>すると次のステージが解放されます（⭐＝クリア、💮＝全問正解）。「ここまでクリア」を目標に挑戦してください。</p>
-    <h4>💾 データのバックアップ</h4>
+    <p>「順番に解放」では、各ステージを<b>10問中8問以上の正解でクリア</b>すると次のステージが解放されます。「ここまでクリア」を目標に挑戦してください。</p>
+    <h4><svg class="ic"><use href="#i-save"/></svg>データのバックアップ</h4>
     <p>成績はこの端末のブラウザに保存されます。ブラウザのデータ削除や機種変更に備えて、ファイルに書き出しておけます。</p>
     <div class="bkRow">
-      <button id="expBtn">⬇ 書き出し</button>
-      <button id="impBtn">⬆ 読み込み</button>
+      <button id="expBtn"><svg class="ic"><use href="#i-down"/></svg>書き出し</button>
+      <button id="impBtn"><svg class="ic"><use href="#i-up"/></svg>読み込み</button>
     </div>
     <p id="bkMsg" class="bkMsg"></p>
     <input type="file" id="impFile" accept=".json,application/json" hidden>
     <button class="cls" id="setClose">閉じる</button>
   </div>
 </div>
-
 <script>
 'use strict';
 
@@ -502,7 +749,7 @@ footer{
 // ── 定数 ──────────────────────────────────────
 
 const QN = 10;    // 1ラウンドの問題数
-const CLEAR = 8;  // クリア基準（QN問中）。次ステージ解放・⭐の条件
+const CLEAR = 8;  // クリア基準（QN問中）。次ステージ解放・の条件
 
 // 度数定義（半音クラス0〜11）。s は移動ド読み（補助表示）
 const DEG = [
@@ -769,6 +1016,7 @@ function stopAll(){
   liveNodes = [];
   for(const t of timers) clearTimeout(t);
   timers = [];
+  setPlaying(false);
 }
 
 function later(fn, ms){ timers.push(setTimeout(fn, ms)); }
@@ -783,6 +1031,36 @@ const dotsEl = $('dots'), playLabelEl = $('playLabel');
 const listenBtn = $('listenBtn'), rootBtn = $('rootBtn');
 const feedbackEl = $('feedback'), answersEl = $('answers');
 const nextBtn = $('nextBtn'), resultEl = $('result');
+
+// ── アイコン・ラベル ────────────────────────────
+// UIに絵文字は使わない（端末ごとに絵柄が変わり「間に合わせ」に見えるため）。
+// すべて #i-* のSVGスプライトを参照する
+const SVGNS = 'http://www.w3.org/2000/svg';
+function ico(name, cls){
+  const s = document.createElementNS(SVGNS, 'svg');
+  s.setAttribute('class', 'ic' + (cls ? ' ' + cls : ''));
+  const u = document.createElementNS(SVGNS, 'use');
+  u.setAttribute('href', '#i-' + name);
+  s.appendChild(u);
+  return s;
+}
+// アイコン＋テキストで中身を組み直す。
+// textContentで代入するとHTML側に置いたアイコンが消えるため、ボタンのラベル変更は必ずこれを使う
+function setIconText(el, name, text){
+  el.textContent = '';
+  if(name) el.appendChild(ico(name));
+  if(text != null){
+    const s = document.createElement('span');
+    s.className = 'lb';
+    s.textContent = text;
+    el.appendChild(s);
+  }
+}
+// 音が鳴っている状態の可視化（サウンドステージのリング発光）
+function setPlaying(on){
+  const el = document.getElementById('soundStage');
+  if(el) el.classList.toggle('playing', !!on);
+}
 
 // ── ゲーム状態 ────────────────────────────────
 
@@ -815,74 +1093,95 @@ function spellNote(midi, preferFlat){
   return {name, letter, acc, step: oct * 7 + LETTER_STEP[letter]};
 }
 
-// notes: [{midi, red(答えの音は赤), flat(♭表記優先)}] を五線に描く
-function drawStaff(notes){
-  const GAP = 9, YB = 80, W = 258, H = 124; // Hは最低音（下行のE2=記譜E3）が欠けない高さ
-  const y = s => YB - (s - 30) * (GAP / 2); // step30 = E4（第1線）
+// 【設計判断 2026-07-27】ト音記号はフォントグリフ依存で端末により消えるため撤去し、
+// 代わりに左端へ「いま鳴っているキー（またはコードのルート）」を常時表示する。
+// 装飾を、実際に役に立つ情報に置き換えている。
+const STAFF = {GAP:10, YB:90, W:300, H:140, X0:54, XE:292};
+
+function staffY(step){ return STAFF.YB - (step - 30) * (STAFF.GAP / 2); } // step30 = E4（第1線）
+
+function staffLines(){
   let el = '';
   for(let i = 0; i < 5; i++){
-    const yy = YB - i * GAP;
-    el += '<line x1="34" y1="' + yy + '" x2="' + (W - 6) + '" y2="' + yy + '" stroke="#8a93a3" stroke-width="1"/>';
+    const yy = STAFF.YB - i * STAFF.GAP;
+    el += '<line x1="' + STAFF.X0 + '" y1="' + yy + '" x2="' + STAFF.XE + '" y2="' + yy +
+          '" stroke="rgba(255,255,255,.2)" stroke-width="1"/>';
   }
-  el += '<text class="clef" x="0" y="0" font-size="60" fill="#1a1a2e" font-family="&#39;Segoe UI Symbol&#39;,&#39;Noto Music&#39;,&#39;Apple Symbols&#39;,serif">\u{1D11E}</text>';
-  el += '<text x="15" y="' + (YB + 17) + '" font-size="11" fill="#1a1a2e" font-family="serif" text-anchor="middle">8</text>';
+  return el;
+}
 
+function ledger(cx, yy){
+  return '<line x1="' + (cx - 12) + '" y1="' + yy + '" x2="' + (cx + 12) + '" y2="' + yy +
+         '" stroke="rgba(255,255,255,.3)" stroke-width="1"/>';
+}
+
+function putStaff(inner){
+  $('staffSvg').innerHTML =
+    '<svg viewBox="0 0 ' + STAFF.W + ' ' + STAFF.H + '" width="' + STAFF.W + '" height="' + STAFF.H +
+    '" xmlns="http://www.w3.org/2000/svg">' + inner + '</svg>';
+}
+
+// 五線の左端に置くキー表示（ト音記号の代わり）
+function staffKeyMark(tag, name){
+  const yTop = STAFF.YB - 4 * STAFF.GAP;
+  const yMid = STAFF.YB - 2 * STAFF.GAP;
+  let el = '<rect x="16" y="' + yTop + '" width="2.5" height="' + (4 * STAFF.GAP) +
+           '" rx="1.25" fill="#ef5340" opacity=".9"/>';
+  el += '<text x="28" y="' + (yMid - 5) + '" font-size="10" fill="#70758b" letter-spacing="1.6"' +
+        ' font-family="system-ui,sans-serif">' + tag + '</text>';
+  el += '<text x="28" y="' + (yMid + 13) + '" font-size="17" font-weight="700" fill="#f1f2f8"' +
+        ' font-family="system-ui,sans-serif">' + name + '</text>';
+  return el;
+}
+
+// notes: [{midi, red(答えの音はアクセント色), flat(♭表記優先), stack(コード積み)}] を五線に描く
+function drawStaff(notes, tag, keyName){
+  let el = staffKeyMark(tag, keyName) + staffLines();
   const spelled = notes.map(n => Object.assign({}, n, spellNote(n.midi, n.flat)));
   // 配置：2音（ルート→答え）は横並び、コードは同じ列に積む（隣接音は右にずらす）
   const isPair = notes.length === 2 && !notes[1].stack;
   let prevStep = null;
   spelled.forEach((n, i) => {
-    let cx = isPair ? (i === 0 ? 120 : 190) : 150;
-    if(!isPair && prevStep !== null && n.step - prevStep <= 1) cx += 12; // sus4等の2度隣接を回避
+    let cx = isPair ? (i === 0 ? 140 : 226) : 186;
+    if(!isPair && prevStep !== null && n.step - prevStep <= 1) cx += 13; // sus4等の2度隣接を回避
     if(!isPair) prevStep = n.step;
-    const cy = y(n.step);
+    const cy = staffY(n.step);
     // 加線（五線の下=E4未満、上=F5超）
-    for(let l = 28; l >= n.step; l -= 2) el += ledger(cx, y(l));
-    for(let l = 40; l <= n.step; l += 2) el += ledger(cx, y(l));
-    const col = n.red ? '#c0392b' : '#1a1a2e';
-    if(n.acc) el += '<text x="' + (cx - 22) + '" y="' + (cy + 5) + '" font-size="15" fill="' + col + '">' + n.acc + '</text>';
-    el += '<ellipse cx="' + cx + '" cy="' + cy + '" rx="6.8" ry="5" fill="' + col + '" transform="rotate(-14 ' + cx + ' ' + cy + ')"/>';
+    for(let l = 28; l >= n.step; l -= 2) el += ledger(cx, staffY(l));
+    for(let l = 40; l <= n.step; l += 2) el += ledger(cx, staffY(l));
+    const col = n.red ? '#ef5340' : '#f1f2f8';
+    if(n.red) el += '<circle cx="' + cx + '" cy="' + cy + '" r="14" fill="#ef5340" opacity=".17"/>';
+    if(n.acc) el += '<text x="' + (cx - 25) + '" y="' + (cy + 5.5) + '" font-size="16" fill="' + col +
+                    '" font-family="system-ui,sans-serif">' + n.acc + '</text>';
+    el += '<ellipse cx="' + cx + '" cy="' + cy + '" rx="7.4" ry="5.4" fill="' + col +
+          '" transform="rotate(-14 ' + cx + ' ' + cy + ')"/>';
   });
-
-  const box = $('staffSvg');
-  box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" xmlns="http://www.w3.org/2000/svg">' + el + '</svg>';
-
-  // ト音記号はフォント差が大きいのでBBox実測で位置・サイズ合わせ（中心=第3線）
-  const svg = box.querySelector('svg');
-  const clef = svg.querySelector('.clef');
-  try{
-    const bb = clef.getBBox();
-    if(bb.height > 10){
-      const k = (GAP * 7.4) / bb.height;
-      const tx = 6 - k * bb.x;
-      const ty = (YB - 2 * GAP) - k * (bb.y + bb.height / 2);
-      clef.setAttribute('transform', 'translate(' + tx + ',' + ty + ') scale(' + k + ')');
-    }else{
-      clef.remove(); // グリフ非対応端末では記号なしで表示
-    }
-  }catch(e){ /* getBBox不可（非表示時など）は位置調整なしで表示 */ }
+  putStaff(el);
 }
 
-function ledger(cx, yy){
-  return '<line x1="' + (cx - 11) + '" y1="' + yy + '" x2="' + (cx + 11) + '" y2="' + yy + '" stroke="#8a93a3" stroke-width="1"/>';
+// 答え合わせ前の状態。五線だけを薄く出しておき、音符が載ってもレイアウトが跳ねないようにする
+function hideStaff(){
+  $('staffWrap').classList.add('empty');
+  putStaff(staffLines());
+  $('staffCap').textContent = '';
 }
-
-function hideStaff(){ $('staffWrap').hidden = true; }
 
 function showStaff(q){
   q = q || curQ;
-  $('staffWrap').hidden = false; // 先に表示（hidden中はgetBBoxが0になりクレフ調整が失敗するため）
+  $('staffWrap').classList.remove('empty');
+  const rootName = spellNote(q.root, false).name;
   let cap;
   if(q.type === 'chord'){
     const ch = CHORDS[q.chord];
     const flatIv = [3, 6, 10]; // ♭3・♭5・♭7は♭表記
-    drawStaff(ch.iv.map((iv, i) => ({midi: q.root + iv, red: i > 0, flat: flatIv.includes(iv), stack: true})));
-    cap = spellNote(q.root, false).name + ' ' + ch.label + '（' + ch.sub + '）';
+    drawStaff(ch.iv.map((iv, i) => ({midi: q.root + iv, red: i > 0, flat: flatIv.includes(iv), stack: true})),
+              'ROOT', rootName);
+    cap = rootName + ' ' + ch.label + '（' + ch.sub + '）';
   }else{
     const flat = DEG[q.cls].d.indexOf('♭') >= 0;
     const ans = q.root + degOffset(q.cls, q.down);
-    drawStaff([{midi: q.root, red: false, flat: false}, {midi: ans, red: true, flat}]);
-    cap = spellNote(q.root, false).name + '（ルート）→ ' + spellNote(ans, flat).name +
+    drawStaff([{midi: q.root, red: false, flat: false}, {midi: ans, red: true, flat}], 'KEY', rootName);
+    cap = rootName + '（ルート）→ ' + spellNote(ans, flat).name +
           '（' + degLabel(q.cls) + (q.down ? '・下行' : '') + '）';
   }
   $('staffCap').textContent = cap;
@@ -893,17 +1192,22 @@ function showStaff(q){
 function renderHeroStats(){
   const el = $('heroStats');
   el.textContent = '';
-  const mk = t => { const s = document.createElement('span'); s.textContent = t; el.appendChild(s); };
+  const mk = (name, t) => {
+    const s = document.createElement('span');
+    if(name) s.appendChild(ico(name));
+    const b = document.createElement('span'); b.textContent = t;
+    s.appendChild(b); el.appendChild(s);
+  };
   let cleared = 0, perfect = 0;
   for(const st of STAGES){
     const b = progress.best[st.id];
     if(b !== undefined && b >= CLEAR) cleared++;
     if(b === QN) perfect++;
   }
-  mk('🏆 クリア ' + cleared + ' / ' + STAGES.length);
-  if(perfect) mk('💮 パーフェクト ' + perfect);
-  if(progress.streak.n > 0) mk('🔥 連続 ' + progress.streak.n + '日');
-  if(!Object.keys(progress.best).length) mk('まずは入門①から！');
+  mk('trophy', 'クリア ' + cleared + ' / ' + STAGES.length);
+  if(perfect) mk('bloom', 'パーフェクト ' + perfect);
+  if(progress.streak.n > 0) mk('flame', '連続 ' + progress.streak.n + '日');
+  if(!Object.keys(progress.best).length) mk(null, 'まずは入門①から');
   renderHeroCta();
 }
 
@@ -918,7 +1222,7 @@ function renderHeroCta(){
   if(last && isUnlocked(last) && (progress.best[last.id] || 0) < CLEAR) target = last;
   if(!target){ btn.hidden = true; return; } // 全ステージクリア済み
   const started = Object.keys(progress.best).length > 0;
-  btn.textContent = (started ? '▶ つづきから：' : '▶ はじめる：') + target.lv + ' ' + target.name;
+  setIconText(btn, 'play', (started ? 'つづきから：' : 'はじめる：') + target.lv + ' ' + target.name);
   btn.onclick = () => enterStage(target);
   btn.hidden = false;
 }
@@ -938,7 +1242,10 @@ function renderStageList(){
       const gcl = gsts.filter(s => (progress.best[s.id] || 0) >= CLEAR).length;
       const cnt = document.createElement('span');
       cnt.className = 'grpCnt';
-      cnt.textContent = '⭐ ' + gcl + '/' + gsts.length;
+      cnt.appendChild(ico('star'));
+      const cntN = document.createElement('span');
+      cntN.textContent = gcl + '/' + gsts.length;
+      cnt.appendChild(cntN);
       h.appendChild(cnt);
       stageListEl.appendChild(h);
       lastGrp = st.grp;
@@ -970,12 +1277,13 @@ function renderStageList(){
       row.classList.add('locked');
       row.disabled = true;
       ds.textContent = '前のステージをクリア（' + CLEAR + '/' + QN + '）で解放';
-      bd.textContent = '🔒';
+      bd.appendChild(ico('lock'));
     }else if(best !== undefined){
-      const star = best === QN ? ' 💮' : (best >= CLEAR ? ' ⭐' : '');
-      bd.textContent = 'ベスト ' + best + '/' + QN + star;
-      if(best === QN) bd.classList.add('perfect');
-      else if(best >= CLEAR) bd.classList.add('star');
+      const bn = document.createElement('span');
+      bn.textContent = 'ベスト ' + best + '/' + QN;
+      bd.appendChild(bn);
+      if(best === QN){ bd.classList.add('perfect'); bd.appendChild(ico('bloom')); }
+      else if(best >= CLEAR){ bd.classList.add('star'); bd.appendChild(ico('star')); }
     }else{
       bd.textContent = '未挑戦';
     }
@@ -998,13 +1306,16 @@ function showSelect(){
 
 // ── マイレポート（累計成績の見える化） ──────────
 
-function rateColor(r){ return r >= 0.8 ? 'var(--ok)' : (r >= 0.5 ? '#f39c12' : 'var(--ng)'); }
+function rateColor(r){ return r >= 0.8 ? 'var(--ok)' : (r >= 0.5 ? 'var(--t2)' : 'var(--ng)'); }
 
-function repCard(body, ttl){
+function repCard(body, iconName, ttl){
   const c = document.createElement('div');
   c.className = 'repCard';
   const t = document.createElement('div');
-  t.className = 'repTtl'; t.textContent = ttl;
+  t.className = 'repTtl';
+  if(iconName) t.appendChild(ico(iconName));
+  const ts = document.createElement('span'); ts.textContent = ttl;
+  t.appendChild(ts);
   c.appendChild(t);
   body.appendChild(c);
   return c;
@@ -1045,14 +1356,19 @@ function renderReport(){
     if(b !== undefined && b >= CLEAR) cleared++;
     if(b === QN) perfect++;
   }
-  const c1 = repCard(body, '🧭 全体のようす');
+  const c1 = repCard(body, 'chart', '全体のようす');
   const sum = document.createElement('div'); sum.className = 'repSum';
-  const mk = t => { const s = document.createElement('span'); s.textContent = t; sum.appendChild(s); };
-  mk('答えた数 ' + tot + '問');
-  if(tot) mk('正解率 ' + Math.round(okc / tot * 100) + '%');
-  mk('🏆 クリア ' + cleared + '/' + STAGES.length);
-  if(perfect) mk('💮 パーフェクト ' + perfect);
-  if(progress.streak.n > 0) mk('🔥 連続 ' + progress.streak.n + '日');
+  const mk = (name, t) => {
+    const s = document.createElement('span');
+    if(name) s.appendChild(ico(name));
+    const b = document.createElement('span'); b.textContent = t;
+    s.appendChild(b); sum.appendChild(s);
+  };
+  mk(null, '答えた数 ' + tot + '問');
+  if(tot) mk(null, '正解率 ' + Math.round(okc / tot * 100) + '%');
+  mk('trophy', 'クリア ' + cleared + '/' + STAGES.length);
+  if(perfect) mk('bloom', 'パーフェクト ' + perfect);
+  if(progress.streak.n > 0) mk('flame', '連続 ' + progress.streak.n + '日');
   c1.appendChild(sum);
   if(!tot){
     const e = document.createElement('div');
@@ -1062,7 +1378,7 @@ function renderReport(){
   }
 
   // 度数別の正解率（答えた音だけ表示）
-  const c2 = repCard(body, '🎵 音（度数）ごとの正解率');
+  const c2 = repCard(body, 'note', '音（度数）ごとの正解率');
   let any = false;
   for(let d = 0; d < 12; d++){
     const s = progress.stats['d' + d];
@@ -1073,7 +1389,7 @@ function renderReport(){
   if(!any) repEmpty(c2);
 
   // コード別の正解率
-  const c3 = repCard(body, '🎶 コードごとの正解率');
+  const c3 = repCard(body, 'note', 'コードごとの正解率');
   any = false;
   for(const k in CHORDS){
     const s = progress.stats[k];
@@ -1084,20 +1400,20 @@ function renderReport(){
   if(!any) repEmpty(c3);
 
   // ステージ別ベスト
-  const c4 = repCard(body, '🚩 ステージごとのベスト');
+  const c4 = repCard(body, 'trophy', 'ステージごとのベスト');
   for(const st of STAGES){
     const r = document.createElement('div'); r.className = 'repStage';
     const l = document.createElement('span'); l.textContent = st.lv + ' ' + st.name;
     const v = document.createElement('span'); v.className = 'repVal';
     const b = progress.best[st.id];
-    if(b === undefined) v.textContent = isUnlocked(st) ? '未挑戦' : '🔒';
-    else v.textContent = 'ベスト ' + b + '/' + QN + (b === QN ? ' 💮' : (b >= CLEAR ? ' ⭐' : ''));
+    if(b === undefined) v.textContent = isUnlocked(st) ? '未挑戦' : 'ロック中';
+    else v.textContent = 'ベスト ' + b + '/' + QN + (b === QN ? '（パーフェクト）' : (b >= CLEAR ? '（クリア）' : ''));
     r.appendChild(l); r.appendChild(v);
     c4.appendChild(r);
   }
   const note = document.createElement('div');
   note.className = 'repNote';
-  note.textContent = 'バーの色：緑＝80%以上（得意）／オレンジ＝50%以上／赤＝これから伸びるところ。苦手な音を集中して聴き直すのが上達の近道です。';
+  note.textContent = 'バーの色：緑＝80%以上（得意）／グレー＝50%以上／赤＝これから伸びるところ。苦手な音を集中して聴き直すのが上達の近道です。';
   body.appendChild(note);
 }
 
@@ -1130,14 +1446,16 @@ function resetRoundUI(){
   phase = 'idle';
   qi = 0; score = 0; answersLog = []; lastAnsVal = null; curQ = null;
   qNumEl.textContent = '全' + QN + '問';
-  listenBtn.textContent = '▶ スタート';
+  setIconText(listenBtn, 'play', 'スタート');
+  listenBtn.classList.remove('busy');
+  setPlaying(false);
   listenBtn.hidden = false;
   rootBtn.hidden = true;
   nextBtn.hidden = true;
   resultEl.hidden = true;
   answersEl.hidden = false;
   setFeedback('', '');
-  setPlayLabel('ボタンで音を試聴できます／▶ スタートで出題開始', false);
+  setPlayLabel('回答ボタンを押すと、その音を試聴できます。スタートで出題開始', false);
   renderDots();
   renderAnswers();
 }
@@ -1185,14 +1503,21 @@ function renderAnswers(){
   }
 }
 
-function setFeedback(text, cls){
-  feedbackEl.textContent = text || ' ';
+function setFeedback(text, cls, iconName){
+  feedbackEl.textContent = '';
   feedbackEl.className = '';
+  if(iconName) feedbackEl.appendChild(ico(iconName, 'b'));
+  if(text){
+    const s = document.createElement('span');
+    s.textContent = text;
+    feedbackEl.appendChild(s);
+  }
+  if(!text && !iconName) feedbackEl.textContent = '\u00a0';
   if(cls){ void feedbackEl.offsetWidth; feedbackEl.className = cls; } // reflowでアニメを毎回リスタート
 }
 
 function setPlayLabel(text, hot){
-  playLabelEl.textContent = text || ' ';
+  playLabelEl.textContent = text || '\u00a0';
   playLabelEl.className = hot ? 'hot' : '';
 }
 
@@ -1268,20 +1593,21 @@ function playStimulus(){
   ensureAudio();
   stopAll();
   clearAnswerHl();
+  setPlaying(true);
   const t0 = audioCtx.currentTime + 0.08;
   if(curQ.type === 'chord'){
     playChordPhrase(curQ.root, curQ.chord, t0);
-    setPlayLabel('♪ この響きは？', true);
+    setPlayLabel('この響きは？', true);
   }else if(curStage.rootEvery === false){
     playNote(curQ.root + degOffset(curQ.cls, curQ.down), t0, 0.95, 1.6);
-    setPlayLabel('♪ この音は？（キーは冒頭のルート）', true);
+    setPlayLabel('この音は？（キーは冒頭のルート）', true);
   }else{
     playDegPhrase(curQ.root, degOffset(curQ.cls, curQ.down), t0);
     if(progress.playMode === 'harmonic'){
-      setPlayLabel('♪ ルートと同時に鳴る音は？', true);
+      setPlayLabel('ルートと同時に鳴っている音は？', true);
     }else{
-      setPlayLabel('♪ ルート…', true);
-      later(() => setPlayLabel('♪ この音は？', true), 1250);
+      setPlayLabel('ルート…', true);
+      later(() => setPlayLabel('この音は？', true), 1250);
     }
   }
 }
@@ -1289,7 +1615,9 @@ function playStimulus(){
 function startRound(){
   ensureAudio();
   resetRoundUIKeepScreen();
-  listenBtn.textContent = '♪ 再生中…'; // カデンツ中に押しても無反応で混乱しないよう表示（出題開始時に戻す）
+  setIconText(listenBtn, 'note', '再生中…'); // カデンツ中に押しても無反応で混乱しないよう表示（出題開始時に戻す）
+  listenBtn.classList.add('busy');
+  setPlaying(true);
   stopAll();
   if(curStage.chords){
     // コードは響きの質を当てる練習でキー文脈に依存しないため、カデンツなしで即出題
@@ -1306,13 +1634,13 @@ function startRound(){
   const t0 = audioCtx.currentTime + 0.08;
   phase = 'listen';
   if(progress.cadence === 'off'){
-    // カデンツOFF（🎼ボタン）：ルート音だけでキーを提示して短く開始
+    // カデンツOFF（ボタン）：ルート音だけでキーを提示して短く開始
     playNote(roundRoot, t0, 1.0, 1.6);
     if(curStage.rootEvery === false){
       rootBtn.hidden = false;
-      setPlayLabel('♪ ルート音（キー）を覚えてください', true);
+      setPlayLabel('ルート音（キー）を覚えてください', true);
     }else{
-      setPlayLabel('♪ キーのルート音 → 出題が始まります', true);
+      setPlayLabel('キーのルート音 → 出題が始まります', true);
     }
     later(nextQuestion, 2000);
     return;
@@ -1321,10 +1649,10 @@ function startRound(){
   if(curStage.rootEvery === false){
     rootBtn.hidden = false;
     playNote(roundRoot, t0 + 3.3, 1.0, 1.6);
-    setPlayLabel('♪ キーの響き → ルート音を覚えてください', true);
+    setPlayLabel('キーの響き → ルート音を覚えてください', true);
     later(nextQuestion, 5100);
   }else{
-    setPlayLabel('♪ キーの響きを聴いてから出題が始まります', true);
+    setPlayLabel('キーの響きを聴いてから出題が始まります', true);
     later(nextQuestion, 3500);
   }
 }
@@ -1345,7 +1673,8 @@ function nextQuestion(){
   stopAll();
   clearAnswerHl();
   hideStaff();
-  listenBtn.textContent = '🔊 もう一度聴く';
+  setIconText(listenBtn, 'volume', 'もう一度聴く');
+  listenBtn.classList.remove('busy');
   qi++;
   if(qi > QN){ showResult(); return; }
   curQ = makeQuestion();
@@ -1370,16 +1699,17 @@ function practicePlay(val){
   ensureAudio();
   stopAll();
   clearAnswerHl();
+  setPlaying(true);
   const t0 = audioCtx.currentTime + 0.05;
   let q;
   if(curStage.chords){
     q = {type:'chord', chord:val, root:48};
     playChordPhrase(48, val, t0);
-    setPlayLabel('👂 ' + CHORDS[val].label + ' を試聴中（基準C）', true);
+    setPlayLabel(CHORDS[val].label + ' を試聴中（基準C）', true);
   }else{
     q = {type:'deg', cls:val, down:false, root:48};
     playDegPhrase(48, degOffset(val, false), t0);
-    setPlayLabel('👂 ' + degLabel(val) + ' を試聴中（基準C）', true);
+    setPlayLabel(degLabel(val) + ' を試聴中（基準C）', true);
   }
   showStaff(q);
 }
@@ -1405,7 +1735,7 @@ function answer(val){
   if(ok){
     phase = 'reveal';
     if(cBtn) cBtn.classList.add('hlOk');
-    setFeedback('✅ 正解！ ' + cLabel, 'ok');
+    setFeedback('正解！ ' + cLabel, 'ok', 'check');
     showStaff();
     later(nextQuestion, 1400); // 五線譜を一瞥できる長さ
   }else{
@@ -1413,7 +1743,7 @@ function answer(val){
     if(cBtn) cBtn.classList.add('hlOk');
     const gBtn = answersEl.querySelector('button[data-val="' + val + '"]');
     if(gBtn) gBtn.classList.add('hlNg');
-    setFeedback('❌ 正解は ' + cLabel + '（あなた: ' + gLabel + '）', 'ng');
+    setFeedback('正解は ' + cLabel + '（あなた: ' + gLabel + '）', 'ng', 'x');
     showStaff();
     // 正解をもう一度聴かせてから手動で次へ
     later(() => { if(phase === 'reveal') replayForReveal(); }, 350);
@@ -1424,6 +1754,7 @@ function answer(val){
 // 不正解時の答え合わせ再生（出題と同じ形で正解を確認→単音は解決フレーズつき）
 function replayForReveal(){
   ensureAudio();
+  setPlaying(true);
   const t0 = audioCtx.currentTime + 0.05;
   if(curQ.type === 'chord'){
     playChordPhrase(curQ.root, curQ.chord, t0);
@@ -1488,14 +1819,16 @@ function showResult(){
     saveProgress();
   }
 
-  const rank = score === QN ? '💮' : (score >= CLEAR ? '⭐' : '🎧');
-  const msg  = score === QN ? 'パーフェクト！' : (score >= CLEAR ? 'クリア！（' + CLEAR + '問以上正解）' : 'あと' + (CLEAR - score) + '問でクリア！繰り返しが耳を作ります');
-  $('resRank').textContent = rank;
+  const msg  = score === QN ? 'パーフェクト！' : (score >= CLEAR ? 'クリア！（' + CLEAR + '問以上正解）' : 'あと' + (CLEAR - score) + '問でクリア。繰り返しが耳を作ります');
+  const rankEl = $('resRank');
+  rankEl.textContent = '';
+  rankEl.className = score === QN ? 'perfect' : (score >= CLEAR ? 'clear' : '');
+  rankEl.appendChild(ico(score === QN ? 'bloom' : (score >= CLEAR ? 'star' : 'headphones')));
   $('resScore').textContent = score;
   $('resMax').textContent = '/ ' + QN;
-  // 達成率リング（クリア以上=緑、それ未満=オレンジ）
-  const ringColor = score >= CLEAR ? 'var(--ok)' : '#f39c12';
-  $('scoreRing').style.background = 'conic-gradient(' + ringColor + ' ' + (score / QN * 100) + '%, #e9ecf1 0)';
+  // 達成率リング（クリア以上=緑、それ未満=アクセント）
+  const ringColor = score >= CLEAR ? 'var(--ok)' : 'var(--acc)';
+  $('scoreRing').style.background = 'conic-gradient(' + ringColor + ' ' + (score / QN * 100) + '%, var(--s3) 0)';
   $('resMsg').textContent = msg;
 
   const log = $('resLog');
@@ -1503,12 +1836,16 @@ function showResult(){
   const misses = answersLog.filter(a => !a.ok);
   if(misses.length){
     const ttl = document.createElement('div');
-    ttl.textContent = '間違えた問題（タップで聴き直し）:';
+    ttl.className = 'logTtl';
+    ttl.textContent = '間違えた問題（タップで聴き直し）';
     log.appendChild(ttl);
     for(const m of misses){
       const line = document.createElement('button');
       line.className = 'ngLineBtn';
-      line.textContent = '▶ 正解 ' + m.correct + ' ← あなた ' + m.given;
+      line.appendChild(ico('play'));
+      const lt = document.createElement('span');
+      lt.textContent = '正解 ' + m.correct + ' ← あなた ' + m.given;
+      line.appendChild(lt);
       line.addEventListener('click', () => {
         ensureAudio();
         stopAll();
@@ -1528,8 +1865,9 @@ function showResult(){
     .slice(0, 3);
   if(weak.length){
     const ttl2 = document.createElement('div');
-    ttl2.textContent = '📊 苦手ランキング（累計）:';
-    ttl2.style.marginTop = '6px';
+    ttl2.className = 'logTtl';
+    ttl2.textContent = '苦手ランキング（累計）';
+    ttl2.style.marginTop = '14px';
     log.appendChild(ttl2);
     for(const e of weak){
       const d = document.createElement('div');
@@ -1545,7 +1883,10 @@ function showResult(){
     saveProgress();
     if(prev !== undefined){
       const up = document.createElement('div');
-      up.textContent = '🎉 ベスト更新！（' + prev + ' → ' + score + '）';
+      up.className = 'logTtl';
+      up.style.color = 'var(--acc)';
+      up.style.marginTop = '14px';
+      up.textContent = 'ベスト更新！（' + prev + ' → ' + score + '）';
       log.appendChild(up);
     }
   }
@@ -1555,7 +1896,7 @@ function showResult(){
   const nxt = chain[chain.findIndex(s => s.id === curStage.id) + 1];
   const nsBtn = $('nextStageBtn');
   if(score >= CLEAR && nxt && isUnlocked(nxt)){
-    nsBtn.textContent = '次のステージへ ▶　' + nxt.lv + ' ' + nxt.name;
+    setIconText(nsBtn, 'play', '次のステージへ：' + nxt.lv + ' ' + nxt.name);
     nsBtn.onclick = () => enterStage(nxt);
     nsBtn.hidden = false;
     $('againBtn').classList.add('secondary');
@@ -1581,7 +1922,7 @@ function startDiag(){
   scrSelect.hidden = true;
   $('scrReport').hidden = true;
   scrQuiz.hidden = false;
-  stageNameEl.textContent = '🎯 レベル診断';
+  stageNameEl.textContent = 'レベル診断';
   $('cadBtn').hidden = true;
   $('diagResult').hidden = true;
   resultEl.hidden = true;
@@ -1602,7 +1943,9 @@ function diagLevelStart(){
   diag.subQ = 0; diag.okCnt = 0;
   lastAnsVal = null;
   renderAnswers();
-  listenBtn.textContent = '♪ 再生中…';
+  setIconText(listenBtn, 'note', '再生中…');
+  listenBtn.classList.add('busy');
+  setPlaying(true);
   rootBtn.hidden = st.rootEvery !== false;
   roundRoot = st.fixedKey ? 48
             : (st.dir === 'both') ? 52 + rnd(9)
@@ -1612,16 +1955,16 @@ function diagLevelStart(){
   const t0 = audioCtx.currentTime + 0.08;
   if(progress.cadence === 'off'){
     playNote(roundRoot, t0, 1.0, 1.6);
-    setPlayLabel('♪ キーのルート音 → 出題が始まります', true);
+    setPlayLabel('キーのルート音 → 出題が始まります', true);
     later(diagQuestion, 2000);
   }else if(st.rootEvery === false){
     playCadence(roundRoot, st.id === 's4', t0);
     playNote(roundRoot, t0 + 3.3, 1.0, 1.6);
-    setPlayLabel('♪ キーの響き → ルート音を覚えてください', true);
+    setPlayLabel('キーの響き → ルート音を覚えてください', true);
     later(diagQuestion, 5100);
   }else{
     playCadence(roundRoot, st.id === 's4', t0);
-    setPlayLabel('♪ キーの響きを聴いてから出題が始まります', true);
+    setPlayLabel('キーの響きを聴いてから出題が始まります', true);
     later(diagQuestion, 3500);
   }
 }
@@ -1630,7 +1973,8 @@ function diagQuestion(){
   stopAll();
   clearAnswerHl();
   hideStaff();
-  listenBtn.textContent = '🔊 もう一度聴く';
+  setIconText(listenBtn, 'volume', 'もう一度聴く');
+  listenBtn.classList.remove('busy');
   diag.n++;
   qNumEl.textContent = '診断 ' + diag.n + '問目';
   curQ = makeQuestion();
@@ -1648,12 +1992,12 @@ function diagAnswer(val){
   const cBtn = answersEl.querySelector('button[data-val="' + correctVal + '"]');
   if(cBtn) cBtn.classList.add('hlOk');
   if(ok){
-    setFeedback('✅ 正解！ ' + degLabel(correctVal), 'ok');
+    setFeedback('正解！ ' + degLabel(correctVal), 'ok', 'check');
     diag.okCnt++;
   }else{
     const gBtn = answersEl.querySelector('button[data-val="' + val + '"]');
     if(gBtn) gBtn.classList.add('hlNg');
-    setFeedback('❌ 正解は ' + degLabel(correctVal), 'ng');
+    setFeedback('正解は ' + degLabel(correctVal), 'ng', 'x');
   }
   showStaff();
   diag.subQ++;
@@ -1700,7 +2044,7 @@ function diagFinish(rec){
   $('diagRecName').textContent = st.lv + ' ' + st.name;
   $('diagRecMsg').textContent =
     rec === 's1' ? 'まずは基本の3音からじっくり始めましょう！' :
-    rec === 's7' ? '単音の全ステージを解放しました！上級までどんどん挑戦してください🔥' :
+    rec === 's7' ? '単音の全ステージを解放しました。上級までどんどん挑戦してください' :
     'ここまでのステージを解放しました。ここから始めるのがおすすめです！';
   $('diagResult').hidden = false;
 }
@@ -1727,7 +2071,7 @@ rootBtn.addEventListener('click', () => {
   ensureAudio();
   stopAll();
   playNote(roundRoot, audioCtx.currentTime + 0.05, 1.0, 1.5);
-  setPlayLabel('♪ キーのルート音', true);
+  setPlayLabel('キーのルート音', true);
 });
 
 nextBtn.addEventListener('click', onNext);
@@ -1773,7 +2117,7 @@ renderUnlockSeg();
 // カデンツON/OFF（永続化・次のラウンドから適用）
 const cadBtn = $('cadBtn');
 function renderCadBtn(){
-  cadBtn.textContent = progress.cadence === 'off' ? '🎼 OFF' : '🎼 ON';
+  $('cadLbl').textContent = progress.cadence === 'off' ? 'OFF' : 'ON';
   cadBtn.classList.toggle('dim', progress.cadence === 'off');
 }
 cadBtn.addEventListener('click', () => {
@@ -1805,7 +2149,7 @@ $('expBtn').addEventListener('click', () => {
   a.click();
   a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-  setBkMsg('✅ 書き出しました（' + name + '）');
+  setBkMsg('書き出しました（' + name + '）');
 });
 
 $('impBtn').addEventListener('click', () => { $('impFile').click(); });
@@ -1840,12 +2184,12 @@ $('impFile').addEventListener('change', e => {
       }
       saveProgress();
       renderStageList();
-      setBkMsg(merged ? '✅ 読み込みました（' + merged + '件のベストを反映）' : '✅ 読み込みました（今の記録の方が良いため変更なし）');
+      setBkMsg(merged ? '読み込みました（' + merged + '件のベストを反映）' : '読み込みました（今の記録の方が良いため変更なし）');
     }catch(err){
-      setBkMsg('❌ 読み込めませんでした。このアプリで書き出したファイルか確認してください');
+      setBkMsg('読み込めませんでした。このアプリで書き出したファイルか確認してください');
     }
   };
-  reader.onerror = () => setBkMsg('❌ ファイルを読み込めませんでした');
+  reader.onerror = () => setBkMsg('ファイルを読み込めませんでした');
   reader.readAsText(file);
 });
 
