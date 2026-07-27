@@ -573,6 +573,45 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
 .repEmpty{font-size:var(--f5); color:var(--t3);}
 .repNote{font-size:var(--f5); color:var(--t3); margin-top:10px; line-height:1.75; padding:0 2px;}
 
+/* 上達の推移（1日ごとの正解率） */
+.chartWrap{overflow-x:auto;}
+.chartWrap svg{display:block; width:100%; height:auto; min-width:260px;}
+.chartCap{font-size:var(--f5); color:var(--t3); margin-top:8px; line-height:1.7;}
+
+/* 取り違えの多いペア */
+.confRow{display:flex; align-items:center; gap:9px; font-size:var(--f5); margin:8px 0;}
+.confLbl{flex:1; min-width:0; color:var(--t2); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.confBarWrap{width:64px; height:8px; background:var(--s2); border-radius:var(--r3); overflow:hidden; flex:none;}
+.confBar{height:100%; background:var(--ng); border-radius:var(--r3);}
+.confN{width:36px; text-align:right; color:var(--t3); font-variant-numeric:tabular-nums; flex:none;}
+
+/* みとり（エラーパターン診断） */
+.dgList{display:flex; flex-direction:column; gap:10px;}
+.dgItem{
+  /* flexにすると<b>が別ボックスになって文が分断されるためblockで組む */
+  display:block; font-size:var(--f5); color:var(--t2); line-height:1.75;
+  background:var(--s2); border:1px solid var(--line); border-left:2px solid var(--acc);
+  border-radius:var(--r1); padding:10px 12px;
+}
+.dgItem b{color:var(--t1);}
+
+/* 音のキャラクター */
+.chRow{display:flex; gap:10px; font-size:var(--f5); margin:9px 0; line-height:1.7;}
+.chDeg{
+  width:64px; flex:none; font-weight:700; color:var(--t1);
+  font-variant-numeric:tabular-nums;
+}
+.chTxt{flex:1; color:var(--t3);}
+
+/* 答え合わせのヒント（度数の性格） */
+#hintLine{
+  font-size:var(--f5); color:var(--t2); line-height:1.75; text-align:left;
+  background:var(--s1); border:1px solid var(--line); border-left:2px solid var(--acc);
+  border-radius:var(--r1); padding:10px 12px; margin:0 0 12px;
+  animation:fadeUp .25s ease;
+}
+#hintLine b{color:var(--acc);}
+
 /* ── モーダル ── */
 .modal{
   position:fixed; inset:0; background:rgba(5,5,10,.72); z-index:50;
@@ -769,6 +808,7 @@ footer{
       <div id="staffSvg"></div>
       <div id="staffCap"></div>
     </div>
+    <div id="hintLine" hidden></div>
     <div id="melBar" hidden>
       <div id="melSlots"></div>
       <button id="melUndo"><svg class="ic"><use href="#i-left"/></svg>1つ戻す</button>
@@ -959,6 +999,23 @@ const CHORDS = {
 
 const ALL12 = [0,1,2,3,4,5,6,7,8,9,10,11];
 
+// 度数の「性格」。当てるための手がかりになるので、間違えたときにその音の性格を出す。
+// ※文言は講師（ギタースクールTSG）の言葉に差し替える前提の下書き
+const DEG_HINT = [
+  '帰ってきた音。落ち着いていて、どこにも動きたくならない',
+  '不安で張りつめた音。すぐ下の主音に寄りかかりたがる',
+  '軽く前に進む音。まだ途中、という感じが残る',
+  '切なくて影のある音。マイナーの顔になる',
+  '明るくて広がる音。メジャーの顔になる',
+  '少し重たく、もたれかかる音。すぐ下の3度に落ちたがる',
+  '宙に浮いた不安定な音。ブルースの匂いがする',
+  '芯が強くて安定した音。主音の相棒',
+  '暗く沈む音。すぐ下の5度に下りたがる',
+  '柔らかく浮き立つ音。明るさをひとさじ足す',
+  '力の抜けた音。ドミナント7thの香りがする',
+  '主音に戻りたくてたまらない音。いちばん強く引っぱられる'
+];
+
 // ステージ定義
 //  pool: 出題する度数クラス／dir:'both'で下行あり／rootEvery:falseでルートは最初だけ
 //  chords: コードステージ（出題するコードタイプ）
@@ -1021,6 +1078,7 @@ function validateProgress(j){
   const p = {v:2, best:{}, bestRate:{}, lastStage:null, playMode:'melodic',
              unlockMode:'seq', scaffold:3, sessionLen:'q10', diagUnlock:null,
              noteName:'deg', singFirst:'off',
+             conf:{}, daily:{}, dir:{up:[0,0], down:[0,0]},
              recentMiss:[], streak:{last:null, n:0}, stats:{}};
   const statKeyOk = k => typeof k === 'string' && (/^d(\d|1[01])$/.test(k) || !!CHORDS[k]);
   if(j && typeof j === 'object'){
@@ -1049,6 +1107,35 @@ function validateProgress(j){
       }
     }
     // 旧形式（10問中のスコア）→ 正答率へ引き継ぎ
+    // 取り違えの記録（「正解キー>答えたキー」→ 回数）
+    if(j.conf && typeof j.conf === 'object'){
+      for(const k in j.conf){
+        const parts = k.split('>');
+        const v = j.conf[k];
+        if(parts.length === 2 && statKeyOk(parts[0]) && statKeyOk(parts[1]) &&
+           Number.isInteger(v) && v > 0) p.conf[k] = v;
+      }
+    }
+    // 1日ごとの成績（上達の推移用）。古いものは捨てる
+    if(j.daily && typeof j.daily === 'object'){
+      for(const k in j.daily){
+        const v = j.daily[k];
+        if(/^\d{4}-\d{2}-\d{2}$/.test(k) && Array.isArray(v) && v.length === 2 &&
+           Number.isInteger(v[0]) && Number.isInteger(v[1]) && v[0] >= 0 && v[1] >= v[0]){
+          p.daily[k] = [v[0], v[1]];
+        }
+      }
+      const dks = Object.keys(p.daily).sort();
+      while(dks.length > 90) delete p.daily[dks.shift()];
+    }
+    // 上行／下行の成績
+    if(j.dir && typeof j.dir === 'object'){
+      for(const side of ['up','down']){
+        const v = j.dir[side];
+        if(Array.isArray(v) && v.length === 2 && Number.isInteger(v[0]) && Number.isInteger(v[1]) &&
+           v[0] >= 0 && v[1] >= v[0]) p.dir[side] = [v[0], v[1]];
+      }
+    }
     if(j.best && typeof j.best === 'object'){
       for(const k in j.best){
         const v = j.best[k];
@@ -1456,6 +1543,20 @@ function drawStaff(notes, tag, keyName){
 }
 
 // 答え合わせ前の状態。五線だけを薄く出しておき、音符が載ってもレイアウトが跳ねないようにする
+// 間違えた音の性格を出す（次に当てるための手がかり）
+function showHint(cls){
+  const el = $('hintLine');
+  if(cls === null || cls === undefined){ el.hidden = true; return; }
+  el.textContent = '';
+  const b = document.createElement('b');
+  b.textContent = degLabel(cls);
+  el.appendChild(b);
+  el.appendChild(document.createTextNode('は' + DEG_HINT[cls]));
+  el.hidden = false;
+}
+
+function hideHint(){ $('hintLine').hidden = true; }
+
 function hideStaff(){
   $('staffWrap').classList.add('empty');
   putStaff(staffLines());
@@ -1648,6 +1749,155 @@ function repEmpty(parent){
   parent.appendChild(e);
 }
 
+// ── 上達の推移（直近14日の1日ごとの正解率） ──────
+// 単一系列なので色は1色（アクセント）に固定し、クリア基準の80%だけ基準線として引く。
+// 値はバーごとのツールチップ（SVGのtitle）と要約文でも読めるようにしている
+function renderTrend(parent){
+  const DAYS = 14;
+  const days = [];
+  const base = new Date();
+  for(let i = DAYS - 1; i >= 0; i--){
+    const d = new Date(base.getTime() - i * 86400000);
+    const pad = x => String(x).padStart(2, '0');
+    const key = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+    const v = progress.daily[key];
+    days.push({key, md: (d.getMonth() + 1) + '/' + d.getDate(), ok: v ? v[0] : 0, tot: v ? v[1] : 0});
+  }
+  const withData = days.filter(d => d.tot > 0);
+  if(!withData.length){
+    repEmpty(parent);
+    const e = document.createElement('div');
+    e.className = 'chartCap';
+    e.textContent = '練習した日ごとの正解率がここに並びます。日をまたいで続けると、伸びが見えるようになります。';
+    parent.appendChild(e);
+    return;
+  }
+  const W = 300, H = 104, padL = 26, padR = 6, base0 = 78, top0 = 12;
+  const span = base0 - top0;
+  const slot = (W - padL - padR) / DAYS;
+  const bw = Math.max(6, slot - 3);
+  const y = r => base0 - r * span;
+  let el = '';
+  // 目盛り（0/80/100%）。基準線だけ意味を持たせる
+  el += '<line x1="' + padL + '" y1="' + base0 + '" x2="' + (W - padR) + '" y2="' + base0 +
+        '" stroke="rgba(255,255,255,.16)" stroke-width="1"/>';
+  el += '<line x1="' + padL + '" y1="' + y(0.8) + '" x2="' + (W - padR) + '" y2="' + y(0.8) +
+        '" stroke="#3ddc97" stroke-width="1" stroke-dasharray="3 3" opacity=".55"/>';
+  el += '<text x="' + (padL - 4) + '" y="' + (y(0.8) + 3) + '" font-size="8" fill="#3ddc97" opacity=".8"' +
+        ' text-anchor="end" font-family="system-ui,sans-serif">80</text>';
+  el += '<text x="' + (padL - 4) + '" y="' + (top0 + 3) + '" font-size="8" fill="#70758b"' +
+        ' text-anchor="end" font-family="system-ui,sans-serif">100</text>';
+  el += '<text x="' + (padL - 4) + '" y="' + (base0 + 3) + '" font-size="8" fill="#70758b"' +
+        ' text-anchor="end" font-family="system-ui,sans-serif">0</text>';
+  days.forEach((d, i) => {
+    const x = padL + i * slot + (slot - bw) / 2;
+    if(!d.tot){
+      // 練習していない日はベースラインに薄い印だけ残す
+      el += '<rect x="' + x + '" y="' + (base0 - 1.5) + '" width="' + bw + '" height="1.5" rx=".75"' +
+            ' fill="rgba(255,255,255,.1)"/>';
+      return;
+    }
+    const rate = d.ok / d.tot;
+    const yy = y(rate);
+    const h = Math.max(2.5, base0 - yy);
+    const r = Math.min(2, h / 2, bw / 2);
+    // 上端だけ角丸・下端はベースラインに接地
+    el += '<path d="M' + x + ' ' + base0 + ' V' + (yy + r) + ' Q' + x + ' ' + yy + ' ' + (x + r) + ' ' + yy +
+          ' H' + (x + bw - r) + ' Q' + (x + bw) + ' ' + yy + ' ' + (x + bw) + ' ' + (yy + r) +
+          ' V' + base0 + ' Z" fill="#ef5340">' +
+          '<title>' + d.md + '　正解率' + Math.round(rate * 100) + '%（' + d.ok + '/' + d.tot + '問）</title></path>';
+  });
+  // 端の日付だけラベルを出す（全部出すと読めなくなる）
+  el += '<text x="' + padL + '" y="' + (H - 2) + '" font-size="8" fill="#70758b"' +
+        ' font-family="system-ui,sans-serif">' + days[0].md + '</text>';
+  el += '<text x="' + (W - padR) + '" y="' + (H - 2) + '" font-size="8" fill="#70758b"' +
+        ' text-anchor="end" font-family="system-ui,sans-serif">' + days[DAYS - 1].md + '</text>';
+  const wrap = document.createElement('div');
+  wrap.className = 'chartWrap';
+  wrap.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" xmlns="http://www.w3.org/2000/svg" ' +
+                   'aria-label="直近14日の1日ごとの正解率">' + el + '</svg>';
+  parent.appendChild(wrap);
+  const last7 = withData.slice(-7);
+  const l7ok = last7.reduce((a, d) => a + d.ok, 0);
+  const l7tot = last7.reduce((a, d) => a + d.tot, 0);
+  const first = withData[0], lastD = withData[withData.length - 1];
+  const cap = document.createElement('div');
+  cap.className = 'chartCap';
+  let t = '練習した日：' + withData.length + '日／直近の平均 ' + Math.round(l7ok / l7tot * 100) + '%';
+  if(withData.length >= 2){
+    const d1 = Math.round(first.ok / first.tot * 100);
+    const d2 = Math.round(lastD.ok / lastD.tot * 100);
+    t += '（' + first.md + ' ' + d1 + '% → ' + lastD.md + ' ' + d2 + '%）';
+  }
+  cap.textContent = t;
+  parent.appendChild(cap);
+}
+
+// ── みとり（エラーパターンの診断） ────────────────
+// 個人差に応じた指導のために、まず誤りのパターンで学習者を分類するという提言に沿った機能
+function buildDiagnosis(){
+  const out = [];
+  // 1) 取り違えの多いペア
+  const pairs = Object.keys(progress.conf)
+    .map(k => ({k, n: progress.conf[k], a: k.split('>')[0], b: k.split('>')[1]}))
+    .filter(e => e.n >= 2)
+    .sort((x, z) => z.n - x.n);
+  if(pairs.length){
+    const p = pairs[0];
+    out.push('<b>' + keyLabel(p.a) + '</b> を <b>' + keyLabel(p.b) + '</b> と取り違えることが多いです（' +
+             p.n + '回）。この2つを続けて聴き比べると、境目がはっきりしてきます。');
+  }
+  // 2) 上行と下行の差
+  const up = progress.dir.up, dn = progress.dir.down;
+  if(dn[1] >= 8 && up[1] >= 8){
+    const ur = up[0] / up[1], dr = dn[0] / dn[1];
+    if(ur - dr >= 0.15){
+      out.push('<b>下行が弱め</b>です（上行 ' + Math.round(ur * 100) + '% / 下行 ' + Math.round(dr * 100) +
+               '%）。中級②「下行ミックス」を少し多めにやると差が埋まります。');
+    }else if(dr - ur >= 0.15){
+      out.push('めずらしく<b>下行のほうが得意</b>です（上行 ' + Math.round(ur * 100) + '% / 下行 ' +
+               Math.round(dr * 100) + '%）。上行の練習を足すとバランスが取れます。');
+    }
+  }
+  // 3) 全音階の音と、半音（♭2・♭5・♭6など）の差
+  const grp = list => {
+    let ok = 0, tot = 0;
+    for(const d of list){ const s = progress.stats['d' + d]; if(s){ ok += s[0]; tot += s[1]; } }
+    return {ok, tot};
+  };
+  const dia = grp([0,2,4,5,7,9,11]), chr = grp([1,3,6,8,10]);
+  if(chr.tot >= 8 && dia.tot >= 8){
+    const cr = chr.ok / chr.tot, dr2 = dia.ok / dia.tot;
+    if(dr2 - cr >= 0.15){
+      out.push('スケールの中の音（' + Math.round(dr2 * 100) + '%）に比べて、<b>半音の音が弱め</b>（' +
+               Math.round(cr * 100) + '%）です。♭2・♭5・♭6あたりを集中して聴き直すのが効きます。');
+    }
+  }
+  // 4) いま一番の苦手
+  const weak = Object.keys(progress.stats)
+    .map(k => ({k, ok: progress.stats[k][0], tot: progress.stats[k][1]}))
+    .filter(e => e.tot >= 5)
+    .sort((x, z) => (x.ok / x.tot) - (z.ok / z.tot));
+  if(weak.length && weak[0].ok / weak[0].tot < 0.7){
+    const w = weak[0];
+    const i = CHORDS[w.k] ? -1 : +w.k.slice(1);
+    let s = 'いま一番の苦手は <b>' + keyLabel(w.k) + '</b>（正解率 ' +
+            Math.round(w.ok / w.tot * 100) + '%）。';
+    if(i >= 0) s += DEG_HINT[i] + '——という手がかりを持っておくと拾いやすくなります。';
+    out.push(s);
+  }
+  // 5) 足場に頼りすぎていないか
+  if(progress.scaffold >= 3){
+    let clearedMono = 0;
+    for(const st of STAGES){ if(st.gk === 'mono' && bestOf(st.id) >= CLEAR_RATE) clearedMono++; }
+    if(clearedMono >= 2){
+      out.push('支えが「' + SCAFFOLD[progress.scaffold].n +
+               '」のままです。<b>1段外す</b>と、実際の曲に近い聴き方に一歩近づきます。');
+    }
+  }
+  return out;
+}
+
 function renderReport(){
   const body = $('repBody');
   body.textContent = '';
@@ -1682,6 +1932,60 @@ function renderReport(){
     c1.appendChild(e);
   }
 
+  // 上達の推移
+  const ct = repCard(body, 'chart', '上達の推移（1日ごとの正解率）');
+  renderTrend(ct);
+
+  // みとり（エラーパターンの診断）
+  const cd = repCard(body, 'target', 'みとり');
+  const dg = buildDiagnosis();
+  if(dg.length){
+    const list = document.createElement('div');
+    list.className = 'dgList';
+    for(const t of dg){
+      const it = document.createElement('div');
+      it.className = 'dgItem';
+      it.innerHTML = t; // 生成元は固定文＋数値・ラベルのみ（ユーザー入力は入らない）
+      list.appendChild(it);
+    }
+    cd.appendChild(list);
+  }else{
+    repEmpty(cd);
+    const e = document.createElement('div');
+    e.className = 'chartCap';
+    e.textContent = 'もう少し練習すると、間違え方のクセ（取り違えやすいペア・上行と下行の差など）を見つけて出します。';
+    cd.appendChild(e);
+  }
+
+  // 取り違えの多いペア
+  const cc = repCard(body, 'x', '取り違えの多いペア');
+  const cpairs = Object.keys(progress.conf)
+    .map(k => ({k, n: progress.conf[k], a: k.split('>')[0], b: k.split('>')[1]}))
+    .sort((x, z) => z.n - x.n)
+    .slice(0, 6);
+  if(cpairs.length){
+    const mx = cpairs[0].n;
+    for(const p of cpairs){
+      const row = document.createElement('div'); row.className = 'confRow';
+      const l = document.createElement('div'); l.className = 'confLbl';
+      l.textContent = keyLabel(p.a) + ' → ' + keyLabel(p.b);
+      const bw = document.createElement('div'); bw.className = 'confBarWrap';
+      const b = document.createElement('div'); b.className = 'confBar';
+      b.style.width = Math.round(p.n / mx * 100) + '%';
+      bw.appendChild(b);
+      const cn = document.createElement('div'); cn.className = 'confN';
+      cn.textContent = p.n + '回';
+      row.appendChild(l); row.appendChild(bw); row.appendChild(cn);
+      cc.appendChild(row);
+    }
+    const note2 = document.createElement('div');
+    note2.className = 'chartCap';
+    note2.textContent = '「正解 → 答えてしまった音」の順です。このペアを続けて鳴らして聴き比べるのが、いちばん早い直し方です。';
+    cc.appendChild(note2);
+  }else{
+    repEmpty(cc);
+  }
+
   // 度数別の正解率（答えた音だけ表示）
   const c2 = repCard(body, 'note', '音（度数）ごとの正解率');
   let any = false;
@@ -1703,6 +2007,16 @@ function renderReport(){
     repRow(c3, CHORDS[k].label, s[0], s[1]);
   }
   if(!any) repEmpty(c3);
+
+  // 音のキャラクター（当てるための手がかり）
+  const c5 = repCard(body, 'book', '音のキャラクター');
+  for(let d = 0; d < 12; d++){
+    const row = document.createElement('div'); row.className = 'chRow';
+    const dl = document.createElement('div'); dl.className = 'chDeg'; dl.textContent = degLabel(d);
+    const tx = document.createElement('div'); tx.className = 'chTxt'; tx.textContent = DEG_HINT[d];
+    row.appendChild(dl); row.appendChild(tx);
+    c5.appendChild(row);
+  }
 
   // ステージ別ベスト
   const c4 = repCard(body, 'trophy', 'ステージごとのベスト');
@@ -1757,6 +2071,7 @@ function resetRoundUI(){
   $('diagResult').hidden = true;
   phase = 'idle';
   qi = 0; score = 0; answersLog = []; lastAnsVal = null; curQ = null;
+  hideHint();
   melInput = [];
   $('melBar').hidden = true;
   $('singBtn').hidden = true;
@@ -1913,6 +2228,39 @@ function clearAnswerHl(){
 // ── 出題ロジック ──────────────────────────────
 
 // 苦手優先の重み付き抽選。正答率が低い音・直近で間違えた音を優先的に出す
+function todayStr(){
+  const d = new Date();
+  const pad = x => String(x).padStart(2, '0');
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+}
+
+// 1問ごとの記録：日ごとの成績・取り違えのペア・上行下行
+function recordAnswer(ok, ckey, gkey, down){
+  const day = todayStr();
+  const e = progress.daily[day] || [0, 0];
+  e[1]++; if(ok) e[0]++;
+  progress.daily[day] = e;
+  const dks = Object.keys(progress.daily).sort();
+  while(dks.length > 90) delete progress.daily[dks.shift()];
+  if(!ok && ckey && gkey && ckey !== gkey){
+    const k = ckey + '>' + gkey;
+    progress.conf[k] = (progress.conf[k] || 0) + 1;
+  }
+  if(down !== undefined){
+    const side = down ? 'down' : 'up';
+    const d = progress.dir[side] || [0, 0];
+    d[1]++; if(ok) d[0]++;
+    progress.dir[side] = d;
+  }
+}
+
+// 統計キー（d0〜d11／コード名）→ 表示ラベル
+function keyLabel(k){
+  if(CHORDS[k]) return CHORDS[k].label;
+  const i = +k.slice(1);
+  return Number.isInteger(i) ? degLabel(i) : k;
+}
+
 function statRate(key){
   const s = progress.stats[key];
   if(!s || s[1] < 3) return null;   // サンプル不足は「未知」として扱う
@@ -2149,6 +2497,7 @@ function nextQuestion(){
   stopAll();
   clearAnswerHl();
   hideStaff();
+  hideHint();
   setIconText(listenBtn, 'volume', 'もう一度聴く');
   listenBtn.classList.remove('busy');
   // 終了判定（エンドレスは「終える」ボタンでのみ終わる）
@@ -2235,6 +2584,7 @@ function melJudge(){
       if(progress.recentMiss.length > 12) progress.recentMiss.shift();
     }
     progress.stats[k] = e;
+    recordAnswer(melInput[i] === c, k, 'd' + melInput[i], false);
   });
   saveProgress();
   if(ok) score++;
@@ -2249,6 +2599,9 @@ function melJudge(){
     later(nextQuestion, 1700);
   }else{
     setFeedback('正解は ' + cLabel, 'ng', 'x');
+    // 最初に外した音の性格を手がかりとして出す
+    const badIdx = correct.findIndex((c, i) => melInput[i] !== c);
+    if(badIdx >= 0) showHint(correct[badIdx]);
     later(() => { if(phase === 'reveal') replayForReveal(); }, 350);
     nextBtn.hidden = false;
   }
@@ -2307,6 +2660,7 @@ function answer(val){
     progress.recentMiss.push(statKey);
     if(progress.recentMiss.length > 12) progress.recentMiss.shift();
   }
+  recordAnswer(ok, statKey, givenKey, curQ.type === 'deg' ? !!curQ.down : undefined);
   saveProgress();
   if(ok) score++;
   // ブロック練習で正確さが出てきたらミックスへ自動移行
@@ -2334,6 +2688,7 @@ function answer(val){
     if(gBtn) gBtn.classList.add('hlNg');
     setFeedback('正解は ' + cLabel + '（あなた: ' + gLabel + '）', 'ng', 'x');
     showStaff();
+    if(curQ.type === 'deg') showHint(correctVal);
     // 正解をもう一度聴かせてから手動で次へ
     later(() => { if(phase === 'reveal') replayForReveal(); }, 350);
     nextBtn.hidden = false;
@@ -2396,6 +2751,7 @@ function showResult(){
   stopTick();
   stopDrone(0.6);
   hideStaff();
+  hideHint();
   phase = 'result';
   $('modeChip').textContent = '';
   $('endBtn').hidden = true;
@@ -2682,6 +3038,7 @@ function diagQuestion(){
   stopAll();
   clearAnswerHl();
   hideStaff();
+  hideHint();
   setIconText(listenBtn, 'volume', 'もう一度聴く');
   listenBtn.classList.remove('busy');
   diag.n++;
@@ -2976,6 +3333,17 @@ $('impFile').addEventListener('change', e => {
         if(!cur || imp.stats[k][1] > cur[1]) progress.stats[k] = imp.stats[k];
       }
       if(imp.streak.n > progress.streak.n) progress.streak = imp.streak;
+      // 取り違え・日ごと・上行下行も回数の多い方を採用（二重読込で加算されない）
+      for(const k in imp.conf){
+        if(!progress.conf[k] || imp.conf[k] > progress.conf[k]) progress.conf[k] = imp.conf[k];
+      }
+      for(const k in imp.daily){
+        const cur = progress.daily[k];
+        if(!cur || imp.daily[k][1] > cur[1]) progress.daily[k] = imp.daily[k];
+      }
+      for(const side of ['up','down']){
+        if(imp.dir[side][1] > progress.dir[side][1]) progress.dir[side] = imp.dir[side];
+      }
       // レベル診断の解放範囲は先まで進んでいる方を採用
       if(imp.diagUnlock){
         const mono = STAGES.filter(s => s.gk === 'mono');
