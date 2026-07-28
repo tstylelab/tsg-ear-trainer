@@ -417,23 +417,124 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
 /* かけ流し（受動リスニング） */
 .lisCard{
   background:var(--s1); border:1px solid var(--line); border-radius:var(--r2);
-  padding:26px 18px; text-align:center;
+  padding:22px 16px 18px; text-align:center;
 }
 .lisKey{
   font-family:'Oswald',sans-serif; font-size:var(--f5); letter-spacing:.18em; color:var(--t3);
 }
 .lisDeg{
-  font-size:var(--f1); font-weight:700; color:var(--acc); margin:10px 0 6px;
-  min-height:40px; line-height:1.2;
+  font-size:var(--f1); font-weight:700; color:var(--acc); margin:8px 0 5px;
+  min-height:40px; line-height:1.2; word-break:break-word;
 }
-.lisSub{font-size:var(--f5); color:var(--t3); line-height:1.7;}
+.lisSrc{font-size:var(--f5); color:var(--t3); min-height:16px; letter-spacing:.03em;}
+.lisSub{font-size:var(--f5); color:var(--t3); line-height:1.7; margin-top:12px;}
 #lisToggle{
   display:flex; align-items:center; justify-content:center; gap:8px;
-  width:100%; margin-top:20px; padding:15px; font-size:var(--f3); font-weight:700;
+  width:100%; margin-top:16px; padding:15px; font-size:var(--f3); font-weight:700;
   background:var(--acc); color:#fff; border:none; border-radius:var(--r1);
   box-shadow:0 0 30px -12px var(--acc);
 }
 #lisToggle.on{background:var(--s2); color:var(--t1); border:1px solid var(--line2); box-shadow:none;}
+
+/* 状態チップ（ミックス数・画面を消さない・スリープ残り） */
+.lisChips{display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:12px;}
+.lisChips span{
+  display:flex; align-items:center; gap:5px; font-size:var(--f5); color:var(--t3);
+  background:var(--s2); border:1px solid var(--line); border-radius:var(--r3); padding:4px 10px;
+  font-variant-numeric:tabular-nums;
+}
+.lisChips span .ic{width:13px; height:13px;}
+.lisChips span.hot{color:var(--acc); border-color:rgba(239,83,64,.4); background:var(--acct);}
+.lisChips span.warn{color:var(--t2);}
+
+/* 「さっきの音」＝画面を見ずに戻ってきたとき最初に押すボタン。いちばん大きく置く */
+#lisBack1{
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  width:100%; margin-top:10px; padding:16px; font-size:var(--f3); font-weight:700;
+  border-radius:var(--r1); background:var(--s2); color:var(--t1); border:1px solid var(--line2);
+}
+#lisBack1:disabled{opacity:.35;}
+#lisSetBtn{
+  display:flex; align-items:center; justify-content:center; gap:7px;
+  width:100%; margin-top:8px; padding:13px; font-size:var(--f4); font-weight:600;
+  border-radius:var(--r1); background:var(--s1); color:var(--t2); border:1px solid var(--line);
+}
+#lisStaffWrap{
+  background:var(--s1); border:1px solid var(--line); border-radius:var(--r2);
+  padding:8px 10px 6px; margin-top:10px; text-align:center;
+}
+#lisStaffWrap svg{display:block; margin:0 auto; max-width:100%;}
+#lisStaffCap{
+  font-size:var(--f5); color:var(--t3); padding-top:4px; min-height:17px;
+  letter-spacing:.02em;
+}
+
+/* 履歴（新しい順） */
+.lisHTtl{
+  font-size:var(--f5); font-weight:700; color:var(--t2); letter-spacing:.12em;
+  margin:20px 0 8px; display:flex; align-items:center; gap:7px;
+}
+.lisHTtl .ic{color:var(--t3);}
+.lisH{
+  display:flex; align-items:center; gap:9px; width:100%; text-align:left;
+  background:var(--s1); border:1px solid var(--line); border-radius:var(--r1);
+  padding:11px 12px; margin:6px 0;
+}
+.lisH.on{border-color:var(--acc); background:var(--acct);}
+.lisH .hN{
+  font-family:'Oswald',sans-serif; font-size:var(--f5); color:var(--t3);
+  width:38px; flex:none; font-variant-numeric:tabular-nums;
+}
+.lisH .hK{
+  font-family:'Oswald',sans-serif; font-size:var(--f5); color:var(--t2);
+  width:28px; flex:none;
+}
+.lisH .hA{
+  flex:1; min-width:0; font-size:var(--f4); font-weight:700; color:var(--t1);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.lisH .hS{font-size:var(--f5); color:var(--t3); font-weight:400; margin-left:6px;}
+.lisH .ic{color:var(--acc); flex:none;}
+
+/* 内容えらびシート */
+.ckRow{
+  display:flex; align-items:flex-start; gap:11px; width:100%; text-align:left;
+  background:var(--s2); border:1px solid var(--line); border-radius:var(--r1);
+  padding:11px 12px; margin:6px 0;
+}
+.ckRow.on{border-color:var(--acc); background:var(--acct);}
+.ckBox{
+  width:19px; height:19px; flex:none; border-radius:6px; margin-top:1px;
+  border:1.5px solid var(--line2); display:flex; align-items:center; justify-content:center;
+}
+.ckRow.on .ckBox{border-color:var(--acc); background:var(--acc);}
+.ckBox .ic{width:13px; height:13px; color:#fff; opacity:0;}
+.ckRow.on .ckBox .ic{opacity:1;}
+.ckRow .ckN{font-size:var(--f4); font-weight:700; color:var(--t1);}
+.ckRow .ckD{font-size:var(--f5); color:var(--t3); margin-top:3px; line-height:1.6;}
+.ckGrp{
+  font-size:var(--f5); font-weight:700; color:var(--t3); letter-spacing:.12em;
+  margin:15px 0 2px; padding-left:2px;
+}
+.presetRow{display:flex; gap:6px; margin:2px 0 4px;}
+.presetRow button{
+  flex:1; display:flex; align-items:center; justify-content:center; gap:5px;
+  padding:11px 4px; font-size:var(--f5); font-weight:700; border-radius:var(--r1);
+  background:var(--s2); color:var(--t2); border:1px solid var(--line);
+}
+.presetRow button .ic{width:14px; height:14px; color:var(--acc);}
+.sheetSub{
+  font-size:var(--f5); font-weight:700; color:var(--t2); letter-spacing:.1em;
+  margin:16px 0 0;
+}
+.sheet .segRow{display:flex; gap:6px; margin:7px 0 0;}
+.sheet .segRow button{
+  flex:1; padding:10px 3px; font-size:var(--f5); font-weight:600; border-radius:var(--r1);
+  background:var(--s2); color:var(--t2); border:1px solid var(--line);
+}
+.sheet .segRow button.active{
+  background:var(--acct); color:var(--acc); border-color:rgba(239,83,64,.42); font-weight:700;
+}
 
 #answers{display:grid; grid-template-columns:repeat(4,1fr); gap:8px;}
 #answers.chordGrid{grid-template-columns:repeat(2,1fr);}
@@ -805,10 +906,19 @@ footer{
     <div class="lisCard">
       <div class="lisKey" id="lisKey">KEY —</div>
       <div class="lisDeg" id="lisDeg">—</div>
-      <div class="lisSub">キーを作る響き → 課題の音 → 主音に解決するまでを、くり返し流します</div>
+      <div class="lisSrc" id="lisSrc"></div>
       <button id="lisToggle"><svg class="ic"><use href="#i-play"/></svg>はじめる</button>
+      <div class="lisChips" id="lisChips"></div>
     </div>
-    <p class="repNote">答える必要はありません。画面を見なくても、キーの中でそれぞれの音がどう響くかに耳が慣れていきます。移動中や家事のあいだの「ながら練習」に。<br>※構造化された練習に「ただ聴くだけ」の時間を足すと、音程の識別も新しい旋律への応用も伸びるという報告があります。</p>
+    <button id="lisBack1" disabled><svg class="ic"><use href="#i-repeat"/></svg>さっきの音をもう一度</button>
+    <button id="lisSetBtn"><svg class="ic"><use href="#i-sliders"/></svg>流す内容をえらぶ</button>
+    <div id="lisStaffWrap" hidden>
+      <div id="lisStaffSvg"></div>
+      <div id="lisStaffCap"></div>
+    </div>
+    <div class="lisHTtl" id="lisHTtl" hidden><svg class="ic"><use href="#i-book"/></svg>流れた音（タップで聴き直し）</div>
+    <div id="lisHist"></div>
+    <p class="repNote">答える必要はありません。画面を見なくても、キーの中でそれぞれの音がどう響くかに耳が慣れていきます。<b>「あ、いまの分からなかった」</b>と思ったら、あとで<b>さっきの音をもう一度</b>から聴き直せます。<br>※構造化された練習に「ただ聴くだけ」の時間を足すと、音程の識別も新しい旋律への応用も伸びるという報告があります。</p>
   </section>
 
   <!-- クイズ画面 -->
@@ -887,6 +997,38 @@ footer{
   </div>
 </div>
 
+<!-- かけ流しの内容えらび -->
+<div id="lisSheet" class="sheet" hidden>
+  <div class="sheetBack" id="lisShBack"></div>
+  <div class="sheetBox">
+    <div class="sheetTtl"><svg class="ic"><use href="#i-headphones"/></svg>かけ流す内容</div>
+    <div class="presetRow">
+      <button id="lisPreLv"><svg class="ic"><use href="#i-target"/></svg>いまのレベル</button>
+      <button id="lisPreWeak"><svg class="ic"><use href="#i-flame"/></svg>苦手だけ</button>
+      <button id="lisPreAll"><svg class="ic"><use href="#i-star"/></svg>ぜんぶ</button>
+    </div>
+    <div id="lisSrcList"></div>
+    <div class="sheetSub">つぎの音までの間</div>
+    <div class="segRow" id="lisGapSeg">
+      <button data-gap="slow">ゆっくり</button><button data-gap="normal">ふつう</button><button data-gap="fast">はやい</button>
+    </div>
+    <div class="sheetSub">主音への解決をつける</div>
+    <div class="segRow" id="lisResoSeg">
+      <button data-reso="on">つける</button><button data-reso="off">つけない</button>
+    </div>
+    <div class="sheetSub">キーを変える間隔</div>
+    <div class="segRow" id="lisKeySeg">
+      <button data-ke="4">4つごと</button><button data-ke="8">8つごと</button><button data-ke="0">変えない</button>
+    </div>
+    <div class="sheetSub">スリープタイマー</div>
+    <div class="segRow" id="lisSleepSeg">
+      <button data-sl="0">なし</button><button data-sl="10">10分</button><button data-sl="20">20分</button><button data-sl="30">30分</button>
+    </div>
+    <p class="sheetNote">チェックしたものだけが混ざって流れます。いくつ選んでもかまいません（例：<b>下行だけ＋ルート省略＋2音のメロディ</b>）。再生中に変えても、次の音から反映されます。</p>
+    <button class="cls" id="lisShClose">閉じる</button>
+  </div>
+</div>
+
 <!-- ヘルプ -->
 <div id="helpModal" class="modal" hidden>
   <div class="box">
@@ -900,6 +1042,9 @@ footer{
     <p>2〜3音のメロディを聴いて、<b>順番に</b>度数で答えます。単音より一段実戦的で、耳コピに直結する練習です。押し間違えたら「1つ戻す」で戻せます（PCはBackspaceキー）。すべての音を入れた時点でまとめて判定されます。</p>
     <h4><svg class="ic"><use href="#i-headphones"/></svg>かけ流し（聴くだけ）</h4>
     <p>トップの<b>かけ流し</b>は、答えずにただ聴くだけのモードです。キーの響き → 課題の音 → 主音への解決、をくり返し流します。移動中や家事のあいだの「ながら練習」に使ってください。</p>
+    <p><b>流す内容はチェックで選べます。</b>単音・下行だけ・ルート省略・メロディ・コードから、好きなものをいくつでも混ぜられます。「いまのレベル」を押せば、クリア済み＋いま挑戦中のステージだけが選ばれます。</p>
+    <p>流れた音は<b>履歴</b>に残ります。分からない音があっても止める必要はありません。あとで<b>さっきの音をもう一度</b>（または履歴のタップ）で、そのときのキーのまま鳴らし直して、五線譜つきで答えを確認できます。</p>
+    <p>再生中は<b>画面が消えないように</b>します（画面が消えると音も止まるため）。電池を使うので、終わったら「とめる」を押すか、スリープタイマーを設定してください。</p>
     <h4><svg class="ic"><use href="#i-headphones"/></svg>練習の進み方</h4>
     <p>同じ音を続けて出す<b>ブロック練習</b>から始まり、正解が続くと自動で<b>ミックス（インターリーブ）</b>に切り替わります。最初の正確さはブロックで作り、実戦で使える耳はミックスで作る——という研究の知見に沿った進み方です。出題は<b>苦手な音を優先</b>して選ばれ、間違えた音は次のラウンドで必ずもう一度出ます。</p>
     <h4><svg class="ic"><use href="#i-volume"/></svg>音色</h4>
@@ -1070,6 +1215,31 @@ const STAGES = [
   {gk:'chord', id:'c3', grp:'コード（響き当て）', lv:'中級', name:'セブンス',            desc:'maj7 / 7th / m7 / m7♭5', chords:['maj7','dom7','m7','m7b5']}
 ];
 
+// かけ流しのネタ（チェックで選んで混ぜる）。ステージ定義とは別に持つ。
+// 「下行だけ」「苦手な音だけ」のように、かけ流しにしか無いものがあるため
+const LIS_SRC = [
+  {id:'weak', g:'おすすめ',  n:'苦手な音だけ',       d:'まちがえた割合が高い音を集めて流す', weak:true},
+  {id:'s1',   g:'単音',      n:'ド・ミ・ソ',          d:'1・3・5度',                  pool:[0,4,7]},
+  {id:'s2',   g:'単音',      n:'ドレミファソ',        d:'1〜5度',                     pool:[0,2,4,5,7]},
+  {id:'s3',   g:'単音',      n:'メジャースケール',    d:'長音階の7音',                pool:[0,2,4,5,7,9,11]},
+  {id:'s4',   g:'単音',      n:'マイナー系',          d:'♭3・♭6・♭7を含む7音',     pool:[0,2,3,5,7,8,10], minor:true},
+  {id:'s5',   g:'単音',      n:'12度数すべて',        d:'半音もすべて',               pool:ALL12},
+  {id:'dn',   g:'単音',      n:'下行だけ',            d:'ルートより下の音だけを流す',  pool:ALL12, dir:'down'},
+  {id:'s6',   g:'単音',      n:'上行・下行ミックス',  d:'上と下をランダムに',          pool:ALL12, dir:'both'},
+  {id:'s7',   g:'上級',      n:'ルート省略',          d:'ルートを鳴らさず課題音だけ',  pool:ALL12, noRoot:true},
+  {id:'m1',   g:'メロディ',  n:'2音のメロディ',       d:'ドから始まる2音',            pool:[0,2,4,5,7],      mel:2, melStart:'root'},
+  {id:'m2',   g:'メロディ',  n:'3音のメロディ',       d:'長音階の7音から3音',          pool:[0,2,4,5,7,9,11], mel:3},
+  {id:'m3',   g:'メロディ',  n:'3音・全12度数',       d:'半音も含む3音',              pool:ALL12,            mel:3},
+  {id:'c1',   g:'コード',    n:'メジャー / マイナー', d:'明るい ↔ 切ない',            chords:['maj','min']},
+  {id:'c2',   g:'コード',    n:'トライアド',          d:'maj / min / sus4 / dim',     chords:['maj','min','sus4','dim']},
+  {id:'c3',   g:'コード',    n:'セブンス',            d:'maj7 / 7th / m7 / m7♭5',    chords:['maj7','dom7','m7','m7b5']}
+];
+const LIS_GRP = ['おすすめ', '単音', '上級', 'メロディ', 'コード'];
+const LIS_PAUSE = {slow:2.6, normal:1.5, fast:0.7}; // 1つ鳴らし終えてから次までの間（秒）
+const LIS_KEY_EVERY = [4, 8, 0];                    // キーを作り直す間隔（0=変えない）
+const LIS_SLEEP = [0, 10, 20, 30];                  // スリープタイマー（分・0=なし）
+const LIS_HIST_MAX = 20;                            // 履歴の保持件数
+
 // ベストは正答率(%)で保持する。旧データ（10問中のスコア）は読み込み時に×10して引き継ぐ
 function bestOf(id){
   const v = progress.bestRate[id];
@@ -1110,6 +1280,7 @@ function validateProgress(j){
   const p = {v:2, best:{}, bestRate:{}, lastStage:null, playMode:'melodic',
              unlockMode:'seq', scaffold:3, sessionLen:'q10', diagUnlock:null,
              noteName:'deg', singFirst:'off',
+             lis:{pick:['s3'], gap:'normal', reso:true, keyEvery:4, sleep:0},
              conf:{}, daily:{}, dir:{up:[0,0], down:[0,0]},
              recentMiss:[], streak:{last:null, n:0}, stats:{}};
   const statKeyOk = k => typeof k === 'string' && (/^d(\d|1[01])$/.test(k) || !!CHORDS[k]);
@@ -1122,6 +1293,21 @@ function validateProgress(j){
     if(j.singFirst === 'on') p.singFirst = 'on';
     if(typeof j.diagUnlock === 'string' && STAGES.some(s => s.id === j.diagUnlock && s.gk === 'mono')) p.diagUnlock = j.diagUnlock;
     if(j.playMode === 'harmonic' || j.playMode === 'both') p.playMode = j.playMode;
+    // かけ流しの設定（内容の選択・間・解決・キー変更・スリープ）
+    if(j.lis && typeof j.lis === 'object'){
+      const L = j.lis;
+      if(Array.isArray(L.pick)){
+        const seen = {}, ok = [];
+        for(const x of L.pick){
+          if(LIS_SRC.some(v => v.id === x) && !seen[x]){ seen[x] = 1; ok.push(x); }
+        }
+        p.lis.pick = ok;
+      }
+      if(LIS_PAUSE[L.gap]) p.lis.gap = L.gap;
+      if(L.reso === false) p.lis.reso = false;
+      if(LIS_KEY_EVERY.indexOf(L.keyEvery) >= 0) p.lis.keyEvery = L.keyEvery;
+      if(LIS_SLEEP.indexOf(L.sleep) >= 0) p.lis.sleep = L.sleep;
+    }
     if(j.unlockMode === 'free') p.unlockMode = 'free';
     if(Array.isArray(j.recentMiss)) p.recentMiss = j.recentMiss.filter(statKeyOk).slice(0, 12);
     if(j.streak && typeof j.streak === 'object' &&
@@ -1525,8 +1711,8 @@ function ledger(cx, yy){
          '" stroke="rgba(255,255,255,.3)" stroke-width="1"/>';
 }
 
-function putStaff(inner){
-  $('staffSvg').innerHTML =
+function putStaff(inner, svgId){
+  $(svgId || 'staffSvg').innerHTML =
     '<svg viewBox="0 0 ' + STAFF.W + ' ' + STAFF.H + '" width="' + STAFF.W + '" height="' + STAFF.H +
     '" xmlns="http://www.w3.org/2000/svg">' + inner + '</svg>';
 }
@@ -1545,7 +1731,7 @@ function staffKeyMark(tag, name){
 }
 
 // notes: [{midi, red(答えの音はアクセント色), flat(♭表記優先), stack(コード積み)}] を五線に描く
-function drawStaff(notes, tag, keyName){
+function drawStaff(notes, tag, keyName, svgId){
   let el = staffKeyMark(tag, keyName) + staffLines();
   const spelled = notes.map(n => Object.assign({}, n, spellNote(n.midi, n.flat)));
   // 配置：コードは同じ列に積む（隣接音は右にずらす）。それ以外は時間の流れとして横に並べる
@@ -1571,7 +1757,7 @@ function drawStaff(notes, tag, keyName){
     el += '<ellipse cx="' + cx + '" cy="' + cy + '" rx="7.4" ry="5.4" fill="' + col +
           '" transform="rotate(-14 ' + cx + ' ' + cy + ')"/>';
   });
-  putStaff(el);
+  putStaff(el, svgId);
 }
 
 // 答え合わせ前の状態。五線だけを薄く出しておき、音符が載ってもレイアウトが跳ねないようにする
@@ -1604,30 +1790,32 @@ function hideStaff(){
   $('staffCap').textContent = '';
 }
 
-function showStaff(q){
+// ids を渡すとクイズ画面以外（かけ流しの聴き直し等）にも描ける
+function showStaff(q, ids){
   q = q || curQ;
-  $('staffWrap').classList.remove('empty');
+  ids = ids || {wrap:'staffWrap', svg:'staffSvg', cap:'staffCap'};
+  $(ids.wrap).classList.remove('empty');
   const rootName = spellNote(q.root, false).name;
   let cap;
   if(q.type === 'chord'){
     const ch = CHORDS[q.chord];
     const flatIv = [3, 6, 10]; // ♭3・♭5・♭7は♭表記
     drawStaff(ch.iv.map((iv, i) => ({midi: q.root + iv, red: i > 0, flat: flatIv.includes(iv), stack: true})),
-              'ROOT', rootName);
+              'ROOT', rootName, ids.svg);
     cap = rootName + ' ' + ch.label + '（' + ch.sub + '）';
   }else if(q.type === 'mel'){
     drawStaff(q.cls.map(c => ({
       midi: q.root + degOffset(c, false), red: true, flat: DEG[c].d.indexOf('♭') >= 0
-    })), 'KEY', rootName);
+    })), 'KEY', rootName, ids.svg);
     cap = q.cls.map(c => shortDeg(c)).join(' → ');
   }else{
     const flat = DEG[q.cls].d.indexOf('♭') >= 0;
     const ans = q.root + degOffset(q.cls, q.down);
-    drawStaff([{midi: q.root, red: false, flat: false}, {midi: ans, red: true, flat}], 'KEY', rootName);
+    drawStaff([{midi: q.root, red: false, flat: false}, {midi: ans, red: true, flat}], 'KEY', rootName, ids.svg);
     cap = rootName + '（ルート）→ ' + spellNote(ans, flat).name +
           '（' + degLabel(q.cls) + (q.down ? '・下行' : '') + '）';
   }
-  $('staffCap').textContent = cap;
+  $(ids.cap).textContent = cap;
 }
 
 // ── トップの達成状況サマリー ──────────────────
@@ -2761,12 +2949,13 @@ function replayForReveal(){
 
 // 解決再生（FET式）：正解音からスケールに沿ってルートへ着地させ、度数の「役割」を体感させる。
 // 5度（ソ）以上は上のルートへ、4度（ファ）以下は下のルートへ。スケール外の音は隣のスケール音から合流
-function playResolution(root, off, t0){
-  const minorish = curStage && curStage.id === 's4';
+// minorish を省略すると現在のステージから判定する。返り値は鳴り終わるまでの秒数
+function playResolution(root, off, t0, minorish){
+  if(minorish === undefined) minorish = !!(curStage && curStage.id === 's4');
   const scale = minorish ? [0,2,3,5,7,8,10,12] : [0,2,4,5,7,9,11,12];
   let base = root, s = off;
   if(s < 0){ base = root - 12; s = off + 12; } // 下行問題は下のオクターブ内で解決
-  if(s <= 0) return;
+  if(s <= 0) return 0;
   const path = [s];
   if(s >= 7){
     for(const t of scale){ if(t > s) path.push(t); }
@@ -2779,6 +2968,7 @@ function playResolution(root, off, t0){
     const last = i === path.length - 1;
     playNote(base + t, t0 + i * 0.32, last ? 0.95 : 0.78, last ? 1.6 : 0.5);
   });
+  return (path.length - 1) * 0.32 + 1.6;
 }
 
 function onNext(){
@@ -2947,10 +3137,257 @@ function showResult(){
 
 // ── かけ流し（受動リスニング） ────────────────
 // 構造化された練習に「ただ聴くだけ」の時間を足すと、音高弁別・音程識別・
-// 新しい旋律への転移がいずれも改善するという報告に基づく。答えさせない練習
+// 新しい旋律への転移がいずれも改善するという報告に基づく。答えさせない練習。
+//
+// 設計の前提：この機能を使っている人は画面を見ていない。だから
+//  ・答えは鳴った瞬間に出し、次の音まで出しっぱなしにする（ふと見たときに読める）
+//  ・流れたものは履歴に残し、戻ってきたら「さっきの音」から遡って確認できる
+//  ・再生中は画面を消させない（Wake Lock）。画面が消えると音も止まるため
 
-const LIS_POOL = [0,2,4,5,7,9,11];
-let lisOn = false, lisTimer = null, lisRoot = 48, lisCount = 0;
+const LIS_STAFF = {wrap:'lisStaffWrap', svg:'lisStaffSvg', cap:'lisStaffCap'};
+
+let lisOn = false, lisTimer = null, lisRevealT = null, lisClock = null;
+let lisRoot = 48, lisCount = 0, lisSince = 0, lisPrevCls = null;
+let lisHist = [], lisDeadline = 0, lisWake = null, lisWakeNG = false;
+
+function lisPicks(){ return LIS_SRC.filter(v => progress.lis.pick.indexOf(v.id) >= 0); }
+
+// 「苦手な音だけ」の動的プール：3回以上出題した中で正答率が低い順に最大6音
+function lisWeakPool(){
+  const arr = [];
+  for(let c = 0; c < 12; c++){
+    const r = statRate('d' + c);
+    if(r !== null && r < 0.92) arr.push([c, r]);
+  }
+  arr.sort((a, b) => a[1] - b[1]);
+  const low = arr.slice(0, 6).map(x => x[0]);
+  return low.length >= 2 ? low : [0,2,4,5,7,9,11]; // データ不足のうちはメジャースケール
+}
+
+// 苦手ほど出やすい重み付け。クイズ側の recentMiss は消費しない（復習の順番を壊さないため）
+function lisPickCls(pool){
+  const ws = pool.map(p => {
+    if(pool.length > 1 && p === lisPrevCls) return 0;
+    const r = statRate('d' + p);
+    return r === null ? 2 : 1 + 3 * (1 - r);
+  });
+  const total = ws.reduce((a, b) => a + b, 0);
+  if(total <= 0) return pool[rnd(pool.length)];
+  let x = Math.random() * total;
+  for(let i = 0; i < pool.length; i++){ x -= ws[i]; if(x <= 0) return pool[i]; }
+  return pool[pool.length - 1];
+}
+
+// 次に流す1件を作る（選ばれたネタから1つ引き、その中身を組み立てる）
+function lisMakeItem(){
+  const picks = lisPicks();
+  const src = picks[rnd(picks.length)];
+  if(src.chords){
+    return {src, q:{type:'chord', chord: src.chords[rnd(src.chords.length)], root: lisRoot}};
+  }
+  const pool = src.weak ? lisWeakPool() : src.pool;
+  if(src.mel){
+    const cls = [];
+    for(let i = 0; i < src.mel; i++){
+      if(i === 0 && src.melStart === 'root'){ cls.push(0); lisPrevCls = 0; continue; }
+      let c, guard = 0;
+      do{ c = lisPickCls(pool); guard++; }
+      while(guard < 8 && cls.length && c === cls[cls.length - 1]);
+      cls.push(c);
+      lisPrevCls = c;
+    }
+    return {src, q:{type:'mel', cls, root: lisRoot}};
+  }
+  const c = lisPickCls(pool);
+  lisPrevCls = c;
+  const down = src.dir === 'down' ? true : (src.dir === 'both' ? Math.random() < 0.5 : false);
+  return {src, q:{type:'deg', cls:c, down, root: lisRoot, noRoot: !!src.noRoot, minor: !!src.minor}};
+}
+
+// 1件を鳴らす。返り値は鳴り終わるまでの秒数（次までの間隔の計算に使う）
+function lisPlayItem(q, t0, reso){
+  if(q.type === 'chord'){
+    playChordPhrase(q.root, q.chord, t0);
+    return 2.2;
+  }
+  if(q.type === 'mel'){
+    playMelPhrase(q.root, q.cls, t0);
+    const tail = q.cls.length * 0.62 + 0.9;
+    if(!reso) return tail + 0.7;
+    return tail + playResolution(q.root, degOffset(q.cls[q.cls.length - 1], false), t0 + tail, false);
+  }
+  const off = degOffset(q.cls, q.down);
+  if(q.noRoot){
+    playNote(q.root + off, t0, 0.95, 1.5);
+    if(!reso) return 1.7;
+    return 1.7 + playResolution(q.root, off, t0 + 1.7, !!q.minor);
+  }
+  playNote(q.root, t0, 0.8, 1.0);
+  playNote(q.root + off, t0 + 1.1, 0.95, 1.4);
+  if(!reso) return 2.7;
+  return 2.8 + playResolution(q.root, off, t0 + 2.8, !!q.minor);
+}
+
+function lisAnsText(q){
+  if(q.type === 'chord') return spellNote(q.root, false).name + ' ' + CHORDS[q.chord].label;
+  if(q.type === 'mel') return q.cls.map(c => shortDeg(c)).join(' → ');
+  return degLabel(q.cls) + (q.down ? ' ↓' : '');
+}
+
+// くり返しの本体。1回の呼び出しで「カデンツ」か「1件」を鳴らし、次を予約する
+function lisStep(){
+  if(!lisOn) return;
+  if(progress.lis.sleep && Date.now() >= lisDeadline){ lisStop('スリープタイマーで停止しました'); return; }
+  stopAll();          // 前の音の後始末（liveNodesを溜めない）
+  if(!lisOn) return;  // stopAllで止まっていないか念のため確認
+  const picks = lisPicks();
+  if(!picks.length){ lisStop('流す内容が選ばれていません'); return; }
+  const ke = progress.lis.keyEvery;
+  // キーを作り直すタイミング（0=変えない ならラウンド最初の1回だけ）
+  if(lisCount === 0 || (ke > 0 && lisSince >= ke)){
+    lisRoot = 45 + rnd(11);
+    playCadence(lisRoot, picks.every(v => v.minor), audioCtx.currentTime + 0.08);
+    $('lisKey').textContent = 'KEY ' + spellNote(lisRoot, false).name;
+    $('lisDeg').textContent = '…';
+    $('lisSrc').textContent = 'キーの響きを作っています';
+    lisSince = 0; lisCount++;
+    lisTimer = setTimeout(lisStep, 4200);
+    return;
+  }
+  const it = lisMakeItem();
+  const dur = lisPlayItem(it.q, audioCtx.currentTime + 0.06, progress.lis.reso);
+  lisHistPush(it);
+  $('lisDeg').textContent = '…';
+  $('lisSrc').textContent = it.src.n + (it.q.down ? '・下行' : '');
+  // 答えは「その音が鳴った瞬間」に出す（ルートを先に鳴らすぶんだけ遅らせる）
+  const revealMs = (it.q.type === 'deg' && !it.q.noRoot) ? 1150 : 150;
+  lisRevealT = setTimeout(() => { $('lisDeg').textContent = lisAnsText(it.q); }, revealMs);
+  lisSince++; lisCount++;
+  lisTimer = setTimeout(lisStep, (dur + LIS_PAUSE[progress.lis.gap]) * 1000);
+}
+
+// ── 履歴（新しい順。ページを閉じるまで保持） ──
+function lisHistPush(it){
+  lisHist.unshift({q: it.q, name: it.src.n});
+  if(lisHist.length > LIS_HIST_MAX) lisHist.pop();
+  $('lisBack1').disabled = false;
+  renderLisHist();
+}
+
+function renderLisHist(active){
+  const el = $('lisHist');
+  el.textContent = '';
+  $('lisHTtl').hidden = lisHist.length === 0;
+  lisHist.forEach((h, i) => {
+    const b = document.createElement('button');
+    b.className = 'lisH' + (i === active ? ' on' : '');
+    const n = document.createElement('span');
+    n.className = 'hN'; n.textContent = (i + 1) + 'つ前';
+    const k = document.createElement('span');
+    k.className = 'hK'; k.textContent = spellNote(h.q.root, false).name;
+    const a = document.createElement('span');
+    a.className = 'hA'; a.textContent = lisAnsText(h.q);
+    const sm = document.createElement('span');
+    sm.className = 'hS'; sm.textContent = h.name;
+    a.appendChild(sm);
+    b.appendChild(n); b.appendChild(k); b.appendChild(a); b.appendChild(ico('play'));
+    b.addEventListener('click', () => lisReplay(i));
+    el.appendChild(b);
+  });
+}
+
+// 聴き直し。かけ流しは重ならないように一時停止する（勝手に再開はしない）
+function lisReplay(i){
+  const h = lisHist[i];
+  if(!h) return;
+  ensureAudio();
+  const wasOn = lisOn;
+  lisPause();
+  stopAll();
+  const q = Object.assign({}, h.q, {noRoot:false}); // 聴き直しではキーのルートも鳴らす
+  lisPlayItem(q, audioCtx.currentTime + 0.06, true);
+  $('lisKey').textContent = 'KEY ' + spellNote(h.q.root, false).name;
+  $('lisDeg').textContent = lisAnsText(h.q);
+  $('lisSrc').textContent = (i + 1) + 'つ前の音 ・ ' + h.name + (wasOn ? '（かけ流しは一時停止中）' : '');
+  $('lisStaffWrap').hidden = false;
+  showStaff(q, LIS_STAFF);
+  renderLisHist(i);
+  renderLisChips();
+}
+
+// ── 停止まわり ──
+function lisStopClock(){ if(lisClock){ clearInterval(lisClock); lisClock = null; } }
+
+function lisStartClock(){
+  lisStopClock();
+  if(!progress.lis.sleep) return;
+  lisClock = setInterval(() => {
+    if(!lisOn){ lisStopClock(); return; }
+    if(Date.now() >= lisDeadline){ lisStop('スリープタイマーで停止しました'); return; }
+    renderLisChips();
+  }, 1000);
+}
+
+function lisPause(){
+  lisOn = false;
+  if(lisTimer){ clearTimeout(lisTimer); lisTimer = null; }
+  if(lisRevealT){ clearTimeout(lisRevealT); lisRevealT = null; }
+  lisStopClock();
+  lisWakeRelease();
+  setIconText($('lisToggle'), 'play', lisHist.length ? '再開する' : 'はじめる');
+  $('lisToggle').classList.remove('on');
+  renderLisChips();
+}
+
+function lisStop(msg){
+  lisPause();
+  stopAll();
+  if(msg) $('lisSrc').textContent = msg;
+}
+
+// ── 画面を消させない（Wake Lock）──
+// かけ流し中に画面が消えると音も止まってしまうため、再生中だけ取得する
+function lisWakeReq(){
+  lisWakeNG = false;
+  try{
+    if(!navigator.wakeLock){ lisWakeNG = true; renderLisChips(); return; }
+    navigator.wakeLock.request('screen').then(w => {
+      lisWake = w;
+      w.addEventListener('release', () => { lisWake = null; renderLisChips(); });
+      renderLisChips();
+    }).catch(() => { lisWake = null; lisWakeNG = true; renderLisChips(); });
+  }catch(e){ lisWake = null; lisWakeNG = true; renderLisChips(); }
+}
+
+function lisWakeRelease(){
+  try{ if(lisWake) lisWake.release(); }catch(e){}
+  lisWake = null;
+}
+
+// タブ復帰時にWake Lockは自動で外れるので、かけ流し中なら取り直す
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible' && lisOn && !lisWake) lisWakeReq();
+});
+
+// ── 表示 ──
+function renderLisChips(){
+  const el = $('lisChips');
+  el.textContent = '';
+  const add = (iconName, text, cls) => {
+    const sp = document.createElement('span');
+    if(cls) sp.className = cls;
+    if(iconName) sp.appendChild(ico(iconName));
+    sp.appendChild(document.createTextNode(text));
+    el.appendChild(sp);
+  };
+  const n = progress.lis.pick.length;
+  add('headphones', n === 0 ? '流す内容が未選択' : n + '種類をミックス', n === 0 ? 'warn' : '');
+  if(lisOn){
+    if(lisWake) add('shield', '画面を消しません', 'hot');
+    else if(lisWakeNG) add('x', '画面が消えると止まります', 'warn');
+    if(progress.lis.sleep) add('note', 'のこり ' + fmtSec((lisDeadline - Date.now()) / 1000));
+  }
+}
 
 function showListen(){
   stopAll();
@@ -2963,52 +3400,130 @@ function showListen(){
   $('scrReport').hidden = true;
   $('scrListen').hidden = false;
   $('modeChip').textContent = '';
-  lisStop();
+  lisHist = [];
+  lisCount = 0; lisSince = 0; lisPrevCls = null;
+  lisPause();
   $('lisKey').textContent = 'KEY —';
   $('lisDeg').textContent = '—';
-  lisCount = 0;
+  $('lisSrc').textContent = '';
+  $('lisStaffWrap').hidden = true;
+  $('lisBack1').disabled = true;
+  renderLisHist();
+  renderLisSeg();
 }
 
-function lisStop(){
-  lisOn = false;
-  if(lisTimer){ clearTimeout(lisTimer); lisTimer = null; }
-  setIconText($('lisToggle'), 'play', 'はじめる');
-  $('lisToggle').classList.remove('on');
-}
-
-function lisStep(){
-  if(!lisOn) return;
-  stopAll();          // 前の音の後始末（liveNodesを溜めない）
-  if(!lisOn) return;  // stopAllで止まっていないか念のため確認
-  // 4音ごとにキーを変え、カデンツで作り直す
-  if(lisCount % 4 === 0){
-    lisRoot = 45 + rnd(11);
-    playCadence(lisRoot, false, audioCtx.currentTime + 0.08);
-    $('lisKey').textContent = 'KEY ' + spellNote(lisRoot, false).name;
-    $('lisDeg').textContent = '…';
-    lisCount++;
-    lisTimer = setTimeout(lisStep, 3600);
-    return;
+// ── 内容えらびシート ──
+function renderLisSrcList(){
+  const el = $('lisSrcList');
+  el.textContent = '';
+  for(const g of LIS_GRP){
+    const items = LIS_SRC.filter(v => v.g === g);
+    if(!items.length) continue;
+    const h = document.createElement('div');
+    h.className = 'ckGrp'; h.textContent = g;
+    el.appendChild(h);
+    for(const src of items){
+      const b = document.createElement('button');
+      b.className = 'ckRow' + (progress.lis.pick.indexOf(src.id) >= 0 ? ' on' : '');
+      const box = document.createElement('div');
+      box.className = 'ckBox';
+      box.appendChild(ico('check'));
+      const wrap = document.createElement('div');
+      const nm = document.createElement('div');
+      nm.className = 'ckN'; nm.textContent = src.n;
+      const ds = document.createElement('div');
+      ds.className = 'ckD'; ds.textContent = src.d;
+      wrap.appendChild(nm); wrap.appendChild(ds);
+      b.appendChild(box); b.appendChild(wrap);
+      b.addEventListener('click', () => {
+        const i = progress.lis.pick.indexOf(src.id);
+        if(i >= 0) progress.lis.pick.splice(i, 1);
+        else progress.lis.pick.push(src.id);
+        saveProgress();
+        renderLisSrcList();
+        renderLisChips();
+      });
+      el.appendChild(b);
+    }
   }
-  const c = LIS_POOL[rnd(LIS_POOL.length)];
-  const off = degOffset(c, false);
-  const t0 = audioCtx.currentTime + 0.05;
-  playNote(lisRoot, t0, 0.8, 1.0);
-  playNote(lisRoot + off, t0 + 1.1, 0.95, 1.4);
-  playResolution(lisRoot, off, t0 + 2.8);
-  $('lisDeg').textContent = degLabel(c);
-  lisCount++;
-  lisTimer = setTimeout(lisStep, 6200);
 }
 
+function lisSetPick(ids){
+  progress.lis.pick = ids.slice();
+  saveProgress();
+  renderLisSrcList();
+  renderLisChips();
+}
+
+const lisGapBtns = [...document.querySelectorAll('#lisGapSeg button')];
+const lisResoBtns = [...document.querySelectorAll('#lisResoSeg button')];
+const lisKeyBtns = [...document.querySelectorAll('#lisKeySeg button')];
+const lisSleepBtns = [...document.querySelectorAll('#lisSleepSeg button')];
+
+function renderLisSeg(){
+  lisGapBtns.forEach(b => b.classList.toggle('active', b.dataset.gap === progress.lis.gap));
+  lisResoBtns.forEach(b => b.classList.toggle('active', (b.dataset.reso === 'on') === progress.lis.reso));
+  lisKeyBtns.forEach(b => b.classList.toggle('active', +b.dataset.ke === progress.lis.keyEvery));
+  lisSleepBtns.forEach(b => b.classList.toggle('active', +b.dataset.sl === progress.lis.sleep));
+}
+
+lisGapBtns.forEach(b => b.addEventListener('click', () => {
+  progress.lis.gap = b.dataset.gap; saveProgress(); renderLisSeg();
+}));
+lisResoBtns.forEach(b => b.addEventListener('click', () => {
+  progress.lis.reso = b.dataset.reso === 'on'; saveProgress(); renderLisSeg();
+}));
+lisKeyBtns.forEach(b => b.addEventListener('click', () => {
+  progress.lis.keyEvery = +b.dataset.ke; saveProgress(); renderLisSeg();
+}));
+lisSleepBtns.forEach(b => b.addEventListener('click', () => {
+  progress.lis.sleep = +b.dataset.sl;
+  saveProgress();
+  renderLisSeg();
+  if(lisOn){
+    if(progress.lis.sleep){ lisDeadline = Date.now() + progress.lis.sleep * 60000; lisStartClock(); }
+    else lisStopClock();
+  }
+  renderLisChips();
+}));
+
+function openLisSheet(){
+  renderLisSrcList();
+  renderLisSeg();
+  $('lisSheet').hidden = false;
+}
+function closeLisSheet(){ $('lisSheet').hidden = true; }
+
+// ── イベント ──
 $('lisBtn').addEventListener('click', showListen);
-$('lisBackBtn').addEventListener('click', () => { lisStop(); stopAll(); showSelect(); });
+$('lisBackBtn').addEventListener('click', () => { lisStop(); showSelect(); });
+$('lisSetBtn').addEventListener('click', openLisSheet);
+$('lisShClose').addEventListener('click', closeLisSheet);
+$('lisShBack').addEventListener('click', closeLisSheet);
+$('lisBack1').addEventListener('click', () => lisReplay(0));
+
+// プリセット：いまのレベル（クリア済み＋いま挑戦中）／苦手だけ／ぜんぶ
+$('lisPreLv').addEventListener('click', () => {
+  const list = STAGES.filter(v => v.gk === 'mono' || v.gk === 'mel');
+  const ids = list.filter(v => bestOf(v.id) >= CLEAR_RATE).map(v => v.id);
+  const next = list.find(v => bestOf(v.id) < CLEAR_RATE && isUnlocked(v));
+  if(next) ids.push(next.id);
+  lisSetPick(ids.length ? ids : ['s1', 's2']);
+});
+$('lisPreWeak').addEventListener('click', () => lisSetPick(['weak']));
+$('lisPreAll').addEventListener('click', () => lisSetPick(LIS_SRC.map(v => v.id)));
+
 $('lisToggle').addEventListener('click', () => {
   ensureAudio();
-  if(lisOn){ lisStop(); stopAll(); return; }
+  if(lisOn){ lisStop(); return; }
+  if(!progress.lis.pick.length){ openLisSheet(); return; }
+  $('lisStaffWrap').hidden = true;
   lisOn = true;
   setIconText($('lisToggle'), 'check', 'とめる');
   $('lisToggle').classList.add('on');
+  if(progress.lis.sleep){ lisDeadline = Date.now() + progress.lis.sleep * 60000; lisStartClock(); }
+  lisWakeReq();
+  renderLisChips();
   lisStep();
 });
 
@@ -3421,6 +3936,13 @@ $('setModal').addEventListener('click', e => { if(e.target === $('setModal')) $(
 
 // キーボード（PC）: 数字=回答（有効ボタンの左上から順）／Space=再生／Enter=次へ
 document.addEventListener('keydown', e => {
+  // かけ流し画面：Space=再生/停止、←=さっきの音
+  if(!$('scrListen').hidden){
+    if(!$('lisSheet').hidden) return;
+    if(e.key === ' '){ e.preventDefault(); $('lisToggle').click(); }
+    else if(e.key === 'ArrowLeft' && !$('lisBack1').disabled){ e.preventDefault(); $('lisBack1').click(); }
+    return;
+  }
   if(!scrQuiz || scrQuiz.hidden) return;
   if(!$('helpModal').hidden || !$('setModal').hidden || !$('scSheet').hidden) return;
   if(e.key === ' '){
