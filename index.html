@@ -788,6 +788,27 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
   #nextBtn{margin-top:9px; padding:12px;}
 }
 
+/* さらに縦が短い端末（iPhone SE 等の568px級）。
+   メロディは入力バーのぶん背が高くなり、740pxの詰めだけでは回答ボタンが画面外へ出る */
+@media (max-height: 640px){
+  main{padding:8px 14px 6px;}
+  #dots{margin-bottom:6px;}
+  #modeChip{margin-bottom:6px;}
+  #modeChip span{padding:2px 8px;}
+  .soundStage{min-height:58px; margin-bottom:0;}
+  .ringWrap{width:44px; height:44px;}
+  .ringCore{font-size:16px;}
+  #playLabel{min-height:22px;}
+  #listenBtn, #rootBtn{padding:10px;}
+  .listenRow{margin-bottom:6px;}
+  #feedback{min-height:18px; margin-bottom:4px;}
+  #singBtn{padding:10px; margin-bottom:6px;}
+  #melBar{margin-bottom:6px;}
+  #melSlots span{padding:6px 2px;}
+  #melUndo{padding:6px 9px;}
+  #answers button{padding:7px 2px 6px;}
+}
+
 footer{
   text-align:center; font-size:var(--f5); color:var(--t3);
   padding:18px 12px 14px; line-height:1.7; opacity:.75;
@@ -2745,7 +2766,7 @@ function playQuestionWithKey(){
     setPlaying(true);
     const d = playShortCadence(roundRoot, curStage.id === 's4', audioCtx.currentTime + 0.06);
     setPlayLabel('キーの響き…', true);
-    later(playStimulus, Math.round(d * 1000) + 150);
+    later(() => { playStimulus(); applySingGate(); }, Math.round(d * 1000) + 150);
     return;
   }
   playStimulus();
@@ -3193,7 +3214,7 @@ function showResult(){
         stopAll();
         const t0 = audioCtx.currentTime + 0.05;
         if(m.q.type === 'chord') playChordPhrase(m.q.root, m.q.chord, t0);
-        else if(m.q.type === 'mel') playMelPhrase(m.q.root, m.q.cls, t0);
+        else if(m.q.type === 'mel') playMelPhrase(m.q.root, m.q.cls, t0, m.q.offs);
         else playDegPhrase(m.q.root, degOffset(m.q.cls, m.q.down), t0);
       });
       log.appendChild(line);
@@ -3416,12 +3437,17 @@ function lisStep(){
   // 「毎回」は1つずつ短いカデンツでキーを作り直す（聴き流していてもキーを見失わない）
   const lead = progress.lis.cad === 'each' ? playShortCadence(lisRoot, minor, t0) + 0.35 : 0;
   const dur = lisPlayItem(it.q, t0 + lead, progress.lis.reso);
-  lisHistPush(it);
   $('lisDeg').textContent = '…';
   $('lisSrc').textContent = it.src.n + (it.q.down ? '・下行' : '');
-  // 答えは「その音が鳴った瞬間」に出す（ルートを先に鳴らすぶんだけ遅らせる）
-  const revealMs = lead * 1000 + ((it.q.type === 'deg' && !it.q.noRoot) ? 1150 : 150);
-  lisRevealT = setTimeout(() => { $('lisDeg').textContent = lisAnsText(it.q); }, revealMs);
+  // 答えは「その音が鳴った瞬間」に出す（先に鳴らすルートやカデンツのぶんだけ遅らせる）。
+  // 履歴に積むのも同じタイミング。先に積むと、まだ鳴っていない音の答えが履歴で読めてしまう
+  let revealMs = lead * 1000 + 150;
+  if(it.q.type === 'deg' && !it.q.noRoot) revealMs += 1000;                       // ルート→課題音
+  if(it.q.type === 'mel') revealMs += (it.q.cls.length - 1) * 620;                // 最後の音まで
+  lisRevealT = setTimeout(() => {
+    $('lisDeg').textContent = lisAnsText(it.q);
+    lisHistPush(it);
+  }, revealMs);
   lisSince++; lisCount++;
   lisTimer = setTimeout(lisStep, (lead + dur + LIS_PAUSE[progress.lis.gap]) * 1000);
 }
@@ -4120,7 +4146,7 @@ $('setModal').addEventListener('click', e => { if(e.target === $('setModal')) $(
 document.addEventListener('keydown', e => {
   // かけ流し画面：Space=再生/停止、←=さっきの音
   if(!$('scrListen').hidden){
-    if(!$('lisSheet').hidden) return;
+    if(!$('lisSheet').hidden || !$('helpModal').hidden || !$('setModal').hidden) return;
     if(e.key === ' '){ e.preventDefault(); $('lisToggle').click(); }
     else if(e.key === 'ArrowLeft' && !$('lisBack1').disabled){ e.preventDefault(); $('lisBack1').click(); }
     return;
