@@ -242,7 +242,14 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
 .stageRow .bd.perfect{color:var(--acc); border-color:rgba(239,83,64,.34); background:var(--acct); font-weight:700;}
 
 /* ── クイズ画面 ── */
-.qbar{display:flex; align-items:center; gap:7px; margin-bottom:12px;}
+/* ヘッダーの直下に貼り付けて、スクロールしても「もどる」が消えないようにする。
+   （アーティファクトやスマホでは画面を下げると戻る手段が無くなるという指摘への対応） */
+.qbar{
+  display:flex; align-items:center; gap:7px; margin-bottom:12px;
+  position:sticky; top:var(--hdrH, 52px); z-index:15;
+  background:var(--s0); padding:8px 0 9px;
+  box-shadow:0 -14px 0 var(--s0); /* 上のすき間も同色で塗る */
+}
 .qbar .navBtn{
   display:flex; align-items:center; gap:4px; padding:8px 11px 8px 8px;
   font-size:var(--f5); font-weight:600; color:var(--t2); background:var(--s1);
@@ -945,7 +952,7 @@ footer{
   <!-- クイズ画面 -->
   <section id="scrQuiz" hidden>
     <div class="qbar">
-      <button id="backBtn" class="navBtn"><svg class="ic"><use href="#i-left"/></svg>ステージ</button>
+      <button id="backBtn" class="navBtn"><svg class="ic"><use href="#i-left"/></svg>もどる</button>
       <span id="stageName"></span>
       <span id="qNum"></span>
       <button id="cadBtn" title="ラウンド開始時にキーの響き（カデンツ）を鳴らすか切り替え"><svg class="ic"><use href="#i-note"/></svg><span id="cadLbl">ON</span></button>
@@ -1034,6 +1041,17 @@ footer{
       <button id="lisPreAll"><svg class="ic"><use href="#i-star"/></svg>ぜんぶ</button>
     </div>
     <div id="lisSrcList"></div>
+    <div class="sheetSub">再生スピード（早送り）</div>
+    <div class="segRow" id="lisSpeedSeg">
+      <button data-sp="1">ふつう</button>
+      <button data-sp="1.25">はやい</button>
+      <button data-sp="1.5">かなり速い</button>
+    </div>
+    <div class="sheetSub">キー</div>
+    <div class="segRow" id="lisKeyModeSeg">
+      <button data-fk="0">ランダム</button>
+      <button data-fk="1">キーC固定（初心者向け）</button>
+    </div>
     <div class="sheetSub">つぎの音までの間</div>
     <div class="segRow" id="lisGapSeg">
       <button data-gap="slow">ゆっくり</button><button data-gap="normal">ふつう</button><button data-gap="fast">はやい</button>
@@ -1070,13 +1088,15 @@ footer{
     <p>単音（度数当て）は入門→上級へ段階的に出題範囲が広がります。<b>各ラウンドはまずキーの響き（カデンツ）が鳴り、調性感を作ってから出題開始</b>。入門〜初級はキーC固定でじっくり音の響きを覚え、中級からはキーがラウンドごとにランダムに変わって、どの調でも通用する耳を鍛えます。キーの支えの強さは、クイズ画面の<b>音符ボタン</b>から5段階で変えられます（カデンツ＋ドローン → カデンツ → ドローン → ドローン減衰 → なし）。強い支えは覚えるのに役立ちますが、頼りきると内側の音感が育ちにくいので、クリアできたら1段ずつ外していってください。上級は「ルート省略」：カデンツとルート音を最初に聴き、あとは連続で答えます。コード（響き当て）はトライアド→セブンスと進みます。腕に自信がある人は、トップの<b>レベル診断</b>（4〜10問）を受けると、実力に合ったステージまで一気に解放されます。</p>
     <h4><svg class="ic"><use href="#i-book"/></svg>メロディ（聴音）</h4>
     <p>2〜5音のメロディを聴いて、<b>順番に</b>度数で答えます。単音より一段実戦的で、耳コピに直結する練習です。押し間違えたら「1つ戻す」で戻せます（PCはBackspaceキー）。すべての音を入れた時点でまとめて判定されます。</p>
-    <p>コースは2つあります。<b>よく使う動き</b>は、順次進行（となりの音）を主役に、跳んだら戻る・安定音に着地するという<b>実際の曲に出てくる形</b>で出題します。まずはこちらを2音→5音と進めてください。<b>自由な組み合わせ</b>は半音を含む全12度数からランダムに並べるコースで、曲には出にくい動きも含めて耳の守備範囲を広げる筋トレです。</p>
+    <p>コースは2つあります。<b>よく使う動き</b>は、ラウンドごとに<b>メジャーかマイナー</b>を選び、その7音の中から作ります。順次進行だけでなく3度〜6度の跳躍も混ぜ、跳んだら戻る・たまに安定音へ着地する、という実際の旋律の性質で組み立てます。</p>
+    <p><b>スケールいろいろ</b>は、ラウンドごとにドリアン・ミクソリディアン・リディアン・フリジアン・ハーモニックマイナー・ブルースなどへ切り替わります。<b>ラウンドの頭にそのスケールを上行で聴かせてから</b>出題するので、「いまどのスケールにいるか」を掴んで音を当てる練習になります。半音をランダムに混ぜると別のキーに聞こえるだけで訓練にならないため、出題は必ずどれかのスケールの中だけで作られます。</p>
     <p>メロディ中は<b>ルート</b>ボタンでいつでもキーの音を確かめられます。また既定では<b>毎問キーの響き（カデンツ）が鳴り直します</b>。頻度は<b>キーの支え</b>（画面右上の音符ボタン）から変えられます。</p>
     <h4><svg class="ic"><use href="#i-headphones"/></svg>かけ流し（聴くだけ）</h4>
     <p>トップの<b>かけ流し</b>は、答えずにただ聴くだけのモードです。キーの響き → 課題の音 → 主音への解決、をくり返し流します。移動中や家事のあいだの「ながら練習」に使ってください。</p>
     <p><b>流す内容はチェックで選べます。</b>単音・下行だけ・ルート省略・メロディ・コードから、好きなものをいくつでも混ぜられます。「いまのレベル」を押せば、クリア済み＋いま挑戦中のステージだけが選ばれます。</p>
     <p>流れた音は<b>履歴</b>に残ります。分からない音があっても止める必要はありません。あとで<b>さっきの音をもう一度</b>（または履歴のタップ）で、そのときのキーのまま鳴らし直して、五線譜つきで答えを確認できます。</p>
     <p>再生中は<b>画面が消えないように</b>します（画面が消えると音も止まるため）。電池を使うので、終わったら「とめる」を押すか、スリープタイマーを設定してください。</p>
+    <p><b>早送り</b>（再生スピード）と<b>キーC固定</b>も選べます。慣れてきてテンポが遅いと感じたら速度を上げ、まだキーが動くと難しいうちはCに固定してください。クイズ側のテンポは設定（歯車）から変えられます。</p>
     <h4><svg class="ic"><use href="#i-headphones"/></svg>練習の進み方</h4>
     <p>同じ音を続けて出す<b>ブロック練習</b>から始まり、正解が続くと自動で<b>ミックス（インターリーブ）</b>に切り替わります。最初の正確さはブロックで作り、実戦で使える耳はミックスで作る——という研究の知見に沿った進み方です。出題は<b>苦手な音を優先</b>して選ばれ、間違えた音は次のラウンドで必ずもう一度出ます。</p>
     <h4><svg class="ic"><use href="#i-volume"/></svg>音色</h4>
@@ -1101,6 +1121,14 @@ footer{
 <div id="setModal" class="modal" hidden>
   <div class="box">
     <h3><svg class="ic"><use href="#i-sliders"/></svg>設定</h3>
+    <h4><svg class="ic"><use href="#i-play"/></svg>テンポ（早送り）</h4>
+    <div class="segRow" id="speedSeg">
+      <button data-sp="1">ふつう</button>
+      <button data-sp="1.25">はやい</button>
+      <button data-sp="1.5">かなり速い</button>
+    </div>
+    <p style="font-size:var(--f5); color:var(--t3); margin:2px 0 0;">カデンツ・出題・答え合わせの待ち時間をまとめて詰めます。音程は変わりません。</p>
+
     <h4><svg class="ic"><use href="#i-volume"/></svg>出題の鳴らし方（単音ステージ）</h4>
     <div class="segRow" id="playModeSeg">
       <button data-mode="melodic">順番に</button>
@@ -1207,7 +1235,24 @@ const CHORDS = {
 };
 
 const ALL12 = [0,1,2,3,4,5,6,7,8,9,10,11];
-const MAJ7 = [0,2,4,5,7,9,11]; // 長音階7音（メロディの「よく使う動き」の土台）
+const MAJ7 = [0,2,4,5,7,9,11]; // 長音階7音
+
+// スケール（モード）。メロディの出題は必ずこの中の1つを選び、その音だけで作る。
+// 半音をランダムに混ぜると「別のキーに聞こえるだけ」で相対音感の訓練にならず、
+// 絶対音感的な当てっこになってしまうため、規則性のある集合から出す
+const SCALES = {
+  ion:  {n:'メジャー',             iv:[0,2,4,5,7,9,11]},
+  aeo:  {n:'マイナー',             iv:[0,2,3,5,7,8,10]},
+  dor:  {n:'ドリアン',             iv:[0,2,3,5,7,9,10]},
+  mix:  {n:'ミクソリディアン',     iv:[0,2,4,5,7,9,10]},
+  lyd:  {n:'リディアン',           iv:[0,2,4,6,7,9,11]},
+  phr:  {n:'フリジアン',           iv:[0,1,3,5,7,8,10]},
+  hmin: {n:'ハーモニックマイナー', iv:[0,2,3,5,7,8,11]},
+  mmin: {n:'メロディックマイナー', iv:[0,2,3,5,7,9,11]},
+  blues:{n:'ブルース',             iv:[0,3,5,6,7,10]},
+  mpent:{n:'マイナーペンタ',       iv:[0,3,5,7,10]}
+};
+const isMinorScale = k => !!(SCALES[k] && SCALES[k].iv.indexOf(3) >= 0); // カデンツを短調にするか
 
 // カデンツ（キーの響き）を鳴らし直す頻度。
 // 単音は毎問ルートが鳴るので最初だけで足りるが、メロディは2問目以降に手がかりが
@@ -1247,13 +1292,15 @@ const STAGES = [
   // 2コースに分ける。本線は「よく使う動き」＝曲に実際に出てくる形（順次進行が主役・
   // 跳んだら戻る・安定音に着地）。全12度数からのランダムだけを続けると、曲では起きない
   // 動きに耳が慣れてしまい耳コピに結びつかないため、そちらは別コース（筋トレ）に分けた
-  {gk:'mel', id:'m1', grp:'メロディ（よく使う動き）', lv:'入門', name:'2音',   desc:'主音から始まる2音',                  pool:[0,2,4,5,7],      mel:2, melStart:'root', style:'common', fixedKey:true},
-  {gk:'mel', id:'m2', grp:'メロディ（よく使う動き）', lv:'初級', name:'3音',   desc:'長音階7音・曲でよく出る動き',        pool:MAJ7,             mel:3, style:'common', fixedKey:true},
-  {gk:'mel', id:'m4', grp:'メロディ（よく使う動き）', lv:'中級', name:'4音',   desc:'長音階7音・4音に伸ばす',             pool:MAJ7,             mel:4, style:'common', fixedKey:true},
-  {gk:'mel', id:'m5', grp:'メロディ（よく使う動き）', lv:'上級', name:'5音',   desc:'長音階7音・5音／キーもランダムに変化', pool:MAJ7,            mel:5, style:'common'},
+  {gk:'mel', id:'m1', grp:'メロディ（よく使う動き）', lv:'入門', name:'2音', desc:'メジャー／マイナーの7音から2音',   mel:2, scales:['ion','aeo'], fixedKey:true},
+  {gk:'mel', id:'m2', grp:'メロディ（よく使う動き）', lv:'初級', name:'3音', desc:'メジャー／マイナーの7音から3音',   mel:3, scales:['ion','aeo'], fixedKey:true},
+  {gk:'mel', id:'m4', grp:'メロディ（よく使う動き）', lv:'中級', name:'4音', desc:'メジャー／マイナーの7音から4音',   mel:4, scales:['ion','aeo'], fixedKey:true},
+  {gk:'mel', id:'m5', grp:'メロディ（よく使う動き）', lv:'上級', name:'5音', desc:'5音／キーもラウンドごとに変化',    mel:5, scales:['ion','aeo']},
 
-  {gk:'mel', id:'m3', grp:'メロディ（自由な組み合わせ）', lv:'中級', name:'3音・全12度数', desc:'半音を含む3音。曲に出にくい動きも出る', pool:ALL12, mel:3},
-  {gk:'mel', id:'m6', grp:'メロディ（自由な組み合わせ）', lv:'上級', name:'5音・全12度数', desc:'半音を含む5音。耳の守備範囲を広げる',   pool:ALL12, mel:5},
+  // モード（教会旋法など）。ラウンドの頭にスケールを聴かせてから、その中だけで出題する。
+  // 「今どのスケールにいるか」を掴んで音を当てる練習で、実際のアドリブ・耳コピに直結する
+  {gk:'mel', id:'m3', grp:'メロディ（スケールいろいろ）', lv:'中級', name:'3音・モード', desc:'ドリアン／ミクソリディアン／リディアン等', mel:3, scales:['ion','aeo','dor','mix','lyd']},
+  {gk:'mel', id:'m6', grp:'メロディ（スケールいろいろ）', lv:'上級', name:'5音・モード', desc:'フリジアン／ハーモニックマイナー／ブルースまで', mel:5, scales:['ion','aeo','dor','mix','lyd','phr','hmin','mmin','blues']},
 
   {gk:'chord', id:'c1', grp:'コード（響き当て）', lv:'入門', name:'メジャー / マイナー', desc:'明るい ↔ 切ない の2択', chords:['maj','min']},
   {gk:'chord', id:'c2', grp:'コード（響き当て）', lv:'初級', name:'トライアド',          desc:'maj / min / sus4 / dim', chords:['maj','min','sus4','dim']},
@@ -1272,12 +1319,12 @@ const LIS_SRC = [
   {id:'dn',   g:'単音',      n:'下行だけ',            d:'ルートより下の音だけを流す',  pool:ALL12, dir:'down'},
   {id:'s6',   g:'単音',      n:'上行・下行ミックス',  d:'上と下をランダムに',          pool:ALL12, dir:'both'},
   {id:'s7',   g:'上級',      n:'ルート省略',          d:'ルートを鳴らさず課題音だけ',  pool:ALL12, noRoot:true},
-  {id:'m1',   g:'メロディ',  n:'2音（よく使う動き）', d:'主音から始まる2音',           pool:[0,2,4,5,7], mel:2, melStart:'root', style:'common'},
-  {id:'m2',   g:'メロディ',  n:'3音（よく使う動き）', d:'長音階7音・曲でよく出る動き',  pool:MAJ7,        mel:3, style:'common'},
-  {id:'m4',   g:'メロディ',  n:'4音（よく使う動き）', d:'長音階7音・4音',              pool:MAJ7,        mel:4, style:'common'},
-  {id:'m5',   g:'メロディ',  n:'5音（よく使う動き）', d:'長音階7音・5音',              pool:MAJ7,        mel:5, style:'common'},
-  {id:'m3',   g:'メロディ',  n:'3音・自由な組み合わせ', d:'半音を含む3音',             pool:ALL12,       mel:3},
-  {id:'m6',   g:'メロディ',  n:'5音・自由な組み合わせ', d:'半音を含む5音',             pool:ALL12,       mel:5},
+  {id:'m1',   g:'メロディ',  n:'2音',          d:'メジャー／マイナーの7音から2音',       mel:2, scales:['ion','aeo']},
+  {id:'m2',   g:'メロディ',  n:'3音',          d:'メジャー／マイナーの7音から3音',       mel:3, scales:['ion','aeo']},
+  {id:'m4',   g:'メロディ',  n:'4音',          d:'メジャー／マイナーの7音から4音',       mel:4, scales:['ion','aeo']},
+  {id:'m5',   g:'メロディ',  n:'5音',          d:'メジャー／マイナーの7音から5音',       mel:5, scales:['ion','aeo']},
+  {id:'m3',   g:'メロディ',  n:'3音・モード',  d:'ドリアン／ミクソリディアン等を含む3音', mel:3, scales:['ion','aeo','dor','mix','lyd']},
+  {id:'m6',   g:'メロディ',  n:'5音・モード',  d:'フリジアン／ブルース等を含む5音',       mel:5, scales:['ion','aeo','dor','mix','lyd','phr','hmin','mmin','blues']},
   {id:'c1',   g:'コード',    n:'メジャー / マイナー', d:'明るい ↔ 切ない',            chords:['maj','min']},
   {id:'c2',   g:'コード',    n:'トライアド',          d:'maj / min / sus4 / dim',     chords:['maj','min','sus4','dim']},
   {id:'c3',   g:'コード',    n:'セブンス',            d:'maj7 / 7th / m7 / m7♭5',    chords:['maj7','dom7','m7','m7b5']}
@@ -1287,6 +1334,10 @@ const LIS_PAUSE = {slow:2.6, normal:1.5, fast:0.7}; // 1つ鳴らし終えてか
 const LIS_KEY_EVERY = [4, 8, 0];                    // キーを作り直す間隔（0=変えない）
 const LIS_SLEEP = [0, 10, 20, 30];                  // スリープタイマー（分・0=なし）
 const LIS_HIST_MAX = 20;                            // 履歴の保持件数
+
+// 再生スピード（早送り）。「簡単だと感じたらどんどん次へ行きたい」ための倍率。
+// 音の長さも間隔もこの倍率で詰める（音程は変わらない）
+const SPEEDS = [1, 1.25, 1.5];
 
 // ベストは正答率(%)で保持する。旧データ（10問中のスコア）は読み込み時に×10して引き継ぐ
 function bestOf(id){
@@ -1329,8 +1380,8 @@ function validateProgress(j){
   const p = {v:2, best:{}, bestRate:{}, lastStage:null, playMode:'melodic',
              unlockMode:'seq', scaffold:3, sessionLen:'q10', diagUnlock:null,
              noteName:'deg', singFirst:'off',
-             cadEvery:'auto',
-             lis:{pick:['s3'], gap:'normal', reso:true, keyEvery:4, sleep:0, cad:'key'},
+             cadEvery:'auto', speed:1,
+             lis:{pick:['s3'], gap:'normal', reso:true, keyEvery:4, sleep:0, cad:'key', speed:1, fixedKey:false},
              conf:{}, daily:{}, dir:{up:[0,0], down:[0,0]},
              recentMiss:[], streak:{last:null, n:0}, stats:{}};
   const statKeyOk = k => typeof k === 'string' && (/^d(\d|1[01])$/.test(k) || !!CHORDS[k]);
@@ -1344,6 +1395,7 @@ function validateProgress(j){
     if(typeof j.diagUnlock === 'string' && STAGES.some(s => s.id === j.diagUnlock && s.gk === 'mono')) p.diagUnlock = j.diagUnlock;
     if(j.playMode === 'harmonic' || j.playMode === 'both') p.playMode = j.playMode;
     if(CAD_EVERY.indexOf(j.cadEvery) >= 0) p.cadEvery = j.cadEvery;
+    if(SPEEDS.indexOf(j.speed) >= 0) p.speed = j.speed;
     // かけ流しの設定（内容の選択・間・解決・キー変更・スリープ）
     if(j.lis && typeof j.lis === 'object'){
       const L = j.lis;
@@ -1359,6 +1411,8 @@ function validateProgress(j){
       if(LIS_KEY_EVERY.indexOf(L.keyEvery) >= 0) p.lis.keyEvery = L.keyEvery;
       if(LIS_SLEEP.indexOf(L.sleep) >= 0) p.lis.sleep = L.sleep;
       if(L.cad === 'each' || L.cad === 'off') p.lis.cad = L.cad;
+      if(SPEEDS.indexOf(L.speed) >= 0) p.lis.speed = L.speed;
+      if(L.fixedKey === true) p.lis.fixedKey = true;
     }
     if(j.unlockMode === 'free') p.unlockMode = 'free';
     if(Array.isArray(j.recentMiss)) p.recentMiss = j.recentMiss.filter(statKeyOk).slice(0, 12);
@@ -1480,6 +1534,10 @@ document.addEventListener('visibilitychange', () => {
 
 function midiToFreq(m){ return 440 * Math.pow(2, (m - 69) / 12); }
 
+let spd = 1;
+const T = x => x / spd;
+function useSpd(v){ spd = SPEEDS.indexOf(v) >= 0 ? v : 1; }
+
 // ── 本物のピアノ音源（FluidR3 GM soundfont / Frank Wen, MIT License） ──
 // 使用音域（MIDI 40〜74）だけをbase64 mp3で埋め込み、初回のユーザー操作時にデコードしてキャッシュする。
 // デコード完了前や範囲外の音は加算合成ピアノにフォールバック（無音にはしない）
@@ -1598,6 +1656,11 @@ function stopAll(){
 
 function later(fn, ms){ timers.push(setTimeout(fn, ms)); }
 
+// 自動で次の問題へ進むタイマー。stopAll() では消さない（再生ボタンを押しても進行が死なない）
+let advT = null;
+function advance(fn, ms){ clearAdv(); advT = setTimeout(fn, ms); }
+function clearAdv(){ if(advT){ clearTimeout(advT); advT = null; } }
+
 // ── ドローン（主音の持続音） ──────────────────
 // キーを感じ続けられる「足場」。ピアノのサンプルは減衰するのでドローンは合成音で作り、
 // 出題音とぶつからないよう1オクターブ下・控えめな音量・ローパスで奥に置く。
@@ -1607,7 +1670,8 @@ let droneNodes = null;
 function startDrone(midi, fadeSec){
   stopDrone(0.05);
   if(!audioCtx || !masterGain) return;
-  const f = midiToFreq(midi - 12);
+  // 1オクターブ下に敷くのが基本だが、ギターに無い低音（MIDI40=6弦E未満）までは下げない
+  const f = midiToFreq(midi - 12 >= 40 ? midi - 12 : midi);
   const t = audioCtx.currentTime;
   const lp = audioCtx.createBiquadFilter();
   lp.type = 'lowpass';
@@ -1695,6 +1759,9 @@ let score = 0;
 let curQ = null;       // {type:'deg', cls, down, root} | {type:'chord', chord, root}
 let lastAnsVal = null; // 直前の出題（連続同一を避ける）
 let roundRoot = null;  // ルート省略ステージ用の固定ルート
+let roundPool = null;  // そのラウンドで使う度数（スケール可変ステージ用）
+let roundScale = null; // そのラウンドのスケール名キー（表示・カデンツの長短に使う）
+let recentMel = [];    // 直近に出したメロディ（同じ並びが続くのを防ぐ）
 let answersLog = [];   // [{ok, correct, given, q, ckey, gkey}]
 
 // ── 進行中セッションの状態 ──
@@ -1713,6 +1780,20 @@ function fmtSec(s){
 }
 
 function rnd(n){ return Math.floor(Math.random() * n); }
+function pickOf(a){ return a[rnd(a.length)]; }
+
+// そのラウンドで使う度数。スケール可変ステージはラウンドごとに変わる
+function poolOf(){
+  if(roundPool) return roundPool;
+  if(curStage && curStage.pool) return curStage.pool;
+  if(curStage && curStage.scales){
+    // ラウンド前（練習試聴中など）は、そのステージで出うる音をすべて有効にしておく
+    const set = {};
+    for(const k of curStage.scales) for(const v of SCALES[k].iv) set[v] = 1;
+    return Object.keys(set).map(Number).sort((a, b) => a - b);
+  }
+  return ALL12;
+}
 // 音の呼び方の設定で、度数とドレミのどちらを主に出すかを切り替える
 function degLabel(c){
   return progress.noteName === 'solfa'
@@ -1978,6 +2059,7 @@ function renderStageList(){
 }
 
 function showSelect(){
+  clearAdv();
   stopAll();
   stopTick();
   stopDrone(0.3);
@@ -2319,6 +2401,7 @@ function renderReport(){
 }
 
 function showReport(){
+  clearAdv();
   stopAll();
   lisStop();
   phase = 'select';
@@ -2333,6 +2416,7 @@ function showReport(){
 
 function enterStage(st){
   curStage = st;
+  roundPool = null; roundScale = null; recentMel = [];
   progress.lastStage = st.id;
   saveProgress();
   lisStop();
@@ -2346,6 +2430,7 @@ function enterStage(st){
 }
 
 function resetRoundUI(){
+  clearAdv();
   stopAll();
   stopTick();
   stopDrone(0.3);
@@ -2448,6 +2533,7 @@ function renderModeChip(){
        roundMode === 'inter');
   }
   if(curStage.gk === 'mel') mk('book', curStage.mel + '音の聴音');
+  if(roundScale) mk('target', SCALES[roundScale].n, true);
   if(progress.singFirst === 'on') mk('ear', '歌ってから答える', true);
   mk('headphones', curSession.label);
 }
@@ -2478,7 +2564,7 @@ function renderAnswers(){
       const s = document.createElement('span');
       s.className = 's'; s.textContent = progress.noteName === 'solfa' ? DEG[c].d : DEG[c].s;
       b.appendChild(d); b.appendChild(s);
-      if(!curStage.pool.includes(c)) b.classList.add('off');
+      if(!poolOf().includes(c)) b.classList.add('off');
       else b.addEventListener('click', () => onAnswerTap(c));
       answersEl.appendChild(b);
     }
@@ -2579,41 +2665,55 @@ function pickWeighted(pool, keyOf){
 // 実際の旋律は「順次進行（となりの音）」が主役で、跳躍のあとは反対方向に戻り、
 // 終わりは安定音（主音・3度・5度）に着地することが多い。この性質を模して組み立てる。
 // 全12度数からのランダムでは曲に出てこない並びばかりになり、耳コピに結びつかない
-const MEL_STEP_R = 0.60; // 順次進行の割合
-const MEL_3RD_R  = 0.85; // ここまでが3度跳躍（残りが4〜5度）
+// 音程の出方（音階のステップ数）。順次進行だけだと「ド→レ」「ド→レ→ミ」の繰り返しになり
+// 練習として成立しないので、3度以上の跳躍をしっかり混ぜる。
+// 音数が少ないほど跳躍を多くする（2音で順次だとほとんど問題にならないため）
+function melStepSize(n){
+  const r = Math.random();
+  if(n <= 2) return r < 0.20 ? 1 : (r < 0.48 ? 2 : (r < 0.70 ? 3 : (r < 0.87 ? 4 : 5 + rnd(2))));
+  return r < 0.40 ? 1 : (r < 0.66 ? 2 : (r < 0.83 ? 3 : (r < 0.94 ? 4 : 5 + rnd(2))));
+}
 
-function makeCommonCls(scale, n, startIdx){
+function makeCommonCls(scale, n){
   const LAST = scale.length - 1;
   const stable = [0, 2, 4].filter(i => i <= LAST); // 音階の1度・3度・5度
   const clamp = i => Math.max(0, Math.min(LAST, i));
-  // 開始音は安定音（1・3・5度）が多いが、毎回そうだと『1音目は1か3か5』と読まれてしまうので混ぜる
-  let i = (startIdx === null || startIdx === undefined)
-        ? (Math.random() < 0.75 ? stable[rnd(stable.length)] : rnd(LAST + 1))
-        : clamp(startIdx);
+  // 開始音は安定音（1・3・5度）寄りだが、偏りすぎると「1音目は1か3か5」と読まれるので抑えめ
+  let i = Math.random() < 0.45 ? pickOf(stable) : rnd(LAST + 1);
   const out = [i];
   let leap = 0;
   for(let k = 1; k < n; k++){
     let step;
-    if(leap !== 0 && Math.random() < 0.75){
-      step = (leap > 0 ? -1 : 1) * (Math.random() < 0.7 ? 1 : 2); // 跳んだあとは反行
+    if(leap !== 0 && Math.random() < 0.55){
+      step = (leap > 0 ? -1 : 1) * (Math.random() < 0.6 ? 1 : 2); // 大きく跳んだあとは戻る
     }else{
-      const r = Math.random();
-      const dir = Math.random() < 0.5 ? 1 : -1;
-      step = dir * (r < MEL_STEP_R ? 1 : (r < MEL_3RD_R ? 2 : 3));
+      step = (Math.random() < 0.5 ? 1 : -1) * melStepSize(n);
     }
     let ni = i + step;
     if(ni < 0 || ni > LAST) ni = clamp(i - step);          // 音域からはみ出したら反対側へ
     if(ni === i) ni = clamp(i + (i < LAST ? 1 : -1));      // 同じ音の連続は避ける
-    if(k === n - 1 && Math.random() < 0.6){
-      // 最後の音は安定音に着地しやすくする（フレーズらしい終わり方になる）
+    if(k === n - 1 && n >= 3 && Math.random() < 0.35){
+      // 3音以上のときだけ、たまに安定音へ着地させてフレーズらしく終わる
       const near = stable.reduce((a, b) => Math.abs(b - i) < Math.abs(a - i) ? b : a);
       if(near !== i) ni = near;
     }
-    leap = Math.abs(ni - i) >= 2 ? ni - i : 0;
+    leap = Math.abs(ni - i) >= 3 ? ni - i : 0;
     i = ni;
     out.push(i);
   }
   return out.map(x => scale[x]);
+}
+
+// 直近と同じ並びを避けて作る（「ドレ」が何問も続く、という状態を防ぐ）
+function makeMelCls(scale, n){
+  let cls, guard = 0;
+  do{
+    cls = makeCommonCls(scale, n);
+    guard++;
+  }while(guard < 14 && recentMel.indexOf(cls.join(',')) >= 0);
+  recentMel.push(cls.join(','));
+  if(recentMel.length > 5) recentMel.shift();
+  return cls;
 }
 
 // 度数クラスを実際の高さに置き直す。クラス0をそのまま1オクターブ上として鳴らすと
@@ -2624,7 +2724,7 @@ function melOffsets(cls){
   for(const c of cls){
     let o = c;
     if(prev !== null){
-      const cand = [c, c + 12, c - 12].filter(x => x >= -4 && x <= 15);
+      const cand = [c, c + 12, c - 12].filter(x => x >= -4 && x <= 12);
       o = cand.length ? cand.reduce((a, b) => Math.abs(b - prev) < Math.abs(a - prev) ? b : a) : c;
     }
     offs.push(o);
@@ -2635,24 +2735,9 @@ function melOffsets(cls){
 
 function makeQuestion(){
   if(curStage.mel){
-    let cls;
-    if(curStage.style === 'common'){
-      // よく使う動き：音楽的な形を優先する（苦手優先の重み付けはここでは使わない）
-      cls = makeCommonCls(curStage.pool, curStage.mel, curStage.melStart === 'root' ? 0 : null);
-      lastAnsVal = cls[cls.length - 1];
-    }else{
-      // 自由な組み合わせ：苦手な音が出やすい重み付けで引く。同じ音が続かないように並べる
-      cls = [];
-      for(let i = 0; i < curStage.mel; i++){
-        if(i === 0 && curStage.melStart === 'root'){ cls.push(0); lastAnsVal = 0; continue; }
-        let c, guard = 0;
-        do{ c = pickWeighted(curStage.pool, k => 'd' + k); guard++; }
-        while(guard < 8 && cls.length && c === cls[cls.length - 1]);
-        cls.push(c);
-        lastAnsVal = c;
-      }
-    }
-    return {type:'mel', cls, offs: melOffsets(cls), root: roundRoot};
+    const cls = makeMelCls(poolOf(), curStage.mel);
+    lastAnsVal = cls[cls.length - 1];
+    return {type:'mel', cls, offs: melOffsets(cls), root: roundRoot, scale: roundScale};
   }
   if(curStage.chords){
     const c = pickWeighted(curStage.chords, k => k);
@@ -2663,13 +2748,13 @@ function makeQuestion(){
   if(roundMode === 'block'){
     // ブロック練習：同じ音を続けて出して、まず響きを刻む
     if(blockDeg === null || blockLeft <= 0){
-      blockDeg = pickWeighted(curStage.pool, k => 'd' + k);
+      blockDeg = pickWeighted(poolOf(), k => 'd' + k);
       blockLeft = BLOCK_REPEAT;
     }
     c = blockDeg;
     blockLeft--;
   }else{
-    c = pickWeighted(curStage.pool, k => 'd' + k);
+    c = pickWeighted(poolOf(), k => 'd' + k);
   }
   lastAnsVal = c;
   const down = curStage.dir === 'both' && Math.random() < 0.5;
@@ -2687,16 +2772,16 @@ function degOffset(cls, down){
 function playDegPhrase(root, off, t0){
   const mode = progress.playMode;
   if(mode === 'harmonic'){
-    playNote(root, t0, 0.9, 1.9);
-    playNote(root + off, t0, 0.9, 1.9);
+    playNote(root, t0, 0.9, T(1.9));
+    playNote(root + off, t0, 0.9, T(1.9));
   }else if(mode === 'both'){
-    playNote(root, t0, 1.0, 1.15);
-    playNote(root + off, t0 + 1.25, 0.95, 1.5);
-    playNote(root, t0 + 2.95, 0.85, 1.7);
-    playNote(root + off, t0 + 2.95, 0.85, 1.7);
+    playNote(root, t0, 1.0, T(1.15));
+    playNote(root + off, t0 + T(1.25), 0.95, T(1.5));
+    playNote(root, t0 + T(2.95), 0.85, T(1.7));
+    playNote(root + off, t0 + T(2.95), 0.85, T(1.7));
   }else{
-    playNote(root, t0, 1.0, 1.15);
-    playNote(root + off, t0 + 1.25, 0.95, 1.6);
+    playNote(root, t0, 1.0, T(1.15));
+    playNote(root + off, t0 + T(1.25), 0.95, T(1.6));
   }
 }
 
@@ -2706,15 +2791,16 @@ function playMelPhrase(root, cls, t0, offs){
   cls.forEach((c, i) => {
     const last = i === cls.length - 1;
     const off = offs ? offs[i] : degOffset(c, false);
-    playNote(root + off, t0 + i * 0.62, last ? 0.98 : 0.92, last ? 1.5 : 0.72);
+    playNote(root + off, t0 + i * T(0.62), last ? 0.98 : 0.92, last ? T(1.5) : T(0.72));
   });
 }
+const melGap = () => T(0.62); // メロディの音間（スピード反映後）
 
 function melOffsOf(q){ return q.offs || q.cls.map(c => degOffset(c, false)); }
 
 function playChordPhrase(root, chordKey, t0){
   // ギターのダウンストローク風に少しずらして発音
-  CHORDS[chordKey].iv.forEach((iv, i) => playNote(root + iv, t0 + i * 0.07, 0.85, 1.9));
+  CHORDS[chordKey].iv.forEach((iv, i) => playNote(root + iv, t0 + i * T(0.07), 0.85, T(1.9)));
 }
 
 // キー確立のカデンツ I→IV→V→I（マイナー系ステージは i→iv→V→i）。調性感を作ってから出題する（FET等の標準式）
@@ -2727,10 +2813,11 @@ function playCadence(root, minor, t0){
     [0, th, 7, 12]
   ];
   seq.forEach((ivs, ci) => {
-    const t = t0 + ci * 0.75;
-    const dur = ci === 3 ? 1.8 : 0.95;
+    const t = t0 + ci * T(0.75);
+    const dur = ci === 3 ? T(1.8) : T(0.95);
     ivs.forEach((s, i) => playNote(root + s, t + i * 0.06, 0.68, dur));
   });
+  return 3 * T(0.75) + T(1.8);
 }
 
 // 短縮カデンツ Ⅰ→Ⅴ→Ⅰ（毎問の合図用・約2.4秒）。
@@ -2739,11 +2826,11 @@ function playShortCadence(root, minor, t0){
   const th = minor ? 3 : 4;
   const seq = [[0, th, 7], [7, 11, 14], [0, th, 7, 12]];
   seq.forEach((ivs, ci) => {
-    const t = t0 + ci * 0.55;
-    const dur = ci === 2 ? 1.3 : 0.72;
+    const t = t0 + ci * T(0.55);
+    const dur = ci === 2 ? T(1.3) : T(0.72);
     ivs.forEach((s, i) => playNote(root + s, t + i * 0.05, 0.62, dur));
   });
-  return 2 * 0.55 + 1.3;
+  return 2 * T(0.55) + T(1.3);
 }
 
 // カデンツを鳴らし直す間隔（問題数・0なら最初だけ）。
@@ -2759,6 +2846,7 @@ function cadGap(){
 
 // 2問目以降にキーの響きを入れ直してから出題する
 function playQuestionWithKey(){
+  useSpd(progress.speed);
   const gap = cadGap();
   if(progress.scaffold >= 3 && gap > 0 && qi > 1 && (qi - 1) % gap === 0 && roundRoot !== null && !diag){
     ensureAudio();
@@ -2775,6 +2863,7 @@ function playQuestionWithKey(){
 // 現在の問題を再生（replay=trueでもまったく同じものを鳴らす）
 function playStimulus(){
   ensureAudio();
+  useSpd(progress.speed);
   stopAll();
   clearAnswerHl();
   setPlaying(true);
@@ -2794,19 +2883,30 @@ function playStimulus(){
       setPlayLabel('ルートと同時に鳴っている音は？', true);
     }else{
       setPlayLabel('ルート…', true);
-      later(() => setPlayLabel('この音は？', true), 1250);
+      later(() => setPlayLabel('この音は？', true), Math.round(T(1.25) * 1000));
     }
   }
 }
 
 function startRound(){
   ensureAudio();
+  useSpd(progress.speed);
   curSession = sessionOf();
   roundTotal = curSession.n || 0;
   roundDeadline = curSession.sec ? Date.now() + curSession.sec * 1000 : 0;
   // ブロック練習から始め、すでにクリア済みのステージ・メロディ・コードは最初からミックスで出す
   roundMode = (curStage.gk === 'mono' && bestOf(curStage.id) < CLEAR_RATE) ? 'block' : 'inter';
   blockDeg = null; blockLeft = 0;
+  recentMel = [];
+  // スケール可変ステージは、このラウンドで使うスケールをここで決める
+  if(curStage.scales && curStage.scales.length){
+    roundScale = pickOf(curStage.scales);
+    roundPool = SCALES[roundScale].iv;
+  }else{
+    roundScale = null;
+    roundPool = null;
+  }
+  renderAnswers(); // 使う音が変わるのでボタンのグレーアウトを引き直す
   resetRoundUIKeepScreen();
   setIconText(listenBtn, 'note', '再生中…'); // 足場の再生中に押しても無反応で混乱しないよう表示
   listenBtn.classList.add('busy');
@@ -2834,7 +2934,7 @@ function startRound(){
             : (curStage.dir === 'both') ? 52 + rnd(9)
             : (curStage.rootEvery === false) ? 48 + rnd(8)
             : 45 + rnd(11);
-  const minor = curStage.id === 's4'; // マイナー系ステージはマイナーカデンツ
+  const minor = curStage.id === 's4' || isMinorScale(roundScale); // マイナー系はマイナーカデンツ
   const t0 = audioCtx.currentTime + 0.08;
   phase = 'listen';
   const sc = progress.scaffold;
@@ -2842,7 +2942,7 @@ function startRound(){
   if(sc >= 3){
     playCadence(roundRoot, minor, t0);
     setPlayLabel('キーの響きを聴いてから出題が始まります', true);
-    delay = 3500;
+    delay = Math.round(T(3.5) * 1000);
     if(sc === 4) later(() => startDrone(roundRoot, 0), 3300); // カデンツのあとドローンを敷く
   }else if(sc >= 1){
     // 減衰モードは、そのラウンドの想定時間をかけて消えていく
@@ -2851,19 +2951,27 @@ function startRound(){
     playNote(roundRoot, t0, 1.0, 1.6);
     setPlayLabel(sc === 1 ? '主音が鳴り続けます（少しずつ小さくなります）'
                           : '主音が鳴り続けます。これがキーです', true);
-    delay = 2200;
+    delay = Math.round(T(2.2) * 1000);
   }else{
     playNote(roundRoot, t0, 1.0, 1.6);
     setPlayLabel('キーのルート音 → 出題が始まります', true);
-    delay = 2000;
+    delay = Math.round(T(2.0) * 1000);
+  }
+  if(roundScale && roundPool){
+    // そのラウンドのスケールを上行で1回聴かせる。何の中で鳴っているかを掴んでもらう
+    const st0 = audioCtx.currentTime + delay / 1000 - 0.15;
+    roundPool.forEach((iv, i) => playNote(roundRoot + iv, st0 + i * T(0.26), 0.72, T(0.42)));
+    playNote(roundRoot + 12, st0 + roundPool.length * T(0.26), 0.8, T(1.1));
+    setPlayLabel(SCALES[roundScale].n + ' のスケールです', true);
+    delay += Math.round((roundPool.length + 1) * T(0.26) * 1000) + Math.round(T(0.5) * 1000);
   }
   if(curStage.mel) rootBtn.hidden = false; // メロディはいつでもキーを確かめられるように
   if(curStage.rootEvery === false){
     // 上級（ルート省略）は最後にもう一度ルートを鳴らして覚えてもらう
     rootBtn.hidden = false;
-    playNote(roundRoot, audioCtx.currentTime + delay / 1000 - 0.2, 1.0, 1.6);
+    playNote(roundRoot, audioCtx.currentTime + delay / 1000 - 0.2, 1.0, T(1.6));
     setPlayLabel('キーの響き → ルート音を覚えてください', true);
-    delay += 1700;
+    delay += Math.round(T(1.7) * 1000);
   }
   later(nextQuestion, delay);
 }
@@ -2885,6 +2993,7 @@ function resetRoundUIKeepScreen(){
 }
 
 function nextQuestion(){
+  clearAdv();
   stopAll();
   clearAnswerHl();
   hideStaff();
@@ -2987,7 +3096,7 @@ function melJudge(){
   showStaff();
   if(ok){
     setFeedback('正解！ ' + cLabel, 'ok', 'check');
-    later(nextQuestion, 1700);
+    advance(nextQuestion, Math.round(T(1.7) * 1000));
   }else{
     const hit = correct.filter((c, i) => melInput[i] === c).length;
     setFeedback('正解は ' + cLabel + '（' + correct.length + '音中' + hit + '音）', 'ng', 'x');
@@ -3016,6 +3125,7 @@ function applySingGate(){
 // 練習試聴（スタート前）：ボタンの音を採点なしで確認できる。基準はCで固定（響きを覚えやすくするため）
 function practicePlay(val){
   ensureAudio();
+  useSpd(progress.speed);
   stopAll();
   clearAnswerHl();
   setPlaying(true);
@@ -3073,7 +3183,7 @@ function answer(val){
     if(cBtn) cBtn.classList.add('hlOk');
     setFeedback('正解！ ' + cLabel, 'ok', 'check');
     showStaff();
-    later(nextQuestion, 1400); // 五線譜を一瞥できる長さ
+    advance(nextQuestion, Math.round(T(1.4) * 1000)); // 五線譜を一瞥できる長さ
   }else{
     phase = 'reveal';
     if(cBtn) cBtn.classList.add('hlOk');
@@ -3092,6 +3202,7 @@ function answer(val){
 // 不正解時の答え合わせ再生（出題と同じ形で正解を確認→単音は解決フレーズつき）
 function replayForReveal(){
   ensureAudio();
+  useSpd(progress.speed);
   setPlaying(true);
   const t0 = audioCtx.currentTime + 0.05;
   if(curQ.type === 'chord'){
@@ -3102,12 +3213,12 @@ function replayForReveal(){
     const offs = melOffsOf(curQ);
     playMelPhrase(curQ.root, curQ.cls, t0, offs);
     // メロディも最後に主音へ解決させて、調の中での位置を体感させる
-    playResolution(curQ.root, offs[offs.length - 1], t0 + curQ.cls.length * 0.62 + 1.2);
+    playResolution(curQ.root, offs[offs.length - 1], t0 + curQ.cls.length * melGap() + T(1.2));
     return;
   }
   const off = degOffset(curQ.cls, curQ.down);
   playDegPhrase(curQ.root, off, t0);
-  const phraseDur = progress.playMode === 'harmonic' ? 2.0 : (progress.playMode === 'both' ? 4.8 : 3.0);
+  const phraseDur = T(progress.playMode === 'harmonic' ? 2.0 : (progress.playMode === 'both' ? 4.8 : 3.0));
   playResolution(curQ.root, off, t0 + phraseDur);
 }
 
@@ -3130,9 +3241,9 @@ function playResolution(root, off, t0, minorish){
   }
   path.forEach((t, i) => {
     const last = i === path.length - 1;
-    playNote(base + t, t0 + i * 0.32, last ? 0.95 : 0.78, last ? 1.6 : 0.5);
+    playNote(base + t, t0 + i * T(0.32), last ? 0.95 : 0.78, last ? T(1.6) : T(0.5));
   });
-  return (path.length - 1) * 0.32 + 1.6;
+  return (path.length - 1) * T(0.32) + T(1.6);
 }
 
 function onNext(){
@@ -3144,6 +3255,7 @@ function onNext(){
 // ── 結果 ──────────────────────────────────────
 
 function showResult(){
+  clearAdv();
   stopAll();
   stopTick();
   stopDrone(0.6);
@@ -3211,6 +3323,7 @@ function showResult(){
       line.appendChild(lt);
       line.addEventListener('click', () => {
         ensureAudio();
+        useSpd(progress.speed);
         stopAll();
         const t0 = audioCtx.currentTime + 0.05;
         if(m.q.type === 'chord') playChordPhrase(m.q.root, m.q.chord, t0);
@@ -3313,8 +3426,25 @@ const LIS_STAFF = {wrap:'lisStaffWrap', svg:'lisStaffSvg', cap:'lisStaffCap'};
 let lisOn = false, lisTimer = null, lisRevealT = null, lisClock = null;
 let lisRoot = 48, lisCount = 0, lisSince = 0, lisPrevCls = null;
 let lisHist = [], lisDeadline = 0, lisWake = null, lisWakeNG = false;
+let lisScale = null; // そのキーのあいだ使うスケール（フレーズごとにバラバラだと調が定まらない）
+
+// 選ばれたネタが使うスケールの中から1つ選ぶ
+function pickLisScale(picks){
+  const set = {};
+  for(const v of picks) if(v.scales) for(const k of v.scales) set[k] = 1;
+  const ks = Object.keys(set);
+  return ks.length ? pickOf(ks) : null;
+}
 
 function lisPicks(){ return LIS_SRC.filter(v => progress.lis.pick.indexOf(v.id) >= 0); }
+
+// キーの取り方。下行を含むときは1オクターブ下まで鳴るので、キー自体を高めに取って
+// ギターの音域（およびピアノ音源の MIDI 40〜74）から外れないようにする
+function lisPickRoot(picks){
+  const down = picks.some(v => v.dir === 'down' || v.dir === 'both');
+  if(progress.lis.fixedKey) return down ? 60 : 48;   // キーC固定（下行ありは1オクターブ上のC）
+  return down ? 52 + rnd(8) : 45 + rnd(11);
+}
 
 // 「苦手な音だけ」の動的プール：3回以上出題した中で正答率が低い順に最大6音
 function lisWeakPool(){
@@ -3351,22 +3481,12 @@ function lisMakeItem(){
   }
   const pool = src.weak ? lisWeakPool() : src.pool;
   if(src.mel){
-    let cls;
-    if(src.style === 'common'){
-      cls = makeCommonCls(pool, src.mel, src.melStart === 'root' ? 0 : null);
-      lisPrevCls = cls[cls.length - 1];
-    }else{
-      cls = [];
-      for(let i = 0; i < src.mel; i++){
-        if(i === 0 && src.melStart === 'root'){ cls.push(0); lisPrevCls = 0; continue; }
-        let c, guard = 0;
-        do{ c = lisPickCls(pool); guard++; }
-        while(guard < 8 && cls.length && c === cls[cls.length - 1]);
-        cls.push(c);
-        lisPrevCls = c;
-      }
-    }
-    return {src, q:{type:'mel', cls, offs: melOffsets(cls), root: lisRoot}};
+    // そのキーで決めたスケールを優先し、このネタが使わないスケールなら自前のものから選ぶ
+    const sc = (src.scales && src.scales.indexOf(lisScale) >= 0) ? lisScale
+             : (src.scales ? pickOf(src.scales) : null);
+    const cls = makeMelCls(sc ? SCALES[sc].iv : pool, src.mel);
+    lisPrevCls = cls[cls.length - 1];
+    return {src, q:{type:'mel', cls, offs: melOffsets(cls), root: lisRoot, scale: sc}};
   }
   const c = lisPickCls(pool);
   lisPrevCls = c;
@@ -3378,25 +3498,31 @@ function lisMakeItem(){
 function lisPlayItem(q, t0, reso){
   if(q.type === 'chord'){
     playChordPhrase(q.root, q.chord, t0);
-    return 2.2;
+    return T(2.2);
   }
   if(q.type === 'mel'){
     const offs = melOffsOf(q);
     playMelPhrase(q.root, q.cls, t0, offs);
-    const tail = q.cls.length * 0.62 + 0.9;
-    if(!reso) return tail + 0.7;
+    const tail = q.cls.length * melGap() + T(0.9);
+    if(!reso) return tail + T(0.7);
     return tail + playResolution(q.root, offs[offs.length - 1], t0 + tail, false);
   }
   const off = degOffset(q.cls, q.down);
   if(q.noRoot){
-    playNote(q.root + off, t0, 0.95, 1.5);
-    if(!reso) return 1.7;
-    return 1.7 + playResolution(q.root, off, t0 + 1.7, !!q.minor);
+    playNote(q.root + off, t0, 0.95, T(1.5));
+    if(!reso) return T(1.7);
+    return T(1.7) + playResolution(q.root, off, t0 + T(1.7), !!q.minor);
   }
-  playNote(q.root, t0, 0.8, 1.0);
-  playNote(q.root + off, t0 + 1.1, 0.95, 1.4);
-  if(!reso) return 2.7;
-  return 2.8 + playResolution(q.root, off, t0 + 2.8, !!q.minor);
+  playNote(q.root, t0, 0.8, T(1.0));
+  playNote(q.root + off, t0 + T(1.1), 0.95, T(1.4));
+  if(!reso) return T(2.7);
+  return T(2.8) + playResolution(q.root, off, t0 + T(2.8), !!q.minor);
+}
+
+// 「3音・モード ／ ドリアン」のようにスケール名を添える
+function lisSrcLabel(it){
+  const sc = it.q.scale ? ' ・ ' + SCALES[it.q.scale].n : '';
+  return it.src.n + (it.q.down ? '・下行' : '') + sc;
 }
 
 function lisAnsText(q){
@@ -3413,43 +3539,46 @@ function lisStep(){
   if(!lisOn) return;  // stopAllで止まっていないか念のため確認
   const picks = lisPicks();
   if(!picks.length){ lisStop('流す内容が選ばれていません'); return; }
+  useSpd(progress.lis.speed);
   const ke = progress.lis.keyEvery;
-  const minor = picks.every(v => v.minor);
   // キーを作り直すタイミング（0=変えない ならラウンド最初の1回だけ）
   if(lisCount === 0 || (ke > 0 && lisSince >= ke)){
-    lisRoot = 45 + rnd(11);
+    lisRoot = lisPickRoot(picks);
+    lisScale = pickLisScale(picks); // このキーのあいだ使うスケールを決める
     $('lisKey').textContent = 'KEY ' + spellNote(lisRoot, false).name;
     $('lisDeg').textContent = '…';
     lisSince = 0; lisCount++;
+    const minorKey = lisScale ? isMinorScale(lisScale) : picks.every(v => v.minor);
     if(progress.lis.cad === 'off'){
-      playNote(lisRoot, audioCtx.currentTime + 0.08, 1.0, 1.6);
+      playNote(lisRoot, audioCtx.currentTime + 0.08, 1.0, T(1.6));
       $('lisSrc').textContent = 'キーのルート音';
-      lisTimer = setTimeout(lisStep, 2400);
+      lisTimer = setTimeout(lisStep, Math.round(T(2.4) * 1000));
     }else{
-      playCadence(lisRoot, minor, audioCtx.currentTime + 0.08);
+      const d = playCadence(lisRoot, minorKey, audioCtx.currentTime + 0.08);
       $('lisSrc').textContent = 'キーの響きを作っています';
-      lisTimer = setTimeout(lisStep, 4200);
+      lisTimer = setTimeout(lisStep, Math.round((d + 0.3) * 1000));
     }
     return;
   }
   const it = lisMakeItem();
   const t0 = audioCtx.currentTime + 0.06;
   // 「毎回」は1つずつ短いカデンツでキーを作り直す（聴き流していてもキーを見失わない）
-  const lead = progress.lis.cad === 'each' ? playShortCadence(lisRoot, minor, t0) + 0.35 : 0;
+  const lead = progress.lis.cad === 'each'
+             ? playShortCadence(lisRoot, lisScale ? isMinorScale(lisScale) : false, t0) + T(0.35) : 0;
   const dur = lisPlayItem(it.q, t0 + lead, progress.lis.reso);
   $('lisDeg').textContent = '…';
-  $('lisSrc').textContent = it.src.n + (it.q.down ? '・下行' : '');
+  $('lisSrc').textContent = lisSrcLabel(it);
   // 答えは「その音が鳴った瞬間」に出す（先に鳴らすルートやカデンツのぶんだけ遅らせる）。
   // 履歴に積むのも同じタイミング。先に積むと、まだ鳴っていない音の答えが履歴で読めてしまう
   let revealMs = lead * 1000 + 150;
-  if(it.q.type === 'deg' && !it.q.noRoot) revealMs += 1000;                       // ルート→課題音
-  if(it.q.type === 'mel') revealMs += (it.q.cls.length - 1) * 620;                // 最後の音まで
+  if(it.q.type === 'deg' && !it.q.noRoot) revealMs += T(1.0) * 1000;              // ルート→課題音
+  if(it.q.type === 'mel') revealMs += (it.q.cls.length - 1) * melGap() * 1000;    // 最後の音まで
   lisRevealT = setTimeout(() => {
     $('lisDeg').textContent = lisAnsText(it.q);
     lisHistPush(it);
   }, revealMs);
   lisSince++; lisCount++;
-  lisTimer = setTimeout(lisStep, (lead + dur + LIS_PAUSE[progress.lis.gap]) * 1000);
+  lisTimer = setTimeout(lisStep, (lead + dur + T(LIS_PAUSE[progress.lis.gap])) * 1000);
 }
 
 // ── 履歴（新しい順。ページを閉じるまで保持） ──
@@ -3474,7 +3603,8 @@ function renderLisHist(active){
     const a = document.createElement('span');
     a.className = 'hA'; a.textContent = lisAnsText(h.q);
     const sm = document.createElement('span');
-    sm.className = 'hS'; sm.textContent = h.name;
+    sm.className = 'hS';
+    sm.textContent = h.name + (h.q.scale ? '・' + SCALES[h.q.scale].n : '');
     a.appendChild(sm);
     b.appendChild(n); b.appendChild(k); b.appendChild(a); b.appendChild(ico('play'));
     b.addEventListener('click', () => lisReplay(i));
@@ -3491,6 +3621,7 @@ function lisReplay(i){
   lisPause();
   stopAll();
   const q = Object.assign({}, h.q, {noRoot:false}); // 聴き直しではキーのルートも鳴らす
+  useSpd(progress.lis.speed);
   lisPlayItem(q, audioCtx.currentTime + 0.06, true);
   $('lisKey').textContent = 'KEY ' + spellNote(h.q.root, false).name;
   $('lisDeg').textContent = lisAnsText(h.q);
@@ -3576,6 +3707,7 @@ function renderLisChips(){
 }
 
 function showListen(){
+  clearAdv();
   stopAll();
   stopTick();
   stopDrone(0.3);
@@ -3646,6 +3778,8 @@ const lisResoBtns = [...document.querySelectorAll('#lisResoSeg button')];
 const lisKeyBtns = [...document.querySelectorAll('#lisKeySeg button')];
 const lisSleepBtns = [...document.querySelectorAll('#lisSleepSeg button')];
 const lisCadBtns = [...document.querySelectorAll('#lisCadSeg button')];
+const lisSpeedBtns = [...document.querySelectorAll('#lisSpeedSeg button')];
+const lisKeyModeBtns = [...document.querySelectorAll('#lisKeyModeSeg button')];
 
 function renderLisSeg(){
   lisGapBtns.forEach(b => b.classList.toggle('active', b.dataset.gap === progress.lis.gap));
@@ -3653,7 +3787,16 @@ function renderLisSeg(){
   lisKeyBtns.forEach(b => b.classList.toggle('active', +b.dataset.ke === progress.lis.keyEvery));
   lisSleepBtns.forEach(b => b.classList.toggle('active', +b.dataset.sl === progress.lis.sleep));
   lisCadBtns.forEach(b => b.classList.toggle('active', b.dataset.cad === progress.lis.cad));
+  lisSpeedBtns.forEach(b => b.classList.toggle('active', +b.dataset.sp === progress.lis.speed));
+  lisKeyModeBtns.forEach(b => b.classList.toggle('active', (b.dataset.fk === '1') === progress.lis.fixedKey));
 }
+
+lisSpeedBtns.forEach(b => b.addEventListener('click', () => {
+  progress.lis.speed = +b.dataset.sp; saveProgress(); renderLisSeg();
+}));
+lisKeyModeBtns.forEach(b => b.addEventListener('click', () => {
+  progress.lis.fixedKey = b.dataset.fk === '1'; saveProgress(); renderLisSeg();
+}));
 
 lisCadBtns.forEach(b => b.addEventListener('click', () => {
   progress.lis.cad = b.dataset.cad; saveProgress(); renderLisSeg();
@@ -3730,6 +3873,7 @@ let diag = null; // {dir, list, idx, subQ, okCnt, n}
 
 function startDiag(){
   ensureAudio();
+  clearAdv();
   stopAll();
   diag = {dir:'up', list:DIAG_UP, idx:0, subQ:0, okCnt:0, n:0};
   lisStop();
@@ -3755,11 +3899,13 @@ function startDiag(){
 }
 
 function diagLevelStart(){
+  useSpd(progress.speed);
   stopAll();
   const st = STAGES.find(s => s.id === diag.list[diag.idx]);
   curStage = st;
   diag.subQ = 0; diag.okCnt = 0;
   lastAnsVal = null;
+  roundPool = null; roundScale = null;
   roundMode = 'inter'; // 診断は実力を測るので常に混ぜて出す
   renderAnswers();
   setIconText(listenBtn, 'note', '再生中…');
@@ -3785,6 +3931,7 @@ function diagLevelStart(){
 }
 
 function diagQuestion(){
+  clearAdv();
   stopAll();
   clearAnswerHl();
   hideStaff();
@@ -3817,7 +3964,7 @@ function diagAnswer(val){
   }
   showStaff();
   diag.subQ++;
-  later(diagAdvance, ok ? 1200 : 1800);
+  advance(diagAdvance, ok ? 1200 : 1800);
 }
 
 function diagAdvance(){
@@ -3882,12 +4029,16 @@ $('diagSelBtn').addEventListener('click', () => { diag = null; showSelect(); });
 listenBtn.addEventListener('click', () => {
   ensureAudio(); // ユーザー操作内で同期的にresume（iOS対策）
   if(phase === 'idle' || phase === 'result') startRound();
-  else if(phase === 'q' || phase === 'reveal') playStimulus();
+  else if(phase === 'q' || phase === 'reveal'){
+    playStimulus();
+    if(phase === 'reveal' && !diag) nextBtn.hidden = false; // 手動でも抜けられるように
+  }
 });
 
 rootBtn.addEventListener('click', () => {
   if(roundRoot === null) return;
   ensureAudio();
+  if(phase === 'reveal' && !diag) nextBtn.hidden = false;
   stopAll();
   playNote(roundRoot, audioCtx.currentTime + 0.05, 1.0, 1.5);
   setPlayLabel('キーのルート音', true);
@@ -3907,6 +4058,18 @@ $('againBtn').addEventListener('click', () => { resetRoundUI(); startRound(); })
 $('selectBtn').addEventListener('click', showSelect);
 $('reportBtn').addEventListener('click', showReport);
 $('repBackBtn').addEventListener('click', showSelect);
+
+// テンポ（早送り・永続化）
+const speedBtns = [...document.querySelectorAll('#speedSeg button')];
+function renderSpeedSeg(){
+  speedBtns.forEach(b => b.classList.toggle('active', +b.dataset.sp === progress.speed));
+}
+speedBtns.forEach(b => b.addEventListener('click', () => {
+  progress.speed = +b.dataset.sp;
+  saveProgress();
+  renderSpeedSeg();
+}));
+renderSpeedSeg();
 
 // 出題の鳴らし方（永続化）
 const segBtns = [...document.querySelectorAll('#playModeSeg button')];
@@ -4180,6 +4343,14 @@ document.addEventListener('keydown', e => {
   const btns = [...answersEl.querySelectorAll('button:not(.off)')];
   if(btns[idx]) btns[idx].click();
 });
+
+// ヘッダーの高さを測って、qbar の貼り付け位置に使う
+function syncHdrH(){
+  const h = document.querySelector('header');
+  if(h) document.documentElement.style.setProperty('--hdrH', h.offsetHeight + 'px');
+}
+syncHdrH();
+window.addEventListener('resize', syncHdrH);
 
 // ── 初期化 ────────────────────────────────────
 
