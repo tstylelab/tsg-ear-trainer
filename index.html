@@ -1345,12 +1345,13 @@ function bestOf(id){
   return v === undefined ? -1 : v;
 }
 
-// ステージ解放判定：グループ（単音/コード）ごとの並び順で、前のステージをクリア（正答率CLEAR_RATE以上）すると解放。
+// ステージ解放判定：画面のグループ見出し(grp)ごとの並び順で、前のステージをクリア（正答率CLEAR_RATE以上）すると解放。
+// gkは挙動の分類（mono/mel/chord）で、コース分けとは別物なのでチェーンには使わない。
 // 「すべて自由」設定なら常に解放。各グループの先頭は常に解放
 function isUnlocked(st){
   if(progress.unlockMode === 'free') return true;
   if(bestOf(st.id) >= CLEAR_RATE) return true; // 一度クリアしたステージは常に解放
-  const chain = STAGES.filter(s => s.gk === st.gk);
+  const chain = STAGES.filter(s => s.grp === st.grp);
   const idx = chain.findIndex(s => s.id === st.id);
   if(idx <= 0) return true;
   // レベル診断の結果で解放された範囲（単音グループのみ）
@@ -3398,7 +3399,7 @@ function showResult(){
   }
 
   // クリアして次のステージが解放されていれば、その場で進めるボタンを出す（ベスト更新の後に判定）
-  const chain = STAGES.filter(s => s.gk === curStage.gk);
+  const chain = STAGES.filter(s => s.grp === curStage.grp);
   const nxt = chain[chain.findIndex(s => s.id === curStage.id) + 1];
   const nsBtn = $('nextStageBtn');
   if(cleared && nxt && isUnlocked(nxt)){
