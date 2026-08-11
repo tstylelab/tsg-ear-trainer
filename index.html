@@ -1090,6 +1090,9 @@ footer{
     <p>絶対的な音名（CやAなど）ではなく、キーの中心＝ルートからの距離（1・♭3・5…）で音を捉える聴き方です。耳コピ・アドリブ・移調に直結する、実戦的な相対音感が身につきます。</p>
     <h4><svg class="ic"><use href="#i-book"/></svg>ステージ構成</h4>
     <p>単音（度数当て）は入門→上級へ段階的に出題範囲が広がります。<b>各ラウンドはまずキーの響き（カデンツ）が鳴り、調性感を作ってから出題開始</b>。入門〜初級はキーC固定でじっくり音の響きを覚え、中級からはキーがラウンドごとにランダムに変わって、どの調でも通用する耳を鍛えます。キーの支えの強さは、クイズ画面の<b>音符ボタン</b>から5段階で変えられます（カデンツ＋ドローン → カデンツ → ドローン → ドローン減衰 → なし）。強い支えは覚えるのに役立ちますが、頼りきると内側の音感が育ちにくいので、クリアできたら1段ずつ外していってください。上級は「ルート省略」：カデンツとルート音を最初に聴き、あとは連続で答えます。コード（響き当て）はトライアド→セブンスと進みます。腕に自信がある人は、トップの<b>レベル診断</b>（4〜10問）を受けると、実力に合ったステージまで一気に解放されます。</p>
+    <h4><svg class="ic"><use href="#i-repeat"/></svg>同じ音のくり返し（ブロック練習）</h4>
+    <p>設定で<b>2問ずつ／3問ずつ</b>にすると、単音ステージで同じ音を続けて出します。初めてその響きに触れる人が耳に刻むための練習で、直近6問で5問正解すると自動的にミックス（毎問ちがう音）へ移ります。<b>既定は「しない」</b>です。生徒さんに使わせるときだけONにしてください。</p>
+
     <h4><svg class="ic"><use href="#i-book"/></svg>メロディ（聴音）</h4>
     <p>2〜5音のメロディを聴いて、<b>順番に</b>度数で答えます。単音より一段実戦的で、耳コピに直結する練習です。押し間違えたら「1つ戻す」で戻せます（PCはBackspaceキー）。すべての音を入れた時点でまとめて判定されます。</p>
     <p>コースは2つあります。<b>よく使う動き</b>は、ラウンドごとに<b>メジャーかマイナー</b>を選び、その7音の中から作ります。順次進行だけでなく3度〜6度の跳躍も混ぜ、跳んだら戻る・たまに安定音へ着地する、という実際の旋律の性質で組み立てます。</p>
@@ -1133,6 +1136,14 @@ footer{
       <button data-sp="1.5">かなり速い</button>
     </div>
     <p style="font-size:var(--f5); color:var(--t3); margin:2px 0 0;">カデンツ・出題・答え合わせの待ち時間をまとめて詰めます。音程は変わりません。</p>
+
+    <h4><svg class="ic"><use href="#i-repeat"/></svg>同じ音のくり返し（単音ステージ）</h4>
+    <div class="segRow" id="blockSeg">
+      <button data-br="0">しない</button>
+      <button data-br="2">2問ずつ</button>
+      <button data-br="3">3問ずつ</button>
+    </div>
+    <p style="font-size:var(--f5); color:var(--t3); margin:2px 0 0;">同じ音を続けて出して響きを刻む「ブロック練習」です。まったくの初心者には有効ですが、すでに聴き取れる人にはただの繰り返しになるので<b>既定はしない</b>にしています。ONにすると、直近6問で5問正解した時点で自動的にミックスへ移ります。</p>
 
     <h4><svg class="ic"><use href="#i-volume"/></svg>出題の鳴らし方（単音ステージ）</h4>
     <div class="segRow" id="playModeSeg">
@@ -1218,7 +1229,9 @@ const SCAFFOLD = [
   {n:'カデンツ＋ドローン', d:'いちばんわかりやすい。両方の支えつき'}
 ];
 
-const BLOCK_REPEAT = 3; // ブロック練習で同じ音を続けて出す回数
+// ブロック練習（同じ音を続けて出す）の回数。0＝しない。
+// 響きを刻むには有効だが、すでに解ける人には同じ問題の繰り返しでしかないので既定はオフ
+const BLOCK_REPS = [0, 2, 3];
 
 // 度数定義（半音クラス0〜11）。s は移動ド読み（補助表示）
 const DEG = [
@@ -1386,7 +1399,7 @@ function validateProgress(j){
   const p = {v:2, best:{}, bestRate:{}, lastStage:null, playMode:'melodic',
              unlockMode:'seq', scaffold:3, sessionLen:'q10', diagUnlock:null,
              noteName:'deg', singFirst:'off',
-             cadEvery:'auto', speed:1,
+             cadEvery:'auto', speed:1, blockRep:0,
              lis:{pick:['s3'], gap:'normal', reso:true, keyEvery:4, sleep:0, cad:'key', speed:1, fixedKey:false},
              conf:{}, daily:{}, dir:{up:[0,0], down:[0,0]},
              recentMiss:[], streak:{last:null, n:0}, stats:{}};
@@ -1402,6 +1415,7 @@ function validateProgress(j){
     if(j.playMode === 'harmonic' || j.playMode === 'both') p.playMode = j.playMode;
     if(CAD_EVERY.indexOf(j.cadEvery) >= 0) p.cadEvery = j.cadEvery;
     if(SPEEDS.indexOf(j.speed) >= 0) p.speed = j.speed;
+    if(BLOCK_REPS.indexOf(j.blockRep) >= 0) p.blockRep = j.blockRep;
     // かけ流しの設定（内容の選択・間・解決・キー変更・スリープ）
     if(j.lis && typeof j.lis === 'object'){
       const L = j.lis;
@@ -2755,7 +2769,7 @@ function makeQuestion(){
     // ブロック練習：同じ音を続けて出して、まず響きを刻む
     if(blockDeg === null || blockLeft <= 0){
       blockDeg = pickWeighted(poolOf(), k => 'd' + k);
-      blockLeft = BLOCK_REPEAT;
+      blockLeft = progress.blockRep;
     }
     c = blockDeg;
     blockLeft--;
@@ -2901,7 +2915,8 @@ function startRound(){
   roundTotal = curSession.n || 0;
   roundDeadline = curSession.sec ? Date.now() + curSession.sec * 1000 : 0;
   // ブロック練習から始め、すでにクリア済みのステージ・メロディ・コードは最初からミックスで出す
-  roundMode = (curStage.gk === 'mono' && bestOf(curStage.id) < CLEAR_RATE) ? 'block' : 'inter';
+  roundMode = (progress.blockRep > 0 && curStage.gk === 'mono' && bestOf(curStage.id) < CLEAR_RATE)
+            ? 'block' : 'inter';
   blockDeg = null; blockLeft = 0;
   recentMel = [];
   // スケール可変ステージは、このラウンドで使うスケールをここで決める
@@ -4064,6 +4079,18 @@ $('againBtn').addEventListener('click', () => { resetRoundUI(); startRound(); })
 $('selectBtn').addEventListener('click', showSelect);
 $('reportBtn').addEventListener('click', showReport);
 $('repBackBtn').addEventListener('click', showSelect);
+
+// 同じ音のくり返し（ブロック練習・永続化）
+const blockBtns = [...document.querySelectorAll('#blockSeg button')];
+function renderBlockSeg(){
+  blockBtns.forEach(b => b.classList.toggle('active', +b.dataset.br === progress.blockRep));
+}
+blockBtns.forEach(b => b.addEventListener('click', () => {
+  progress.blockRep = +b.dataset.br;
+  saveProgress();
+  renderBlockSeg();
+}));
+renderBlockSeg();
 
 // テンポ（早送り・永続化）
 const speedBtns = [...document.querySelectorAll('#speedSeg button')];
