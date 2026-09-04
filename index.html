@@ -9,6 +9,13 @@
 <meta property="og:description" content="キーの中で音を「度数」で聴き取る相対音感トレーニングの無料Webアプリ。単音の度数当て・メロディ聴音・コードの響き当てを、支えを少しずつ外しながら鍛えられます。スマホ対応。ギタースクールTSG提供。監修：杉山つよし。">
 <meta property="og:url" content="https://ear.tsg-gt.com">
 <meta name="theme-color" content="#0d0d16">
+<!-- ホーム画面追加（PWA）用：アイコン・アプリ名・全画面表示。オフライン対応は sw.js -->
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ear">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%230d0d16"/><circle cx="24" cy="42" r="8" fill="%23f1f2f8"/><rect x="30" y="12" width="4" height="30" fill="%23f1f2f8"/><rect x="30" y="12" width="18" height="4" rx="2" fill="%23ef5340"/></svg>'>
 <title>音感トレーニング・相対音感アプリ【プロ監修・無料】- ギタースクールTSG</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -4472,6 +4479,16 @@ renderStageList();
     history.replaceState(null, '', location.pathname);
   }catch(e){}
 })();
+</script>
+<script>
+// ===== PWA：オフライン対応（Service Worker の登録）=====
+// https（本番）と localhost でのみ登録。file:// では動作しないため黙ってスキップ。
+// 登録に失敗しても通常どおり動く（オフライン機能が無効になるだけ）。
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch((e) => console.warn('[sw] register failed:', e));
+  });
+}
 </script>
 </body>
 </html>
