@@ -148,7 +148,7 @@ ok(ev(`typeof MIN7 !== 'undefined' && MIN7.join() === '0,2,3,5,7,8,10'`), 'MIN7'
 
 // ── 9. HTML/ヘルプの断片 ──
 const html = require('fs').readFileSync(process.argv[2], 'utf8');
-for(const frag of ['id="scaleBtn"', 'id="scaleBtnSeg"', 'id="traceSeg"', '.lv-e{', 'スケールボタン（数えて探す支え）', '<b>S</b>＝スケールボタン', '〜<b>s16</b>（単音・s7は欠番）', '実戦（キーランダム）'])
+for(const frag of ['id="scaleBtn"', 'id="scaleBtnSeg"', 'id="traceSeg"', '.lv-e{', 'これ、知ってましたか', 'class="tipT red"', 'スケールボタンで「ドレミファ…」と数えて探せます', 'S＝スケール', 's1〜s16、s7は欠番', '実戦（キーが毎回変わる）'])
   ok(html.indexOf(frag) >= 0, 'html missing ' + frag);
 
 console.log('mono: ' + info.mono.join(' | '));
