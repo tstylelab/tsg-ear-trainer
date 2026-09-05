@@ -1629,6 +1629,9 @@ document.addEventListener('visibilitychange', () => {
 
 function midiToFreq(m){ return 440 * Math.pow(2, (m - 69) / 12); }
 
+// 検証用：URLに ?mute=1 を付けると音を一切出さない（画面の見た目だけ確認したいとき用。通常利用には無関係）
+const MUTE_TEST = /[?&]mute=1/.test(location.search);
+
 let spd = 1;
 const T = x => x / spd;
 function useSpd(v){ spd = SPEEDS.indexOf(v) >= 0 ? v : 1; }
@@ -1711,6 +1714,7 @@ function playPianoSynth(midi, t, gain, dur){
 }
 
 function playNote(midi, t, gain, dur){
+  if(MUTE_TEST) return;
   const buf = sampleCache[midi];
   if(buf){
     const src = audioCtx.createBufferSource();
@@ -1764,6 +1768,7 @@ let droneNodes = null;
 
 function startDrone(midi, fadeSec){
   stopDrone(0.05);
+  if(MUTE_TEST) return;
   if(!audioCtx || !masterGain) return;
   // 1オクターブ下に敷くのが基本だが、ギターに無い低音（MIDI40=6弦E未満）までは下げない
   const f = midiToFreq(midi - 12 >= 40 ? midi - 12 : midi);
