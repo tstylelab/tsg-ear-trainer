@@ -17,7 +17,8 @@ ok(ev(`DIAG_UP.every(id => STAGES.some(s => s.id === id))`), 'DIAG_UP ids exist'
 ok(!ev(`STAGES.some(s => s.id === 's7')`), 's7 removed');
 
 // ── 2. 解放チェーン・旧データ ──
-ev(`progress = validateProgress({unlockMode:'seq', bestRate:{s1:100,s2:100,s3:100}})`);
+ev(`progress = validateProgress({unlockMode:'seq', unlockChosen:true, bestRate:{s1:100,s2:100,s3:100}})`);
+ok(ev(`validateProgress({}).unlockMode`) === 'free' && ev(`validateProgress({unlockMode:'seq'}).unlockMode`) === 'free' && ev(`validateProgress({unlockMode:'seq', unlockChosen:true}).unlockMode`) === 'seq', 'unlock default free / seq only when chosen');
 const chain = ev(`STAGES.filter(s=>s.gk==='mono').map(s => s.id + (isUnlocked(s)?'o':'x')).join(' ')`);
 info.chain = chain;
 ok(chain === 's1o s2o s3o s8o s9x s12x s13x s4x s5x s10x s6x s11x s14x s15x s16x', 'unlock chain');

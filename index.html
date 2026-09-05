@@ -8,7 +8,7 @@
 <meta property="og:title" content="音感トレーニング・相対音感アプリ【プロ監修・無料】- ギタースクールTSG">
 <meta property="og:description" content="キーの中で音を「度数」で聴き取る相対音感トレーニングの無料Webアプリ。単音の度数当て・メロディ聴音・コードの響き当てを、支えを少しずつ外しながら鍛えられます。スマホ対応。ギタースクールTSG提供。監修：杉山つよし。">
 <meta property="og:url" content="https://ear.tsg-gt.com">
-<meta name="theme-color" content="#0d0d16">
+<meta name="theme-color" content="#f6f5fb">
 <!-- ホーム画面追加（PWA）用：アイコン・アプリ名・全画面表示。オフライン対応は sw.js -->
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon-180.png">
@@ -16,14 +16,14 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Ear">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
-<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%230d0d16"/><circle cx="24" cy="42" r="8" fill="%23f1f2f8"/><rect x="30" y="12" width="4" height="30" fill="%23f1f2f8"/><rect x="30" y="12" width="18" height="4" rx="2" fill="%23ef5340"/></svg>'>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%23ef5340"/><circle cx="24" cy="42" r="8" fill="%23f1f2f8"/><rect x="30" y="12" width="4" height="30" fill="%23f1f2f8"/><rect x="30" y="12" width="18" height="4" rx="2" fill="%23ffffff"/></svg>'>
 <title>音感トレーニング・相対音感アプリ【プロ監修・無料】- ギタースクールTSG</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   デザインシステム（2026-07-27 全面刷新）
+   デザインシステム（2026-07-27 全面刷新 → 2026-09-06 明るいパステル基調に変更）
    規律：
    ・面は明度差で階層を作る。box-shadowは使わない（発光を除く）
    ・色はアクセント1色＋グレー階調。正誤の2色だけは意味として許可
@@ -32,29 +32,29 @@
    ・絵文字はUIに使わない。すべてSVGアイコン（#i-*）
    ============================================================ */
 :root{
-  /* 面（数字が大きいほど手前＝明るい） */
-  --s0:#0d0d16;  /* ページ背景 */
-  --s1:#171728;  /* カード */
-  --s2:#212137;  /* カード内の要素・ボタン */
-  --s3:#2d2d49;  /* 押した面・強調された要素 */
-  --line:rgba(255,255,255,.07);
-  --line2:rgba(255,255,255,.16);
+  /* 面（2026-09-06 明るいパステル基調へ。暗い＝渋い・難しそう、という指摘への対応） */
+  --s0:#f6f5fb;  /* ページ背景（ごく薄いラベンダー） */
+  --s1:#ffffff;  /* カード */
+  --s2:#f1f2f9;  /* カード内の要素・ボタン */
+  --s3:#e3e6f3;  /* 押した面・強調された要素 */
+  --line:rgba(30,32,70,.08);
+  --line2:rgba(30,32,70,.16);
 
   /* 文字 */
-  --t1:#f1f2f8;  /* 主 */
-  --t2:#a5aac1;  /* 副 */
-  --t3:#70758b;  /* 補助・無効 */
+  --t1:#1e2140;  /* 主 */
+  --t2:#585d7d;  /* 副 */
+  --t3:#8b90ab;  /* 補助・無効 */
 
-  /* アクセント（ブランド赤をダーク面用に明度調整） */
+  /* アクセント（ブランド赤） */
   --acc:#ef5340;
   --accd:#c0392b;
-  --acct:rgba(239,83,64,.13);
+  --acct:rgba(239,83,64,.10);
 
-  /* 正誤（装飾ではなく意味。これ以外に色を足さない） */
-  --ok:#3ddc97;
-  --okt:rgba(61,220,151,.13);
-  --ng:#ff6b6b;
-  --ngt:rgba(255,107,107,.13);
+  /* 正誤（装飾ではなく意味。これ以外に色を足さない。段のチップだけは例外でパステル） */
+  --ok:#17b877;
+  --okt:rgba(23,184,119,.12);
+  --ng:#e64c4c;
+  --ngt:rgba(230,76,76,.12);
 
   /* タイポ5段階 */
   --f1:28px;  /* 数値・スコア */
@@ -115,7 +115,7 @@ button[disabled]{cursor:default;}
 /* ── ヘッダー ── */
 header{
   display:flex; justify-content:center; padding:9px 14px;
-  background:var(--s0); border-bottom:1px solid var(--line);
+  background:var(--s1); border-bottom:1px solid var(--line);
   position:sticky; top:0; z-index:20;
 }
 .hwrap{
@@ -153,7 +153,7 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
 
 /* ── ヒーロー ── */
 .hero{
-  background:var(--s1); border:1px solid var(--line);
+  background:linear-gradient(135deg, #ffe9e2 0%, #eee8ff 55%, #dff3ff 100%); border:1px solid var(--line);
   border-radius:var(--r2); padding:18px 16px 16px; margin:0 0 16px;
   position:relative; overflow:hidden;
 }
@@ -182,7 +182,7 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
   display:flex; align-items:center; justify-content:center; gap:8px;
   width:100%; margin-top:14px; padding:14px; font-size:var(--f3); font-weight:700;
   background:var(--acc); color:#fff; border:none; border-radius:var(--r1);
-  box-shadow:0 0 30px -12px var(--acc);
+  box-shadow:0 8px 20px -10px rgba(239,83,64,.55);
 }
 #heroCta:active{background:var(--accd); transform:scale(.985);}
 #heroCta .lb{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
@@ -211,6 +211,7 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
 .stageRow{
   width:100%; display:flex; align-items:center; justify-content:space-between;
   background:var(--s1); border:1px solid var(--line); border-radius:var(--r2);
+  box-shadow:0 2px 10px -6px rgba(30,32,70,.18);
   padding:13px 14px; margin:7px 0; text-align:left; gap:10px;
 }
 .stageRow::after{
@@ -229,11 +230,11 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
   background:var(--s3); color:var(--t2); border:1px solid var(--line);
 }
 /* レベルは色ではなく明度と文字色の濃さで段階を表す（色数を増やさない規律） */
-.lv-a{color:var(--t2);}
-.lv-b{color:var(--t1);}
-.lv-c{color:var(--t1); border-color:var(--line2);}
-.lv-d{color:var(--acc); border-color:rgba(239,83,64,.4); background:var(--acct);}
-.lv-e{color:#fff; border-color:var(--acc); background:var(--acc);}
+.lv-a{color:#1c7a4f; background:#dcf6e8; border-color:#b6e9cd;}
+.lv-b{color:#1f5fa8; background:#e0edff; border-color:#bcd5fb;}
+.lv-c{color:#6a3fb5; background:#ece4ff; border-color:#d3c2f6;}
+.lv-d{color:#b5540f; background:#ffead6; border-color:#f9d0a6;}
+.lv-e{color:#fff; background:var(--acc); border-color:var(--acc);}
 .lastChip{
   font-size:var(--f5); font-weight:700; padding:3px 8px; border-radius:var(--r0);
   background:var(--acct); color:var(--acc); border:1px solid rgba(239,83,64,.32);
@@ -250,7 +251,7 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
   padding:5px 10px; border-radius:var(--r3);
   font-variant-numeric:tabular-nums;
 }
-.stageRow .bd.star{color:var(--ok); border-color:rgba(61,220,151,.3); background:var(--okt);}
+.stageRow .bd.star{color:var(--ok); border-color:rgba(23,184,119,.35); background:var(--okt);}
 .stageRow .bd.perfect{color:var(--acc); border-color:rgba(239,83,64,.34); background:var(--acct); font-weight:700;}
 
 /* ── クイズ画面 ── */
@@ -336,7 +337,7 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
 /* ボトムシート（足場の選択） */
 @keyframes sheetUp{from{transform:translateY(14px); opacity:0;} to{transform:none; opacity:1;}}
 .sheet{position:fixed; inset:0; z-index:60;}
-.sheetBack{position:absolute; inset:0; background:rgba(5,5,10,.66);}
+.sheetBack{position:absolute; inset:0; background:rgba(30,32,70,.45);}
 .sheetBox{
   position:absolute; inset:auto 0 0 0; max-width:560px; margin:0 auto;
   background:var(--s1); border-top:1px solid var(--line2);
@@ -374,7 +375,7 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
   flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
   padding:15px; font-size:var(--f3); font-weight:700;
   background:var(--acc); color:#fff; border:none; border-radius:var(--r1);
-  box-shadow:0 0 30px -12px var(--acc);
+  box-shadow:0 8px 20px -10px rgba(239,83,64,.55);
 }
 #listenBtn:active{background:var(--accd);}
 #listenBtn.busy{background:var(--s2); color:var(--t2); box-shadow:none; animation:glowBreath 1.7s ease-in-out infinite;}
@@ -400,7 +401,7 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
 #staffWrap svg{display:block; margin:0 auto; max-width:100%;}
 #staffWrap.empty svg{opacity:.3;}
 #staffCap{
-  font-size:var(--f5); color:var(--t3); padding-top:6px;
+  font-size:var(--f5); color:var(--t2); /* 音程名を読ませたいので補助色より1段濃く */ padding-top:6px;
   height:17px; line-height:17px; overflow:hidden; white-space:nowrap;
   font-variant-numeric:tabular-nums; letter-spacing:.02em;
 }
@@ -453,7 +454,7 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
   display:flex; align-items:center; justify-content:center; gap:8px;
   width:100%; margin-top:16px; padding:15px; font-size:var(--f3); font-weight:700;
   background:var(--acc); color:#fff; border:none; border-radius:var(--r1);
-  box-shadow:0 0 30px -12px var(--acc);
+  box-shadow:0 8px 20px -10px rgba(239,83,64,.55);
 }
 #lisToggle.on{background:var(--s2); color:var(--t1); border:1px solid var(--line2); box-shadow:none;}
 
@@ -629,7 +630,7 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
   display:flex; align-items:center; justify-content:center; gap:8px;
   width:100%; margin-top:14px; padding:14px; font-size:var(--f3); font-weight:700;
   border-radius:var(--r1); background:var(--acc); color:#fff; border:none;
-  box-shadow:0 0 30px -12px var(--acc);
+  box-shadow:0 8px 20px -10px rgba(239,83,64,.55);
 }
 #nextStageBtn .lb{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 #nextStageBtn:active{background:var(--accd);}
@@ -655,7 +656,7 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
   display:flex; align-items:center; justify-content:center; gap:8px;
   width:100%; margin-top:16px; padding:14px; font-size:var(--f3); font-weight:700;
   border-radius:var(--r1); background:var(--acc); color:#fff; border:none;
-  box-shadow:0 0 30px -12px var(--acc);
+  box-shadow:0 8px 20px -10px rgba(239,83,64,.55);
 }
 #diagGoBtn .lb{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 
@@ -737,7 +738,7 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
 
 /* ── モーダル ── */
 .modal{
-  position:fixed; inset:0; background:rgba(5,5,10,.72); z-index:50;
+  position:fixed; inset:0; background:rgba(30,32,70,.5); z-index:50;
   display:flex; align-items:center; justify-content:center; padding:16px;
   backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px);
 }
@@ -916,7 +917,7 @@ footer{
     <div class="hero">
       <div class="heroEyebrow">Ear Training</div>
       <div class="heroTitle">音あてゲームで、<b>いい耳</b>を育てよう</div>
-      <p class="heroSub">流れてくる音が「ドレミのどれか」を当てるだけ。かんたんな3音から、耳コピできる耳まで一歩ずつ。</p>
+      <p class="heroSub">音を聴いて、ドレミのどれかを当てるだけ。</p>
       <div class="heroStats" id="heroStats"></div>
       <button id="heroCta" hidden></button>
       <div class="heroTools">
@@ -960,7 +961,7 @@ footer{
     </div>
     <div class="lisHTtl" id="lisHTtl" hidden><svg class="ic"><use href="#i-book"/></svg>流れた音（タップで聴き直し）</div>
     <div id="lisHist"></div>
-    <p class="repNote">答える必要はありません。画面を見なくても、キーの中でそれぞれの音がどう響くかに耳が慣れていきます。<b>「あ、いまの分からなかった」</b>と思ったら、あとで<b>さっきの音をもう一度</b>から聴き直せます。<br>※構造化された練習に「ただ聴くだけ」の時間を足すと、音程の識別も新しい旋律への応用も伸びるという報告があります。</p>
+    <p class="repNote">答えなくてOK。聴き流すだけで、キーの中の響きに耳が慣れていきます。分からなかった音は<b>さっきの音をもう一度</b>で確認できます。</p>
   </section>
 
   <!-- クイズ画面 -->
@@ -1220,10 +1221,10 @@ footer{
     <p>1回の練習で解く量です。時間制は制限時間まで、エンドレスは「終える」を押すまで続きます。※ベスト記録の更新とクリア判定は<b>15問以上</b>答えたときだけ行われます（時間制・エンドレスも同じ）。</p>
     <h4><svg class="ic"><use href="#i-lock"/></svg>ステージの進め方</h4>
     <div class="segRow" id="unlockSeg">
-      <button data-mode="seq">順番に解放</button>
       <button data-mode="free">すべて自由</button>
+      <button data-mode="seq">順番に解放</button>
     </div>
-    <p>「順番に解放」では、各ステージを<b>15問以上・正答率80%以上でクリア</b>すると次のステージが解放されます（＝15問中12問）。「ここまでクリア」を目標に挑戦してください。</p>
+    <p>既定は<b>すべて自由</b>（どのステージからでも始められます）。生徒さんに順番を守らせたいときは<b>順番に解放</b>にすると、各ステージを<b>15問中12問（80%）</b>でクリアするまで次が開きません。</p>
     <h4><svg class="ic"><use href="#i-save"/></svg>データのバックアップ</h4>
     <p>成績はこの端末のブラウザに保存されます。ブラウザのデータ削除や機種変更に備えて、ファイルに書き出しておけます。</p>
     <div class="bkRow">
@@ -1354,19 +1355,19 @@ const STAGES = [
   // 「Cの高さを覚えたのではなく関係で聴けている」ことの仕上げ。IDは記録互換のため据え置き（s7は欠番）
   {gk:'mono', id:'s1',  grp:'単音（度数当て）', lv:'入門①', name:'ド・ミ・ソ',            desc:'1・3・5度だけ（上行）',                 pool:[0,4,7],     fixedKey:true},
   {gk:'mono', id:'s2',  grp:'単音（度数当て）', lv:'入門②', name:'ドレミファソ',          desc:'1〜5度（上行）',                        pool:[0,2,4,5,7], fixedKey:true},
-  {gk:'mono', id:'s3',  grp:'単音（度数当て）', lv:'初級①', name:'メジャー・上行',        desc:'長音階7音・ルートの上側',               pool:MAJ7,        fixedKey:true},
-  {gk:'mono', id:'s8',  grp:'単音（度数当て）', lv:'初級②', name:'メジャー・下行',        desc:'長音階7音・ルートの下側',               pool:MAJ7,        dir:'down', fixedKey:true},
-  {gk:'mono', id:'s9',  grp:'単音（度数当て）', lv:'初級③', name:'メジャー・上下',        desc:'長音階7音・上下ランダム',               pool:MAJ7,        dir:'both', fixedKey:true},
-  {gk:'mono', id:'s12', grp:'単音（度数当て）', lv:'中級①', name:'マイナー・上行',        desc:'♭3・♭6・♭7を含む7音・ルートの上側',   pool:MIN7,        fixedKey:true},
-  {gk:'mono', id:'s13', grp:'単音（度数当て）', lv:'中級②', name:'マイナー・下行',        desc:'自然短音階7音・ルートの下側',           pool:MIN7,        dir:'down', fixedKey:true},
-  {gk:'mono', id:'s4',  grp:'単音（度数当て）', lv:'中級③', name:'マイナー・上下',        desc:'自然短音階7音・上下ランダム',           pool:MIN7,        dir:'both', fixedKey:true},
-  {gk:'mono', id:'s5',  grp:'単音（度数当て）', lv:'上級①', name:'12度数・上行',          desc:'半音も含む12音・ルートの上側',          pool:ALL12,       fixedKey:true},
-  {gk:'mono', id:'s10', grp:'単音（度数当て）', lv:'上級②', name:'12度数・下行',          desc:'12音・ルートの下側',                    pool:ALL12,       dir:'down', fixedKey:true},
-  {gk:'mono', id:'s6',  grp:'単音（度数当て）', lv:'上級③', name:'12度数・上下',          desc:'12音・上下ランダム',                    pool:ALL12,       dir:'both', fixedKey:true},
-  {gk:'mono', id:'s11', grp:'単音（度数当て）', lv:'上級④', name:'オクターブをまたぐ',    desc:'1オクターブ以上離れた音も出る（キーE固定・ギターの音域いっぱい）', pool:ALL12, dir:'both', wide:true},
-  {gk:'mono', id:'s14', grp:'単音（度数当て）', lv:'実戦①', name:'メジャー・キーランダム', desc:'長音階7音・上下。キーがラウンドごとに変わる', pool:MAJ7,  dir:'both'},
-  {gk:'mono', id:'s15', grp:'単音（度数当て）', lv:'実戦②', name:'マイナー・キーランダム', desc:'自然短音階7音・上下。キーがラウンドごとに変わる', pool:MIN7, dir:'both'},
-  {gk:'mono', id:'s16', grp:'単音（度数当て）', lv:'実戦③', name:'12度数・キーランダム',   desc:'12音・上下。キーがラウンドごとに変わる',  pool:ALL12,  dir:'both'},
+  {gk:'mono', id:'s3',  grp:'単音（度数当て）', lv:'初級①', name:'メジャー・上行',        desc:'メジャー7音・上側',               pool:MAJ7,        fixedKey:true},
+  {gk:'mono', id:'s8',  grp:'単音（度数当て）', lv:'初級②', name:'メジャー・下行',        desc:'メジャー7音・下側',               pool:MAJ7,        dir:'down', fixedKey:true},
+  {gk:'mono', id:'s9',  grp:'単音（度数当て）', lv:'初級③', name:'メジャー・上下',        desc:'メジャー7音・上下',               pool:MAJ7,        dir:'both', fixedKey:true},
+  {gk:'mono', id:'s12', grp:'単音（度数当て）', lv:'中級①', name:'マイナー・上行',        desc:'マイナー7音（♭3・♭6・♭7）・上側',   pool:MIN7,        fixedKey:true},
+  {gk:'mono', id:'s13', grp:'単音（度数当て）', lv:'中級②', name:'マイナー・下行',        desc:'マイナー7音・下側',           pool:MIN7,        dir:'down', fixedKey:true},
+  {gk:'mono', id:'s4',  grp:'単音（度数当て）', lv:'中級③', name:'マイナー・上下',        desc:'マイナー7音・上下',           pool:MIN7,        dir:'both', fixedKey:true},
+  {gk:'mono', id:'s5',  grp:'単音（度数当て）', lv:'上級①', name:'12度数・上行',          desc:'半音も含む12音・上側',          pool:ALL12,       fixedKey:true},
+  {gk:'mono', id:'s10', grp:'単音（度数当て）', lv:'上級②', name:'12度数・下行',          desc:'12音・下側',                    pool:ALL12,       dir:'down', fixedKey:true},
+  {gk:'mono', id:'s6',  grp:'単音（度数当て）', lv:'上級③', name:'12度数・上下',          desc:'12音・上下',                    pool:ALL12,       dir:'both', fixedKey:true},
+  {gk:'mono', id:'s11', grp:'単音（度数当て）', lv:'上級④', name:'オクターブをまたぐ',    desc:'1オクターブより遠い音も（キーE固定）', pool:ALL12, dir:'both', wide:true},
+  {gk:'mono', id:'s14', grp:'単音（度数当て）', lv:'実戦①', name:'メジャー・キーランダム', desc:'メジャー7音・上下／キーが毎回変わる', pool:MAJ7,  dir:'both'},
+  {gk:'mono', id:'s15', grp:'単音（度数当て）', lv:'実戦②', name:'マイナー・キーランダム', desc:'マイナー7音・上下／キーが毎回変わる', pool:MIN7, dir:'both'},
+  {gk:'mono', id:'s16', grp:'単音（度数当て）', lv:'実戦③', name:'12度数・キーランダム',   desc:'12音・上下／キーが毎回変わる',  pool:ALL12,  dir:'both'},
 
   // メロディ聴音（ディクテーション）：複数の音を順番に答える。単音より一段実戦的。
   // 2コースに分ける。本線は「よく使う動き」＝曲に実際に出てくる形（順次進行が主役・
@@ -1467,7 +1468,7 @@ function lsSet(k, v){ try{ localStorage.setItem(k, v); }catch(e){} }
 // 生JSON→検証済み進捗オブジェクト（localStorage・バックアップ読み込みの両方で使う）
 function validateProgress(j){
   const p = {v:2, best:{}, bestRate:{}, lastStage:null, playMode:'melodic',
-             unlockMode:'seq', scaffold:3, sessionLen:'q10', diagUnlock:null,
+             unlockMode:'free', unlockChosen:false, scaffold:3, sessionLen:'q10', diagUnlock:null,
              noteName:'deg', singFirst:'off',
              cadEvery:'auto', speed:1, blockRep:0, rootEvery:1, scaleBtn:'on', traceAns:'off',
              lis:{pick:['s3'], gap:'normal', reso:true, keyEvery:4, sleep:0, cad:'key', speed:1, fixedKey:false},
@@ -1507,7 +1508,8 @@ function validateProgress(j){
       if(SPEEDS.indexOf(L.speed) >= 0) p.lis.speed = L.speed;
       if(L.fixedKey === true) p.lis.fixedKey = true;
     }
-    if(j.unlockMode === 'free') p.unlockMode = 'free';
+    if(j.unlockChosen === true) p.unlockChosen = true;
+    if(j.unlockMode === 'seq' && j.unlockChosen === true) p.unlockMode = 'seq';
     if(Array.isArray(j.recentMiss)) p.recentMiss = j.recentMiss.filter(statKeyOk).slice(0, 12);
     if(j.streak && typeof j.streak === 'object' &&
        Number.isInteger(j.streak.n) && j.streak.n >= 0 &&
@@ -1931,14 +1933,14 @@ function staffLines(){
   for(let i = 0; i < 5; i++){
     const yy = STAFF.YB - i * STAFF.GAP;
     el += '<line x1="' + STAFF.X0 + '" y1="' + yy + '" x2="' + STAFF.XE + '" y2="' + yy +
-          '" stroke="rgba(255,255,255,.2)" stroke-width="1"/>';
+          '" stroke="rgba(30,32,70,.35)" stroke-width="1"/>';
   }
   return el;
 }
 
 function ledger(cx, yy){
   return '<line x1="' + (cx - 12) + '" y1="' + yy + '" x2="' + (cx + 12) + '" y2="' + yy +
-         '" stroke="rgba(255,255,255,.3)" stroke-width="1"/>';
+         '" stroke="rgba(30,32,70,.5)" stroke-width="1"/>';
 }
 
 function putStaff(inner, svgId){
@@ -1955,7 +1957,7 @@ function staffKeyMark(tag, name){
            '" rx="1.25" fill="#ef5340" opacity=".9"/>';
   el += '<text x="28" y="' + (yMid - 5) + '" font-size="10" fill="#70758b" letter-spacing="1.6"' +
         ' font-family="system-ui,sans-serif">' + tag + '</text>';
-  el += '<text x="28" y="' + (yMid + 13) + '" font-size="17" font-weight="700" fill="#f1f2f8"' +
+  el += '<text x="28" y="' + (yMid + 13) + '" font-size="17" font-weight="700" fill="#1e2140"' +
         ' font-family="system-ui,sans-serif">' + name + '</text>';
   return el;
 }
@@ -1980,7 +1982,7 @@ function drawStaff(notes, tag, keyName, svgId){
     // 加線（五線の下=E4未満、上=F5超）
     for(let l = 28; l >= n.step; l -= 2) el += ledger(cx, staffY(l));
     for(let l = 40; l <= n.step; l += 2) el += ledger(cx, staffY(l));
-    const col = n.red ? '#ef5340' : '#f1f2f8';
+    const col = n.red ? '#ef5340' : '#1e2140';
     if(n.red) el += '<circle cx="' + cx + '" cy="' + cy + '" r="14" fill="#ef5340" opacity=".17"/>';
     if(n.acc) el += '<text x="' + (cx - 25) + '" y="' + (cy + 5.5) + '" font-size="16" fill="' + col +
                     '" font-family="system-ui,sans-serif">' + n.acc + '</text>';
@@ -2094,7 +2096,8 @@ function renderHeroCta(){
   if(last && isUnlocked(last) && bestOf(last.id) < CLEAR_RATE) target = last;
   if(!target){ btn.hidden = true; return; } // 全ステージクリア済み
   const started = Object.keys(progress.best).length > 0;
-  setIconText(btn, 'play', (started ? 'つづきから：' : 'はじめる：') + target.lv + ' ' + target.name);
+  setIconText(btn, 'play', (started ? 'つづきから：' : 'はじめる：') + target.lv + ' ' + target.name +
+    (drec && target === drec ? '（おすすめ）' : ''));
   btn.onclick = () => enterStage(target);
   btn.hidden = false;
 }
@@ -2138,6 +2141,12 @@ function renderStageList(){
       lastC.textContent = '前回';
       nm.appendChild(lastC);
     }
+    if(progress.diagUnlock === st.id && bestOf(st.id) < CLEAR_RATE){
+      const recC = document.createElement('span');
+      recC.className = 'lastChip';
+      recC.textContent = 'おすすめ';
+      nm.appendChild(recC);
+    }
     const ds = document.createElement('div');
     ds.className = 'ds'; ds.textContent = st.desc;
     left.appendChild(nm); left.appendChild(ds);
@@ -2148,7 +2157,7 @@ function renderStageList(){
     if(!unlocked){
       row.classList.add('locked');
       row.disabled = true;
-      ds.textContent = '前のステージを正答率' + CLEAR_RATE + '%以上でクリアすると解放';
+      ds.textContent = '前のステージをクリアすると開きます';
       bd.appendChild(ico('lock'));
     }else if(best !== undefined){
       const bn = document.createElement('span');
@@ -2251,7 +2260,7 @@ function renderTrend(parent){
   let el = '';
   // 目盛り（0/80/100%）。基準線だけ意味を持たせる
   el += '<line x1="' + padL + '" y1="' + base0 + '" x2="' + (W - padR) + '" y2="' + base0 +
-        '" stroke="rgba(255,255,255,.16)" stroke-width="1"/>';
+        '" stroke="rgba(30,32,70,.15)" stroke-width="1"/>';
   el += '<line x1="' + padL + '" y1="' + y(0.8) + '" x2="' + (W - padR) + '" y2="' + y(0.8) +
         '" stroke="#3ddc97" stroke-width="1" stroke-dasharray="3 3" opacity=".55"/>';
   el += '<text x="' + (padL - 4) + '" y="' + (y(0.8) + 3) + '" font-size="8" fill="#3ddc97" opacity=".8"' +
@@ -2265,7 +2274,7 @@ function renderTrend(parent){
     if(!d.tot){
       // 練習していない日はベースラインに薄い印だけ残す
       el += '<rect x="' + x + '" y="' + (base0 - 1.5) + '" width="' + bw + '" height="1.5" rx=".75"' +
-            ' fill="rgba(255,255,255,.1)"/>';
+            ' fill="rgba(30,32,70,.06)"/>';
       return;
     }
     const rate = d.ok / d.tot;
@@ -2633,21 +2642,17 @@ function renderModeChip(){
     s.appendChild(b);
     el.appendChild(s);
   };
-  if(curStage.gk !== 'chord'){
-    mk('note', SCAFFOLD[progress.scaffold].n, progress.scaffold >= 3);
+  if(curStage.gk !== 'chord' && progress.scaffold !== 3){
+    mk('note', SCAFFOLD[progress.scaffold].n, progress.scaffold >= 3); // 既定（カデンツ）のときは出さない
   }
   if(curStage.gk === 'mono' && progress.rootEvery !== 1){
     mk('volume', progress.rootEvery === 0 ? 'ルートなし' : 'ルートは' + progress.rootEvery + '問に1回', true);
   }
-  if(curStage.gk === 'mono'){
-    mk(roundMode === 'block' ? 'repeat' : 'target',
-       roundMode === 'block' ? 'ブロック練習' : 'ミックス',
-       roundMode === 'inter');
-  }
+  if(curStage.gk === 'mono' && roundMode === 'block') mk('repeat', 'ブロック練習', false);
   if(curStage.gk === 'mel') mk('book', curStage.mel + '音の聴音');
   if(roundScale) mk('target', SCALES[roundScale].n, true);
   if(progress.singFirst === 'on') mk('ear', '歌ってから答える', true);
-  mk('headphones', curSession.label);
+  if(progress.sessionLen !== 'q10') mk('headphones', curSession.label); // 既定（クイック）のときは出さない
 }
 
 function renderAnswers(){
@@ -4219,8 +4224,8 @@ function diagFinish(rec){
   $('diagRecName').textContent = st.lv + ' ' + st.name;
   $('diagRecMsg').textContent =
     rec === 's1' ? 'まずは基本の3音からじっくり始めましょう！' :
-    rec === 's16' ? '単音の全ステージを解放しました。どんどん挑戦してください' :
-    'ここまでのステージを解放しました。ここから始めるのがおすすめです！';
+    rec === 's16' ? 'いちばん上のレベルです。実戦（キーランダム）からどうぞ！' :
+    'ここから始めるのがおすすめです！';
   $('diagResult').hidden = false;
 }
 
@@ -4328,6 +4333,7 @@ function renderUnlockSeg(){
 }
 unlockBtns.forEach(b => b.addEventListener('click', () => {
   progress.unlockMode = b.dataset.mode;
+  progress.unlockChosen = true;
   saveProgress();
   renderUnlockSeg();
   renderStageList();
