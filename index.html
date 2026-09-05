@@ -233,6 +233,7 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
 .lv-b{color:var(--t1);}
 .lv-c{color:var(--t1); border-color:var(--line2);}
 .lv-d{color:var(--acc); border-color:rgba(239,83,64,.4); background:var(--acct);}
+.lv-e{color:#fff; border-color:var(--acc); background:var(--acc);}
 .lastChip{
   font-size:var(--f5); font-weight:700; padding:3px 8px; border-radius:var(--r0);
   background:var(--acct); color:var(--acc); border:1px solid rgba(239,83,64,.32);
@@ -288,6 +289,7 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
 #dots span.cur{border-color:var(--acc); box-shadow:0 0 10px -2px var(--acc);}
 #dots span.ok{background:var(--ok); border-color:var(--ok);}
 #dots span.ng{background:var(--ng); border-color:var(--ng);}
+#dots span.as{background:var(--acc); border-color:var(--acc); opacity:.75;}
 
 /* サウンドステージ（音が鳴っている状態を可視化する中心） */
 .soundStage{
@@ -376,7 +378,7 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
 }
 #listenBtn:active{background:var(--accd);}
 #listenBtn.busy{background:var(--s2); color:var(--t2); box-shadow:none; animation:glowBreath 1.7s ease-in-out infinite;}
-#rootBtn, #endBtn{
+#rootBtn, #scaleBtn, #endBtn{
   display:flex; align-items:center; gap:6px; padding:15px 14px;
   font-size:var(--f4); font-weight:600; color:var(--t2); background:var(--s1);
 }
@@ -387,6 +389,7 @@ main{flex:1; width:100%; max-width:560px; margin:0 auto; padding:14px 14px 6px;}
 }
 #feedback.ok{color:var(--ok); animation:pop .26s ease;}
 #feedback.ng{color:var(--ng); animation:pop .26s ease;}
+#feedback.as{color:var(--acc); animation:pop .26s ease;}   /* スケール使用＝正解扱いなし */
 
 /* 五線譜（常設。答え合わせで音符が載る。高さは固定してレイアウトを跳ねさせない） */
 #staffWrap{
@@ -982,6 +985,7 @@ footer{
     <div class="listenRow">
       <button id="listenBtn"><svg class="ic"><use href="#i-play"/></svg><span class="lb">スタート</span></button>
       <button id="rootBtn" hidden><svg class="ic"><use href="#i-repeat"/></svg>ルート</button>
+      <button id="scaleBtn" hidden title="ルートから音階を1オクターブなぞる（Sキー）"><svg class="ic"><use href="#i-up"/></svg>スケール</button>
       <button id="endBtn" hidden><svg class="ic"><use href="#i-check"/></svg>終える</button>
     </div>
     <button id="singBtn" hidden><svg class="ic"><use href="#i-ear"/></svg>歌いました</button>
@@ -1039,6 +1043,17 @@ footer{
       <button data-re="0">鳴らさない</button>
     </div>
     <p class="sheetNote">ルートが毎問鳴ると「2音の距離を測る」だけで解けてしまいます。<b>外していくほど、頭の中に主音を保ち続ける力＝相対音感そのものが鍛えられます</b>（耳コピで実際に使うのはこちら）。鳴らさない設定でも、ラウンドの最初とルートボタンでキーは確認できます。</p>
+
+    <div class="sheetSub">スケールボタン（出題中に音階をなぞる）</div>
+    <div class="segRow" id="scaleBtnSeg">
+      <button data-sb="on">出す</button><button data-sb="off">出さない</button>
+    </div>
+    <p class="sheetNote">「もう一度聴く」の横に<b>スケール</b>ボタンが出ます。ルートから音階を1オクターブなぞるので、慣れないうちは「ドレミファ…」と数えて答えを探せます。<b>出題中に使った問題は正解扱いになりません</b>（毎回使えば答えが分かってしまうため）。答え合わせ中は自由に使えます。</p>
+    <div class="sheetSub">答え合わせでスケールをなぞる</div>
+    <div class="segRow" id="traceSeg">
+      <button data-tr="off">しない</button><button data-tr="on">する</button>
+    </div>
+    <p class="sheetNote">答えたあと、ルートから答えの音まで音階をなぞって、そこで止めて強く鳴らします（ド レ ミ ファ <b>ソ</b>）。何度離れていたかが数として分かります。</p>
 
     <div class="sheetSub">キーの響き（カデンツ）を鳴らす頻度</div>
     <div class="segRow" id="cadFreqSeg">
@@ -1105,10 +1120,15 @@ footer{
     <h4><svg class="ic"><use href="#i-target"/></svg>度数で聴くとは</h4>
     <p>絶対的な音名（CやAなど）ではなく、キーの中心＝ルートからの距離（1・♭3・5…）で音を捉える聴き方です。耳コピ・アドリブ・移調に直結する、実戦的な相対音感が身につきます。</p>
     <h4><svg class="ic"><use href="#i-book"/></svg>ステージ構成</h4>
-    <p>単音（度数当て）は入門→中級へ、<b>音の種類（3音→7音→12音）→ 方向（上行→下行→上下）→ 音域（オクターブ超え）</b>の順に広がります。<b>各ラウンドはまずキーの響き（カデンツ）が鳴り、調性感を作ってから出題開始</b>。入門〜初級はキーC固定でじっくり音の響きを覚え、中級からはキーがラウンドごとにランダムに変わって、どの調でも通用する耳を鍛えます。キーの支えの強さは、クイズ画面の<b>音符ボタン</b>から5段階で変えられます（カデンツ＋ドローン → カデンツ → ドローン → ドローン減衰 → なし）。強い支えは覚えるのに役立ちますが、頼りきると内側の音感が育ちにくいので、クリアできたら1段ずつ外していってください。上級は「ルート省略」：カデンツとルート音を最初に聴き、あとは連続で答えます。コード（響き当て）はトライアド→セブンスと進みます。腕に自信がある人は、トップの<b>レベル診断</b>（4〜10問）を受けると、実力に合ったステージまで一気に解放されます。</p>
+    <p>単音（度数当て）は<b>入門 → 初級（メジャー7音）→ 中級（マイナー7音）→ 上級（12度数・オクターブ超え）→ 実戦（キーランダム）</b>の5段。各段の中は<b>上行 → 下行 → 上下</b>の順です。実戦まではキーC固定で、実戦ではキーがラウンドごとに変わります（Cの高さを覚えたのではなく、関係で聴けているかの仕上げ）。<b>各ラウンドはまずキーの響き（カデンツ）が鳴り、調性感を作ってから出題開始</b>。入門〜初級はキーC固定でじっくり音の響きを覚え、中級からはキーがラウンドごとにランダムに変わって、どの調でも通用する耳を鍛えます。キーの支えの強さは、クイズ画面の<b>音符ボタン</b>から5段階で変えられます（カデンツ＋ドローン → カデンツ → ドローン → ドローン減衰 → なし）。強い支えは覚えるのに役立ちますが、頼りきると内側の音感が育ちにくいので、クリアできたら1段ずつ外していってください。上級は「ルート省略」：カデンツとルート音を最初に聴き、あとは連続で答えます。コード（響き当て）はトライアド→セブンスと進みます。腕に自信がある人は、トップの<b>レベル診断</b>（4〜10問）を受けると、実力に合ったステージまで一気に解放されます。</p>
     <h4><svg class="ic"><use href="#i-volume"/></svg>ルートを鳴らす回数（いちばん効く難易度調整）</h4>
     <p>単音ステージは既定で<b>毎問「ルート→課題音」</b>の順に鳴ります。これは分かりやすい反面、<b>2音の距離を測るだけで解けてしまう</b>ため、調性を保つ力は育ちません。</p>
     <p>キーの支え（画面右上の音符ボタン）で<b>2問に1回／4問に1回／鳴らさない</b>に変えられます。ルートが鳴らない問題では、<b>頭の中に主音を保ったまま音の色を感じ取る</b>必要があります。これが耳コピで実際に使っている力で、相対音感の本丸です。慣れてきたら少しずつ減らしてください。</p>
+
+    <h4><svg class="ic"><use href="#i-up"/></svg>スケールボタン（数えて探す支え）</h4>
+    <p>出題中に<b>スケール</b>ボタン（PCはSキー）を押すと、ルートから音階を1オクターブなぞります（下行の問題なら下向きに）。慣れないうちは「ドレミファ…」と数えて答えの位置を探せます。先生が横で音階を弾いてくれるのと同じ支えです。</p>
+    <p>ただし<b>出題中に使った問題は正解扱いになりません</b>。毎回使えば答えが分かってしまうので、記録には入らず、結果画面に「スケール n回使用」と出ます。自分でスケールを思い浮かべられるようになったら押さない、が目標です。答え合わせ中は自由に押せます。</p>
+    <p>キーの支えの設定で<b>答え合わせでスケールをなぞる</b>をONにすると、答えたあとにルートから答えの音まで音階をたどって止まります（ド レ ミ ファ <b>ソ</b>）。何度離れていたかが数として腑に落ちます。</p>
 
     <h4><svg class="ic"><use href="#i-repeat"/></svg>同じ音のくり返し（ブロック練習）</h4>
     <p>設定で<b>2問ずつ／3問ずつ</b>にすると、単音ステージで同じ音を続けて出します。初めてその響きに触れる人が耳に刻むための練習で、直近6問で5問正解すると自動的にミックス（毎問ちがう音）へ移ります。<b>既定は「しない」</b>です。生徒さんに使わせるときだけONにしてください。</p>
@@ -1129,9 +1149,10 @@ footer{
     <h4><svg class="ic"><use href="#i-volume"/></svg>音色</h4>
     <p>本物のグランドピアノの録音（FluidR3 GM soundfont / Frank Wen 氏, MIT License）を使用しています。倍音が豊かな実際の楽器の音で、実戦に近い耳を育てられます。</p>
     <h4><svg class="ic"><use href="#i-sliders"/></svg>キーボード（PC）</h4>
+    <p><b>S</b>＝スケールボタン（表示されているとき）。</p>
     <p>スペース＝再生／数字キー＝回答ボタン（左上から順に1,2,3…）／Enter＝次へ</p>
     <h4><svg class="ic"><use href="#i-link"/></svg>ステージの直リンク（講師向け）</h4>
-    <p>URLの末尾に <b>?stage=s1</b>〜<b>s7</b>（単音）／<b>m1</b> <b>m2</b> <b>m4</b> <b>m5</b>（メロディ・よく使う動き）／<b>m3</b> <b>m6</b>（メロディ・自由）／<b>c1</b>〜<b>c3</b>（コード）を付けると、そのステージが直接開きます。レッスン課題の指定に便利です。</p>
+    <p>URLの末尾に <b>?stage=s1</b>〜<b>s16</b>（単音・s7は欠番）／<b>m1</b> <b>m2</b> <b>m4</b> <b>m5</b>（メロディ・よく使う動き）／<b>m3</b> <b>m6</b>（メロディ・自由）／<b>c1</b>〜<b>c3</b>（コード）を付けると、そのステージが直接開きます。レッスン課題の指定に便利です。</p>
     <h4><svg class="ic"><use href="#i-link"/></svg>姉妹アプリ</h4>
     <p>
       <a href="https://metrotuner.tsg-gt.com" target="_blank" rel="noopener">メトロノーム＆チューナー</a> ／
@@ -1275,6 +1296,7 @@ const CHORDS = {
 
 const ALL12 = [0,1,2,3,4,5,6,7,8,9,10,11];
 const MAJ7 = [0,2,4,5,7,9,11]; // 長音階7音
+const MIN7 = [0,2,3,5,7,8,10]; // 自然短音階7音（♭3・♭6・♭7）
 
 // スケール（モード）。メロディの出題は必ずこの中の1つを選び、その音だけで作る。
 // 半音をランダムに混ぜると「別のキーに聞こえるだけ」で相対音感の訓練にならず、
@@ -1326,16 +1348,24 @@ const DEG_HINT = [
 //    あれは聴き分ける対象ではなく難易度のつまみなので、どのステージにも掛けられるほうが正しい
 //  chords: コードステージ（出題するコードタイプ）
 const STAGES = [
-  {gk:'mono', id:'s1',  grp:'単音（度数当て）', lv:'入門①', name:'ド・ミ・ソ',            desc:'1・3・5度だけ（上行）',              pool:[0,4,7],          fixedKey:true},
-  {gk:'mono', id:'s2',  grp:'単音（度数当て）', lv:'入門②', name:'ドレミファソ',          desc:'1〜5度（上行）',                     pool:[0,2,4,5,7],      fixedKey:true},
-  {gk:'mono', id:'s3',  grp:'単音（度数当て）', lv:'初級①', name:'メジャースケール',      desc:'長音階の7音（上行）',                pool:MAJ7,             fixedKey:true},
-  {gk:'mono', id:'s8',  grp:'単音（度数当て）', lv:'初級②', name:'メジャー・下行',        desc:'長音階7音・ルートの下側だけ',        pool:MAJ7,             dir:'down', fixedKey:true},
-  {gk:'mono', id:'s9',  grp:'単音（度数当て）', lv:'初級③', name:'メジャー・上下',        desc:'長音階7音・上下ランダム',            pool:MAJ7,             dir:'both', fixedKey:true},
-  {gk:'mono', id:'s4',  grp:'単音（度数当て）', lv:'中級①', name:'マイナー系',            desc:'♭3・♭6・♭7を含む7音・上下／キーもランダム', pool:[0,2,3,5,7,8,10], dir:'both'},
-  {gk:'mono', id:'s5',  grp:'単音（度数当て）', lv:'中級②', name:'12度数すべて',          desc:'全12度数（上行）',                   pool:ALL12},
-  {gk:'mono', id:'s10', grp:'単音（度数当て）', lv:'中級③', name:'12度数・下行',          desc:'全12度数・ルートの下側だけ',         pool:ALL12,            dir:'down'},
-  {gk:'mono', id:'s6',  grp:'単音（度数当て）', lv:'中級④', name:'12度数・上下',          desc:'全12度数・上下ランダム',             pool:ALL12,            dir:'both'},
-  {gk:'mono', id:'s11', grp:'単音（度数当て）', lv:'中級⑤', name:'オクターブをまたぐ',    desc:'1オクターブ以上離れた音も出る（キーE固定・ギターの音域いっぱい）', pool:ALL12, dir:'both', wide:true},
+  // 単音は「音の種類 × 方向」の格子。段の順に音の種類が広がり、各段の中は上行→下行→上下。
+  // キーは実戦まで C 固定（オクターブをまたぐだけ音域の都合で E）。実戦はキーがラウンドごとに変わる＝
+  // 「Cの高さを覚えたのではなく関係で聴けている」ことの仕上げ。IDは記録互換のため据え置き（s7は欠番）
+  {gk:'mono', id:'s1',  grp:'単音（度数当て）', lv:'入門①', name:'ド・ミ・ソ',            desc:'1・3・5度だけ（上行）',                 pool:[0,4,7],     fixedKey:true},
+  {gk:'mono', id:'s2',  grp:'単音（度数当て）', lv:'入門②', name:'ドレミファソ',          desc:'1〜5度（上行）',                        pool:[0,2,4,5,7], fixedKey:true},
+  {gk:'mono', id:'s3',  grp:'単音（度数当て）', lv:'初級①', name:'メジャー・上行',        desc:'長音階7音・ルートの上側',               pool:MAJ7,        fixedKey:true},
+  {gk:'mono', id:'s8',  grp:'単音（度数当て）', lv:'初級②', name:'メジャー・下行',        desc:'長音階7音・ルートの下側',               pool:MAJ7,        dir:'down', fixedKey:true},
+  {gk:'mono', id:'s9',  grp:'単音（度数当て）', lv:'初級③', name:'メジャー・上下',        desc:'長音階7音・上下ランダム',               pool:MAJ7,        dir:'both', fixedKey:true},
+  {gk:'mono', id:'s12', grp:'単音（度数当て）', lv:'中級①', name:'マイナー・上行',        desc:'♭3・♭6・♭7を含む7音・ルートの上側',   pool:MIN7,        fixedKey:true},
+  {gk:'mono', id:'s13', grp:'単音（度数当て）', lv:'中級②', name:'マイナー・下行',        desc:'自然短音階7音・ルートの下側',           pool:MIN7,        dir:'down', fixedKey:true},
+  {gk:'mono', id:'s4',  grp:'単音（度数当て）', lv:'中級③', name:'マイナー・上下',        desc:'自然短音階7音・上下ランダム',           pool:MIN7,        dir:'both', fixedKey:true},
+  {gk:'mono', id:'s5',  grp:'単音（度数当て）', lv:'上級①', name:'12度数・上行',          desc:'半音も含む12音・ルートの上側',          pool:ALL12,       fixedKey:true},
+  {gk:'mono', id:'s10', grp:'単音（度数当て）', lv:'上級②', name:'12度数・下行',          desc:'12音・ルートの下側',                    pool:ALL12,       dir:'down', fixedKey:true},
+  {gk:'mono', id:'s6',  grp:'単音（度数当て）', lv:'上級③', name:'12度数・上下',          desc:'12音・上下ランダム',                    pool:ALL12,       dir:'both', fixedKey:true},
+  {gk:'mono', id:'s11', grp:'単音（度数当て）', lv:'上級④', name:'オクターブをまたぐ',    desc:'1オクターブ以上離れた音も出る（キーE固定・ギターの音域いっぱい）', pool:ALL12, dir:'both', wide:true},
+  {gk:'mono', id:'s14', grp:'単音（度数当て）', lv:'実戦①', name:'メジャー・キーランダム', desc:'長音階7音・上下。キーがラウンドごとに変わる', pool:MAJ7,  dir:'both'},
+  {gk:'mono', id:'s15', grp:'単音（度数当て）', lv:'実戦②', name:'マイナー・キーランダム', desc:'自然短音階7音・上下。キーがラウンドごとに変わる', pool:MIN7, dir:'both'},
+  {gk:'mono', id:'s16', grp:'単音（度数当て）', lv:'実戦③', name:'12度数・キーランダム',   desc:'12音・上下。キーがラウンドごとに変わる',  pool:ALL12,  dir:'both'},
 
   // メロディ聴音（ディクテーション）：複数の音を順番に答える。単音より一段実戦的。
   // 2コースに分ける。本線は「よく使う動き」＝曲に実際に出てくる形（順次進行が主役・
@@ -1365,7 +1395,9 @@ const LIS_SRC = [
   {id:'s3',   g:'単音',      n:'メジャースケール',    d:'長音階の7音',                pool:[0,2,4,5,7,9,11]},
   {id:'s8',   g:'単音',      n:'メジャー・下行',      d:'長音階7音・ルートの下側だけ', pool:MAJ7, dir:'down'},
   {id:'s9',   g:'単音',      n:'メジャー・上下',      d:'長音階7音・上下ランダム',    pool:MAJ7, dir:'both'},
-  {id:'s4',   g:'単音',      n:'マイナー系',          d:'♭3・♭6・♭7を含む7音',     pool:[0,2,3,5,7,8,10], minor:true},
+  {id:'s12',  g:'単音',      n:'マイナー・上行',      d:'♭3・♭6・♭7を含む7音',       pool:MIN7, minor:true},
+  {id:'s13',  g:'単音',      n:'マイナー・下行',      d:'自然短音階7音・ルートの下側', pool:MIN7, dir:'down', minor:true},
+  {id:'s4',   g:'単音',      n:'マイナー・上下',      d:'自然短音階7音・上下ランダム', pool:MIN7, dir:'both', minor:true},
   {id:'s5',   g:'単音',      n:'12度数すべて',        d:'半音もすべて',               pool:ALL12},
   {id:'dn',   g:'単音',      n:'下行だけ',            d:'ルートより下の音だけを流す',  pool:ALL12, dir:'down'},
   {id:'s6',   g:'単音',      n:'上行・下行ミックス',  d:'上と下をランダムに',          pool:ALL12, dir:'both'},
@@ -1414,11 +1446,15 @@ function isUnlocked(st){
 }
 
 // レベルチップの色分け（先頭2文字で判定）
+// マイナー系ステージか（♭3を含み長3度を含まないプール）。カデンツ・解決フレーズの長短に使う
+function stageMinor(st){ return !!(st && st.pool && st.pool.indexOf(3) >= 0 && st.pool.indexOf(4) < 0); }
+
 function lvClass(lv){
   if(lv.indexOf('入門') === 0) return 'lv-a';
   if(lv.indexOf('初級') === 0) return 'lv-b';
   if(lv.indexOf('中級') === 0) return 'lv-c';
-  return 'lv-d';
+  if(lv.indexOf('上級') === 0) return 'lv-d';
+  return 'lv-e';
 }
 
 // ── localStorage（キー名で他アプリと分離・読み込みは必ず検証） ──
@@ -1432,7 +1468,7 @@ function validateProgress(j){
   const p = {v:2, best:{}, bestRate:{}, lastStage:null, playMode:'melodic',
              unlockMode:'seq', scaffold:3, sessionLen:'q10', diagUnlock:null,
              noteName:'deg', singFirst:'off',
-             cadEvery:'auto', speed:1, blockRep:0, rootEvery:1,
+             cadEvery:'auto', speed:1, blockRep:0, rootEvery:1, scaleBtn:'on', traceAns:'off',
              lis:{pick:['s3'], gap:'normal', reso:true, keyEvery:4, sleep:0, cad:'key', speed:1, fixedKey:false},
              conf:{}, daily:{}, dir:{up:[0,0], down:[0,0]},
              recentMiss:[], streak:{last:null, n:0}, stats:{}};
@@ -1450,6 +1486,8 @@ function validateProgress(j){
     if(SPEEDS.indexOf(j.speed) >= 0) p.speed = j.speed;
     if(BLOCK_REPS.indexOf(j.blockRep) >= 0) p.blockRep = j.blockRep;
     if(ROOT_EVERY.indexOf(j.rootEvery) >= 0) p.rootEvery = j.rootEvery;
+    if(j.scaleBtn === 'off') p.scaleBtn = 'off';
+    if(j.traceAns === 'on') p.traceAns = 'on';
     // かけ流しの設定（内容の選択・間・解決・キー変更・スリープ）
     if(j.lis && typeof j.lis === 'object'){
       const L = j.lis;
@@ -1858,6 +1896,10 @@ function shortDeg(c){ return progress.noteName === 'solfa' ? DEG[c].s : DEG[c].d
 
 // ── メロディ聴音の入力状態 ──
 let melInput = [];
+
+// スケールボタン：出題中に使ったらその問題は正解扱いにしない（毎回使えば答えが分かってしまうため）
+let scaleUsed = false;  // この問題で使ったか
+let scaleCount = 0;     // このラウンドで使った回数（結果画面に出す）
 
 // ── 五線譜表示（答え合わせ用） ──────────────────
 // ギターの慣習に合わせ、実音より1オクターブ上に記譜（ト音記号+8vb）
@@ -2492,6 +2534,8 @@ function resetRoundUI(){
   $('diagResult').hidden = true;
   phase = 'idle';
   qi = 0; score = 0; answersLog = []; lastAnsVal = null; curQ = null;
+  scaleUsed = false; scaleCount = 0;
+  $('scaleBtn').hidden = true;
   hideHint();
   melInput = [];
   $('melBar').hidden = true;
@@ -2537,7 +2581,7 @@ function renderDots(){
     dotsEl.className = '';
     for(let i = 1; i <= roundTotal; i++){
       const s = document.createElement('span');
-      if(i <= answersLog.length) s.className = answersLog[i-1].ok ? 'ok' : 'ng';
+      if(i <= answersLog.length) s.className = answersLog[i-1].ok ? 'ok' : (answersLog[i-1].assisted ? 'as' : 'ng');
       else if(i === qi) s.className = 'cur';
       dotsEl.appendChild(s);
     }
@@ -2922,7 +2966,7 @@ function playQuestionWithKey(){
     ensureAudio();
     stopAll();
     setPlaying(true);
-    const d = playShortCadence(roundRoot, curStage.id === 's4', audioCtx.currentTime + 0.06);
+    const d = playShortCadence(roundRoot, stageMinor(curStage), audioCtx.currentTime + 0.06);
     setPlayLabel('キーの響き…', true);
     later(() => { playStimulus(); applySingGate(); }, Math.round(d * 1000) + 150);
     return;
@@ -2931,6 +2975,52 @@ function playQuestionWithKey(){
 }
 
 // 現在の問題を再生（replay=trueでもまったく同じものを鳴らす）
+// スケールボタンで鳴らす音階。メジャー系は長音階、マイナー系は自然短音階、モードはそのモード、
+// 12度数ステージや入門は長音階（半音の音は「間にある」と聴く）
+function scalePoolFor(){
+  if(!curStage) return MAJ7;
+  if(curStage.scales && roundPool) return roundPool;
+  if(curStage.pool && curStage.pool.length === 7) return curStage.pool;
+  return MAJ7;
+}
+
+// ルートから音階を1オクターブなぞる（down なら下向き：ド シ ラ ソ…）。返り値は秒数
+function playScaleWalk(root, pool, down, t0){
+  const seq = down
+    ? [0].concat(pool.slice(1).reverse().map(iv => iv - 12), [-12])
+    : pool.concat([12]);
+  seq.forEach((iv, i) => {
+    const last = i === seq.length - 1;
+    playNote(root + iv, t0 + i * T(0.26), last ? 0.85 : 0.72, last ? T(1.0) : T(0.42));
+  });
+  return (seq.length - 1) * T(0.26) + T(1.0);
+}
+
+// 答え合わせで、ルートから答えの音まで音階をなぞって止める（ド レ ミ ファ ソ！）。
+// 答えが音階の外（半音）なら、手前の音階音までなぞってから答えの音を鳴らす
+function playTrace(root, pool, off, t0){
+  const down = off < 0;
+  const steps = down ? pool.slice(1).reverse().map(iv => iv - 12).concat([-12]) : pool.slice(1).concat([12]);
+  const path = [0];
+  for(const iv of steps){
+    if(down ? iv <= off : iv >= off) break;
+    path.push(iv);
+  }
+  path.push(off);
+  path.forEach((iv, i) => {
+    const last = i === path.length - 1;
+    playNote(root + iv, t0 + i * T(0.26), last ? 1.0 : 0.7, last ? T(1.5) : T(0.4));
+  });
+  return (path.length - 1) * T(0.26) + T(1.5);
+}
+
+// スケールボタンの表示（設定ON・コード以外・診断以外・出題中〜答え合わせ中）
+function renderScaleBtn(){
+  const show = progress.scaleBtn === 'on' && curStage && curStage.gk !== 'chord' && !diag &&
+               (phase === 'q' || phase === 'sing' || phase === 'reveal');
+  $('scaleBtn').hidden = !show;
+}
+
 // この問題でルートを鳴らすか（キーの支えの設定。メロディ・コードには効かない）
 function rootShown(){
   if(!curStage || curStage.gk !== 'mono') return true;
@@ -3016,7 +3106,7 @@ function startRound(){
             : curStage.fixedKey ? (hasDown ? 60 : 48)
             : hasDown ? 52 + rnd(9)
             : 45 + rnd(11);
-  const minor = curStage.id === 's4' || isMinorScale(roundScale); // マイナー系はマイナーカデンツ
+  const minor = stageMinor(curStage) || isMinorScale(roundScale); // マイナー系はマイナーカデンツ
   const t0 = audioCtx.currentTime + 0.08;
   phase = 'listen';
   const sc = progress.scaffold;
@@ -3061,6 +3151,7 @@ function startRound(){
 // スタート押下時にスコア類だけ初期化（画面はそのまま）
 function resetRoundUIKeepScreen(){
   qi = 0; score = 0; answersLog = []; lastAnsVal = null;
+  scaleUsed = false; scaleCount = 0;
   melInput = [];
   $('melBar').hidden = true;
   $('singBtn').hidden = true;
@@ -3087,6 +3178,7 @@ function nextQuestion(){
   if(!curSession.endless && !curSession.sec && qi >= roundTotal){ showResult(); return; }
   qi++;
   melInput = [];
+  scaleUsed = false;
   $('singBtn').hidden = true;
   answersEl.classList.remove('locked');
   curQ = makeQuestion();
@@ -3098,6 +3190,7 @@ function nextQuestion(){
   renderMelBar(false);
   playQuestionWithKey();
   applySingGate();
+  renderScaleBtn();
 }
 
 // ── 回答処理 ──────────────────────────────────
@@ -3150,12 +3243,13 @@ function melTap(val){
 function melJudge(){
   const correct = curQ.cls;
   const ok = correct.every((c, i) => melInput[i] === c);
+  const assisted = scaleUsed;
   const cLabel = correct.map(c => shortDeg(c)).join(' → ');
   const gLabel = melInput.map(c => shortDeg(c)).join(' → ');
-  answersLog.push({ok, correct: cLabel, given: gLabel, q: Object.assign({}, curQ),
+  answersLog.push({ok: ok && !assisted, assisted, correct: cLabel, given: gLabel, q: Object.assign({}, curQ),
                    ckey: 'd' + correct[0], gkey: 'd' + melInput[0]});
-  // 音ごとに正誤を積む（苦手優先の出題とレポートに効かせるため）
-  correct.forEach((c, i) => {
+  // 音ごとに正誤を積む（苦手優先の出題とレポートに効かせるため）。スケールを使った問題は統計に入れない
+  if(!assisted) correct.forEach((c, i) => {
     const k = 'd' + c;
     const e = progress.stats[k] || [0, 0];
     e[1]++;
@@ -3169,7 +3263,7 @@ function melJudge(){
     recordAnswer(melInput[i] === c, k, 'd' + melInput[i], false);
   });
   saveProgress();
-  if(ok) score++;
+  if(ok && !assisted) score++;
   renderDots();
   renderModeChip();
   stopAll();
@@ -3177,7 +3271,8 @@ function melJudge(){
   renderMelBar(true);
   showStaff();
   if(ok){
-    setFeedback('正解！ ' + cLabel, 'ok', 'check');
+    if(assisted) setFeedback('スケールを使ったので正解扱いになりません（答え ' + cLabel + '）', 'as', 'up');
+    else setFeedback('正解！ ' + cLabel, 'ok', 'check');
     advance(nextQuestion, Math.round(T(1.7) * 1000));
   }else{
     const hit = correct.filter((c, i) => melInput[i] === c).length;
@@ -3229,25 +3324,28 @@ function answer(val){
   if(phase !== 'q') return;
   const correctVal = curQ.type === 'chord' ? curQ.chord : curQ.cls;
   const ok = val === correctVal;
+  const assisted = scaleUsed; // 出題中にスケールボタンを使った
   const cLabel = curQ.type === 'chord' ? CHORDS[correctVal].label : degLabel(correctVal);
   const gLabel = curQ.type === 'chord' ? CHORDS[val].label : degLabel(val);
   const statKey = curQ.type === 'chord' ? correctVal : 'd' + correctVal;
   const givenKey = curQ.type === 'chord' ? val : 'd' + val;
-  answersLog.push({ok, correct: cLabel, given: gLabel, q: Object.assign({}, curQ),
+  answersLog.push({ok: ok && !assisted, assisted, correct: cLabel, given: gLabel, q: Object.assign({}, curQ),
                    ckey: statKey, gkey: givenKey});
-  // 度数/コード別の累計成績（苦手優先の出題・レポートで使う）
-  const stEntry = progress.stats[statKey] || [0, 0];
-  stEntry[1]++; if(ok) stEntry[0]++;
-  progress.stats[statKey] = stEntry;
-  // 間違えた音は次のラウンドで必ずもう一度出す
-  if(!ok){
-    progress.recentMiss = progress.recentMiss.filter(k => k !== statKey);
-    progress.recentMiss.push(statKey);
-    if(progress.recentMiss.length > 12) progress.recentMiss.shift();
+  if(!assisted){
+    // 度数/コード別の累計成績（苦手優先の出題・レポートで使う）。スケールを使った問題は統計に入れない
+    const stEntry = progress.stats[statKey] || [0, 0];
+    stEntry[1]++; if(ok) stEntry[0]++;
+    progress.stats[statKey] = stEntry;
+    // 間違えた音は次のラウンドで必ずもう一度出す
+    if(!ok){
+      progress.recentMiss = progress.recentMiss.filter(k => k !== statKey);
+      progress.recentMiss.push(statKey);
+      if(progress.recentMiss.length > 12) progress.recentMiss.shift();
+    }
+    recordAnswer(ok, statKey, givenKey, curQ.type === 'deg' ? !!curQ.down : undefined);
+    saveProgress();
   }
-  recordAnswer(ok, statKey, givenKey, curQ.type === 'deg' ? !!curQ.down : undefined);
-  saveProgress();
-  if(ok) score++;
+  if(ok && !assisted) score++;
   // ブロック練習で正確さが出てきたらミックスへ自動移行
   // （研究の知見：初期の正確さはブロックで作り、実戦への転移はインターリーブで作る）
   if(roundMode === 'block' && answersLog.length >= 6 &&
@@ -3263,9 +3361,15 @@ function answer(val){
   if(ok){
     phase = 'reveal';
     if(cBtn) cBtn.classList.add('hlOk');
-    setFeedback('正解！ ' + cLabel, 'ok', 'check');
+    if(assisted) setFeedback('スケールを使ったので正解扱いになりません（答え ' + cLabel + '）', 'as', 'up');
+    else setFeedback('正解！ ' + cLabel, 'ok', 'check');
     showStaff();
-    advance(nextQuestion, Math.round(T(1.4) * 1000)); // 五線譜を一瞥できる長さ
+    let wait = T(1.4); // 五線譜を一瞥できる長さ
+    if(progress.traceAns === 'on' && curQ.type === 'deg'){
+      ensureAudio(); useSpd(progress.speed); setPlaying(true);
+      wait = playTrace(curQ.root, scalePoolFor(), degOffOf(curQ), audioCtx.currentTime + 0.05) + 0.6;
+    }
+    advance(nextQuestion, Math.round(wait * 1000));
   }else{
     phase = 'reveal';
     if(cBtn) cBtn.classList.add('hlOk');
@@ -3274,8 +3378,14 @@ function answer(val){
     setFeedback('正解は ' + cLabel + '（あなた: ' + gLabel + '）', 'ng', 'x');
     showStaff();
     if(curQ.type === 'deg') showHint(correctVal);
-    // 正解をもう一度聴かせてから手動で次へ
-    later(() => { if(phase === 'reveal') replayForReveal(); }, 350);
+    // 正解をもう一度聴かせてから手動で次へ（設定で「なぞって止める」なら音階でたどる）
+    later(() => {
+      if(phase !== 'reveal') return;
+      if(progress.traceAns === 'on' && curQ.type === 'deg'){
+        ensureAudio(); useSpd(progress.speed); setPlaying(true);
+        playTrace(curQ.root, scalePoolFor(), degOffOf(curQ), audioCtx.currentTime + 0.05);
+      }else replayForReveal();
+    }, 350);
     nextBtn.hidden = false;
     later(() => ensureVisible(nextBtn), 60);
   }
@@ -3308,7 +3418,7 @@ function replayForReveal(){
 // 5度（ソ）以上は上のルートへ、4度（ファ）以下は下のルートへ。スケール外の音は隣のスケール音から合流
 // minorish を省略すると現在のステージから判定する。返り値は鳴り終わるまでの秒数
 function playResolution(root, off, t0, minorish){
-  if(minorish === undefined) minorish = !!(curStage && curStage.id === 's4');
+  if(minorish === undefined) minorish = !!(curStage && stageMinor(curStage));
   const scale = minorish ? [0,2,3,5,7,8,10,12] : [0,2,4,5,7,9,11,12];
   let base = root, s = off;
   if(s < 0){ base = root - 12; s = off + 12; } // 下行問題は下のオクターブ内で解決
@@ -3347,6 +3457,7 @@ function showResult(){
   $('modeChip').textContent = '';
   $('endBtn').hidden = true;
   qNumEl.textContent = '終了';
+  $('scaleBtn').hidden = true;
   setPlayLabel('', false);
   setFeedback('', '');
   answersEl.hidden = true;
@@ -3386,7 +3497,8 @@ function showResult(){
   // 達成率リング（クリア以上=緑、それ未満=アクセント）
   const ringColor = cleared ? 'var(--ok)' : 'var(--acc)';
   $('scoreRing').style.background = 'conic-gradient(' + ringColor + ' ' + rate + '%, var(--s3) 0)';
-  $('resMsg').textContent = answered + '問中 ' + score + '問正解 ／ ' + msg;
+  $('resMsg').textContent = answered + '問中 ' + score + '問正解 ／ ' + msg +
+    (scaleCount ? '　※スケール' + scaleCount + '回使用（正解扱いなし）' : '');
 
   const log = $('resLog');
   log.textContent = '';
@@ -3401,7 +3513,9 @@ function showResult(){
       line.className = 'ngLineBtn';
       line.appendChild(ico('play'));
       const lt = document.createElement('span');
-      lt.textContent = '正解 ' + m.correct + ' ← あなた ' + m.given;
+      lt.textContent = m.assisted
+        ? 'スケール使用（正解 ' + m.correct + '・あなた ' + m.given + '）'
+        : '正解 ' + m.correct + ' ← あなた ' + m.given;
       line.appendChild(lt);
       line.addEventListener('click', () => {
         ensureAudio();
@@ -3951,7 +4065,7 @@ $('lisToggle').addEventListener('click', () => {
 // s3で落ちたら下り（s2→s1）で確かめる。最短4問・最長10問。
 // おすすめのステージまで解放（progress.diagUnlock）。既により先まで解放済みなら下げない
 
-const DIAG_UP = ['s3','s9','s4','s5','s6','s11'];
+const DIAG_UP = ['s3','s9','s4','s6','s16'];
 const DIAG_DOWN = ['s2','s1'];
 let diag = null; // {dir, list, idx, subQ, okCnt, n}
 
@@ -3996,13 +4110,14 @@ function diagLevelStart(){
   listenBtn.classList.add('busy');
   setPlaying(true);
   rootBtn.hidden = progress.rootEvery === 1; // 診断は単音のみ
+  $('scaleBtn').hidden = true;               // 診断は実力を測るのでスケールは使わせない
   roundRoot = st.fixedKey ? 48
             : (st.dir === 'down' || st.dir === 'both') ? 52 + rnd(9)
             : 45 + rnd(11);
   phase = 'listen';
   const t0 = audioCtx.currentTime + 0.08;
   // 診断は条件を揃えるため、足場の設定に関係なく常にカデンツでキーを提示する
-  playCadence(roundRoot, st.id === 's4', t0);
+  playCadence(roundRoot, stageMinor(st), t0);
   if(progress.rootEvery !== 1){
     playNote(roundRoot, t0 + 3.3, 1.0, 1.6);
     setPlayLabel('キーの響き → ルート音を覚えてください', true);
@@ -4056,7 +4171,7 @@ function diagAdvance(){
   const lvl = diag.list[diag.idx];
   if(diag.dir === 'up'){
     if(passed){
-      if(diag.idx === diag.list.length - 1){ diagFinish('s11'); return; }
+      if(diag.idx === diag.list.length - 1){ diagFinish('s16'); return; }
       diag.idx++;
       diagLevelStart();
       return;
@@ -4093,7 +4208,7 @@ function diagFinish(rec){
   $('diagRecName').textContent = st.lv + ' ' + st.name;
   $('diagRecMsg').textContent =
     rec === 's1' ? 'まずは基本の3音からじっくり始めましょう！' :
-    rec === 's11' ? '単音の全ステージを解放しました。どんどん挑戦してください' :
+    rec === 's16' ? '単音の全ステージを解放しました。どんどん挑戦してください' :
     'ここまでのステージを解放しました。ここから始めるのがおすすめです！';
   $('diagResult').hidden = false;
 }
@@ -4116,6 +4231,23 @@ listenBtn.addEventListener('click', () => {
     playStimulus();
     if(phase === 'reveal' && !diag) nextBtn.hidden = false; // 手動でも抜けられるように
   }
+});
+
+$('scaleBtn').addEventListener('click', () => {
+  if(!curStage || !curQ) return;
+  if(!(phase === 'q' || phase === 'sing' || phase === 'reveal')) return;
+  ensureAudio();
+  useSpd(progress.speed);
+  stopAll();
+  if(phase !== 'reveal'){
+    if(!scaleUsed){ scaleUsed = true; scaleCount++; }
+    setPlayLabel('スケール（この問題は正解扱いになりません）', true);
+  }else{
+    setPlayLabel('スケール', true);
+    if(!diag) nextBtn.hidden = false;
+  }
+  const down = curQ.type === 'deg' && !!curQ.down;
+  playScaleWalk(roundRoot !== null ? roundRoot : curQ.root, scalePoolFor(), down, audioCtx.currentTime + 0.05);
 });
 
 rootBtn.addEventListener('click', () => {
@@ -4198,6 +4330,7 @@ function renderScaffoldBtn(){
   $('cadLbl').textContent = SCAFFOLD[progress.scaffold].n;
   renderCadFreq();
   renderRootEvery();
+  renderScaleSeg();
   cadBtn.classList.toggle('dim', progress.scaffold === 0);
   renderScList();
   renderModeChip();
@@ -4246,6 +4379,20 @@ rootEveryBtns.forEach(b => b.addEventListener('click', () => {
     setPlayLabel(progress.rootEvery === 1
       ? 'ルートは毎問鳴ります' : 'ルートの回数を減らしました。次のラウンドから適用されます', false);
   }
+}));
+
+// スケールボタンと「なぞって止める」（永続化）
+const scaleBtnBtns = [...document.querySelectorAll('#scaleBtnSeg button')];
+const traceBtns = [...document.querySelectorAll('#traceSeg button')];
+function renderScaleSeg(){
+  scaleBtnBtns.forEach(b => b.classList.toggle('active', b.dataset.sb === progress.scaleBtn));
+  traceBtns.forEach(b => b.classList.toggle('active', b.dataset.tr === progress.traceAns));
+}
+scaleBtnBtns.forEach(b => b.addEventListener('click', () => {
+  progress.scaleBtn = b.dataset.sb; saveProgress(); renderScaleSeg(); renderScaleBtn();
+}));
+traceBtns.forEach(b => b.addEventListener('click', () => {
+  progress.traceAns = b.dataset.tr; saveProgress(); renderScaleSeg();
 }));
 
 // キーの響きを鳴らす頻度（永続化・次の問題から適用）
@@ -4441,6 +4588,11 @@ document.addEventListener('keydown', e => {
   if(e.key === 'Enter' && phase === 'reveal' && !nextBtn.hidden){
     e.preventDefault();
     onNext();
+    return;
+  }
+  if((e.key === 's' || e.key === 'S') && !$('scaleBtn').hidden){
+    e.preventDefault();
+    $('scaleBtn').click();
     return;
   }
   if(e.key === 'Backspace' && phase === 'q' && curStage && curStage.mel){
