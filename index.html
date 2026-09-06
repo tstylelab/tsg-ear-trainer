@@ -1008,6 +1008,86 @@ body:has(#tabbar:not([hidden])) footer{padding-bottom:84px;}
   .hwrap, .sheetBox{max-width:1040px;}
 }
 
+/* ═══ 2026-09-07 v5：色を絞る・赤い面をやめる・幅を止める（v3/v4 の上書き）═══
+   ・色は 墨(#15161f)＋白＋コーラル1色。コーラルは「主ボタン／今いる場所／次に挑む所／大事な数字」だけ
+   ・段のパステルチップ・緑の塗り・赤いヒーローは廃止
+   ・コンテンツ幅は 640px まで。PCでも横に伸ばさない（出題画面の2列だけ 900px）           */
+:root{
+  --s0:#f6f6f7; --s1:#ffffff; --s2:#f0f0f3; --s3:#e3e3e9;
+  --t1:#15161f; --t2:#5b5e70; --t3:#9a9dab;
+  --acc:#ff5a3c; --accd:#e64a2e; --acct:rgba(255,90,60,.10);
+  --shadow:0 1px 2px rgba(21,22,31,.04), 0 10px 28px -16px rgba(21,22,31,.16);
+}
+main{max-width:640px;}
+.hwrap, .sheetBox{max-width:640px;}
+
+/* ヒーロー：白いカード。数字だけが大きく、色はCTAのコーラルだけ */
+.hero{background:var(--s1); border:none; box-shadow:var(--shadow); border-radius:22px; padding:22px 20px 18px; color:var(--t1);}
+.hero::before{display:none;}
+.heroEyebrow{display:none;}
+.heroTitle{color:var(--t1); font-size:21px; font-weight:700;}
+.heroTitle b{color:var(--acc);}
+.heroSub{color:var(--t2); font-size:13px; margin-top:4px;}
+.heroStats{display:flex; gap:0; margin-top:16px; border-top:1px solid var(--s2); border-bottom:1px solid var(--s2); padding:12px 0;}
+.heroStats .stat{flex:1; background:transparent; border:none; border-left:1px solid var(--s2); border-radius:0; padding:2px 6px; text-align:center;}
+.heroStats .stat:first-child{border-left:none;}
+.heroStats .stat b{color:var(--t1); font-size:32px;}
+.heroStats .stat:first-child b{color:var(--acc);}
+.heroStats .stat b small{color:inherit; font-size:13px;}
+.heroStats .stat span{color:var(--t3); font-size:11px; margin-top:4px;}
+#heroCta{background:var(--acc); color:#fff; box-shadow:0 10px 24px -12px rgba(255,90,60,.7); margin-top:16px;}
+#heroCta:active{background:var(--accd);}
+.heroGhost{background:transparent; border:none; color:var(--t2); padding:10px; font-size:13px; margin-top:4px;}
+.heroGhost .ic{color:var(--t3);}
+
+/* 段のチップ：パステル廃止。灰の小さなラベル。実戦だけ墨で塗る */
+.lvChip{background:var(--s2); color:var(--t2); border:none; font-family:var(--fontD); font-weight:600; letter-spacing:.04em;}
+.lv-a, .lv-b, .lv-c, .lv-d{color:var(--t2); background:var(--s2); border-color:transparent;}
+.lv-e{color:#fff; background:var(--t1); border-color:var(--t1);}
+.lastChip{background:var(--acct); color:var(--accd);}
+
+/* 道：緑をやめる。クリア済み＝墨、次＝コーラル、未挑戦＝白 */
+.stageRow::before{background:var(--s3);}
+.stageRow.cleared::before{background:var(--t1);}
+.stageRow .node{background:var(--s1); color:var(--t3);}
+.stageRow.cleared .node{background:var(--t1); color:#fff; box-shadow:0 8px 18px -12px rgba(21,22,31,.6);}
+.stageRow.perfect .node{background:var(--t1); color:#fff; box-shadow:0 0 0 3px var(--s1), 0 0 0 5px var(--acc);}
+.stageRow.next .node{background:var(--acc); color:#fff; animation:none; box-shadow:0 10px 22px -12px rgba(255,90,60,.8);}
+.stageRow.next .nm{color:var(--t1);}
+.stageRow .bd{background:var(--s2); color:var(--t2);}
+.stageRow .bd.star{background:var(--s2); color:var(--t1); border:none;}
+.stageRow .bd.perfect, .stageRow .bd.perfect .ic{color:var(--accd);}
+.grpTtl{color:var(--t3); font-size:12px; letter-spacing:.08em;}
+.grpCnt{color:var(--t3);}
+
+/* 出題画面：色は正誤の緑赤とコーラルの主ボタンだけ */
+.ringCore{color:var(--t2);}
+#modeChip span{color:var(--t2);}
+#answers button.hlOk{background:var(--t1); box-shadow:0 10px 24px -12px rgba(21,22,31,.6);}
+#answers button.hlOk .d, #answers button.hlOk .s{color:#fff;}
+#feedback.ok{color:var(--t1);}
+
+/* タブバー */
+#tabbar button{color:var(--t3);}
+#tabbar button.on{color:var(--t1);}
+#tabbar button.on .ic{color:var(--acc);}
+
+/* PC：横に広げない。出題画面の2列だけ 900px */
+@media (min-width: 768px){
+  main{max-width:640px; padding:22px 20px 8px;}
+  .hwrap, .sheetBox{max-width:640px;}
+  .hero{padding:24px 24px 20px;}
+  .heroTitle{font-size:22px;}
+  #stageList{display:block;}
+  body:has(#scrQuiz:not([hidden])) main{max-width:900px;}
+  #repBody{display:block;}
+}
+@media (min-width: 1100px){
+  main{max-width:640px;}
+  .hwrap, .sheetBox{max-width:640px;}
+  body:has(#scrQuiz:not([hidden])) main{max-width:900px;}
+}
+
 /* 使い方ガイド：姉妹アプリと同じ「💡 これ、知ってましたか？」形式 */
 .modal h3{font-size:18px; font-weight:700; color:#1a1a2e; border-bottom:2px solid var(--s2); padding-bottom:12px; margin-bottom:12px;}
 .modal .gIntro{font-size:13px; color:var(--t2); margin:0 0 6px; line-height:1.6;}
