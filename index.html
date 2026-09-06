@@ -5091,12 +5091,17 @@ $('reportBtn').addEventListener('click', () => lisStop());
 $('tabSet').addEventListener('click', () => $('setBtn').click());
 function syncTabbar(){
   const bar = $('tabbar');
-  bar.hidden = !scrQuiz.hidden; // 出題中は隠す（誤タップ防止・回答ボタンの場所を空ける）
+  const hide = !scrQuiz.hidden; // 出題中は隠す（誤タップ防止・回答ボタンの場所を空ける）
+  // 値が変わるときだけ書く。毎回書くと自分の変更に監視が反応して無限ループになり、
+  // クリックなどのイベントが処理されなくなる（2026-09-07 の公開サイトで発生）
+  if(bar.hidden !== hide) bar.hidden = hide;
   const on = !scrSelect.hidden ? 'tabHome' : !$('scrListen').hidden ? 'lisBtn' : !$('scrReport').hidden ? 'reportBtn' : null;
   for(const id of ['tabHome', 'lisBtn', 'reportBtn', 'tabSet']) $(id).classList.toggle('on', id === on);
 }
 if(typeof MutationObserver !== 'undefined'){
-  new MutationObserver(syncTabbar).observe(document.body, {attributes:true, subtree:true, attributeFilter:['hidden']});
+  // 監視するのは4つの画面の hidden だけ（タブバー自身や他の要素は見ない）
+  const mo = new MutationObserver(syncTabbar);
+  for(const el of [scrSelect, scrQuiz, $('scrListen'), $('scrReport')]) mo.observe(el, {attributes:true, attributeFilter:['hidden']});
 }
 syncTabbar();
 
