@@ -1236,10 +1236,11 @@ footer{
     <div class="segRow" id="lisGapSeg">
       <button data-gap="slow">ゆっくり</button><button data-gap="normal">ふつう</button><button data-gap="fast">はやい</button>
     </div>
-    <div class="sheetSub">主音への解決をつける</div>
+    <div class="sheetSub">音のあとのスケール再生</div>
     <div class="segRow" id="lisResoSeg">
-      <button data-reso="on">つける</button><button data-reso="off">つけない</button>
+      <button data-reso="down">音→主音</button><button data-reso="up">主音→音</button><button data-reso="both">両方</button><button data-reso="off">なし</button>
     </div>
+    <p class="sheetNote" style="margin-top:4px;">「音→主音」＝その音が主音へ引っぱられる感じ（響きの性格）。「主音→音」＝主音から数えて着く感じ（距離感）。両方だと1件が4秒ほど長くなります。</p>
     <div class="sheetSub">キーの響き（カデンツ）</div>
     <div class="segRow" id="lisCadSeg">
       <button data-cad="each">毎回</button><button data-cad="key">変わるとき</button><button data-cad="off">なし</button>
@@ -1344,6 +1345,15 @@ footer{
       <button data-sp="1.5">かなり速い</button>
     </div>
     <p style="font-size:var(--f5); color:var(--t3); margin:2px 0 0;">カデンツ・出題・答え合わせの待ち時間をまとめて詰めます。音程は変わりません。</p>
+
+    <h4><svg class="ic"><use href="#i-note"/></svg>不正解のあとのスケール再生</h4>
+    <div class="segRow" id="resoSeg">
+      <button data-reso="down">音→主音</button>
+      <button data-reso="up">主音→音</button>
+      <button data-reso="both">両方</button>
+      <button data-reso="off">なし</button>
+    </div>
+    <p style="font-size:var(--f5); color:var(--t3); margin:2px 0 0;">間違えたとき、正解の音を聴かせたあとにスケールをなぞります。「音→主音」＝その音が主音へ引っぱられる感じ（響きの性格）。「主音→音」＝主音から数えて着く感じ（距離感）。<b>不正解のときだけ鳴る</b>ので、正解が続く限りテンポは落ちません。</p>
 
     <h4><svg class="ic"><use href="#i-repeat"/></svg>同じ音のくり返し（単音ステージ）</h4>
     <div class="segRow" id="blockSeg">
@@ -1581,6 +1591,9 @@ const LIS_SRC = [
 ];
 const LIS_GRP = ['おすすめ', '単音', '上級', 'メロディ', 'コード'];
 const LIS_PAUSE = {slow:2.6, normal:1.5, fast:0.7}; // 1つ鳴らし終えてから次までの間（秒）
+
+// 解決再生の方向。down=音→主音（引っぱられ方＝響きの性格）／up=主音→音（距離感）／both／off
+const RESO_MODES = ['down', 'up', 'both', 'off'];
 const LIS_KEY_EVERY = [4, 8, 0];                    // キーを作り直す間隔（0=変えない）
 const LIS_SLEEP = [0, 10, 20, 30];                  // スリープタイマー（分・0=なし）
 const LIS_HIST_MAX = 20;                            // 履歴の保持件数
@@ -1636,7 +1649,8 @@ function validateProgress(j){
              unlockMode:'free', unlockChosen:false, scaffold:3, sessionLen:'q10', diagUnlock:null,
              noteName:'deg', singFirst:'off',
              cadEvery:'auto', speed:1, blockRep:0, rootEvery:1, scaleBtn:'on', traceAns:'off',
-             lis:{pick:['s3'], gap:'normal', reso:true, keyEvery:4, sleep:0, cad:'key', speed:1, fixedKey:false},
+             reso:'down',
+             lis:{pick:['s3'], gap:'normal', reso:'down', keyEvery:4, sleep:0, cad:'key', speed:1, fixedKey:false},
              conf:{}, daily:{}, dir:{up:[0,0], down:[0,0]},
              recentMiss:[], streak:{last:null, n:0}, stats:{}};
   const statKeyOk = k => typeof k === 'string' && (/^d(\d|1[01])$/.test(k) || !!CHORDS[k]);
@@ -1647,6 +1661,7 @@ function validateProgress(j){
     if(SESSIONS[j.sessionLen]) p.sessionLen = j.sessionLen;
     if(j.noteName === 'solfa') p.noteName = 'solfa';
     if(j.singFirst === 'on') p.singFirst = 'on';
+    if(RESO_MODES.indexOf(j.reso) >= 0) p.reso = j.reso;
     if(typeof j.diagUnlock === 'string' && STAGES.some(s => s.id === j.diagUnlock && s.gk === 'mono')) p.diagUnlock = j.diagUnlock;
     if(j.playMode === 'harmonic' || j.playMode === 'both') p.playMode = j.playMode;
     if(CAD_EVERY.indexOf(j.cadEvery) >= 0) p.cadEvery = j.cadEvery;
@@ -1666,7 +1681,9 @@ function validateProgress(j){
         p.lis.pick = ok;
       }
       if(LIS_PAUSE[L.gap]) p.lis.gap = L.gap;
-      if(L.reso === false) p.lis.reso = false;
+      // 旧データ true/false → down/off に読み替え
+      if(L.reso === false || L.reso === 'off') p.lis.reso = 'off';
+      else if(RESO_MODES.indexOf(L.reso) >= 0) p.lis.reso = L.reso;
       if(LIS_KEY_EVERY.indexOf(L.keyEvery) >= 0) p.lis.keyEvery = L.keyEvery;
       if(LIS_SLEEP.indexOf(L.sleep) >= 0) p.lis.sleep = L.sleep;
       if(L.cad === 'each' || L.cad === 'off') p.lis.cad = L.cad;
@@ -3590,14 +3607,14 @@ function replayForReveal(){
   if(curQ.type === 'mel'){
     const offs = melOffsOf(curQ);
     playMelPhrase(curQ.root, curQ.cls, t0, offs);
-    // メロディも最後に主音へ解決させて、調の中での位置を体感させる
-    playResolution(curQ.root, offs[offs.length - 1], t0 + curQ.cls.length * melGap() + T(1.2));
+    // メロディも最後に主音へ解決させて、調の中での位置を体感させる（設定に従う）
+    playReso(progress.reso, curQ.root, offs[offs.length - 1], t0 + curQ.cls.length * melGap() + T(1.2));
     return;
   }
   const off = degOffOf(curQ);
   playDegPhrase(curQ.root, off, t0);
   const phraseDur = T(progress.playMode === 'harmonic' ? 2.0 : (progress.playMode === 'both' ? 4.8 : 3.0));
-  playResolution(curQ.root, off, t0 + phraseDur);
+  playReso(progress.reso, curQ.root, off, t0 + phraseDur);
 }
 
 // 解決再生（FET式）：正解音からスケールに沿ってルートへ着地させ、度数の「役割」を体感させる。
@@ -3622,6 +3639,40 @@ function playResolution(root, off, t0, minorish){
     playNote(base + t, t0 + i * T(0.32), last ? 0.95 : 0.78, last ? T(1.6) : T(0.5));
   });
   return (path.length - 1) * T(0.32) + T(1.6);
+}
+
+// たどる再生：主音からスケールに沿って正解音まで進み、主音からの距離を体感させる。
+// 上行の問題は主音から上がって着く。下行の問題は主音から下がって着く（聴いた基準音から数える形）。
+// スケール外の音は、その手前のスケール音まで進んでから着地する。返り値は鳴り終わるまでの秒数
+function playApproach(root, off, t0, minorish, holdLast){
+  if(minorish === undefined) minorish = !!(curStage && stageMinor(curStage));
+  const scale = minorish ? [0,2,3,5,7,8,10,12] : [0,2,4,5,7,9,11,12];
+  let base = root, s = off, start = 0;
+  if(s < 0){ base = root - 12; s = off + 12; start = 12; } // 下行：上の主音から下りる
+  if(s === start) return 0;
+  const path = [start];
+  if(s > start){ for(const t of scale){ if(t > start && t < s) path.push(t); } }
+  else{ for(let i = scale.length - 1; i >= 0; i--){ if(scale[i] < start && scale[i] > s) path.push(scale[i]); } }
+  path.push(s);
+  const hold = holdLast === undefined ? T(1.6) : holdLast;
+  path.forEach((t, i) => {
+    const last = i === path.length - 1;
+    playNote(base + t, t0 + i * T(0.32), last ? 0.95 : 0.78, last ? hold : T(0.5));
+  });
+  return (path.length - 1) * T(0.32) + hold;
+}
+
+// 方向の設定に従って解決再生を鳴らす。返り値は鳴り終わるまでの秒数（offは0）
+function playReso(mode, root, off, t0, minorish){
+  if(mode === 'down') return playResolution(root, off, t0, minorish);
+  if(mode === 'up') return playApproach(root, off, t0, minorish);
+  if(mode === 'both'){
+    // 主音→音 で着いたら、そこから 音→主音 で帰る（着いた音は短めに持って続ける）
+    const up = playApproach(root, off, t0, minorish, T(0.9));
+    if(!up) return playResolution(root, off, t0, minorish);
+    return up + T(0.15) + playResolution(root, off, t0 + up + T(0.15), minorish);
+  }
+  return 0;
 }
 
 function onNext(){
@@ -3886,19 +3937,19 @@ function lisPlayItem(q, t0, reso){
     const offs = melOffsOf(q);
     playMelPhrase(q.root, q.cls, t0, offs);
     const tail = q.cls.length * melGap() + T(0.9);
-    if(!reso) return tail + T(0.7);
-    return tail + playResolution(q.root, offs[offs.length - 1], t0 + tail, false);
+    if(reso === 'off') return tail + T(0.7);
+    return tail + playReso(reso, q.root, offs[offs.length - 1], t0 + tail, false);
   }
   const off = degOffset(q.cls, q.down);
   if(q.noRoot){
     playNote(q.root + off, t0, 0.95, T(1.5));
-    if(!reso) return T(1.7);
-    return T(1.7) + playResolution(q.root, off, t0 + T(1.7), !!q.minor);
+    if(reso === 'off') return T(1.7);
+    return T(1.7) + playReso(reso, q.root, off, t0 + T(1.7), !!q.minor);
   }
   playNote(q.root, t0, 0.8, T(1.0));
   playNote(q.root + off, t0 + T(1.1), 0.95, T(1.4));
-  if(!reso) return T(2.7);
-  return T(2.8) + playResolution(q.root, off, t0 + T(2.8), !!q.minor);
+  if(reso === 'off') return T(2.7);
+  return T(2.8) + playReso(reso, q.root, off, t0 + T(2.8), !!q.minor);
 }
 
 // 「3音・モード ／ ドリアン」のようにスケール名を添える
@@ -4165,7 +4216,7 @@ const lisKeyModeBtns = [...document.querySelectorAll('#lisKeyModeSeg button')];
 
 function renderLisSeg(){
   lisGapBtns.forEach(b => b.classList.toggle('active', b.dataset.gap === progress.lis.gap));
-  lisResoBtns.forEach(b => b.classList.toggle('active', (b.dataset.reso === 'on') === progress.lis.reso));
+  lisResoBtns.forEach(b => b.classList.toggle('active', b.dataset.reso === progress.lis.reso));
   lisKeyBtns.forEach(b => b.classList.toggle('active', +b.dataset.ke === progress.lis.keyEvery));
   lisSleepBtns.forEach(b => b.classList.toggle('active', +b.dataset.sl === progress.lis.sleep));
   lisCadBtns.forEach(b => b.classList.toggle('active', b.dataset.cad === progress.lis.cad));
@@ -4188,7 +4239,7 @@ lisGapBtns.forEach(b => b.addEventListener('click', () => {
   progress.lis.gap = b.dataset.gap; saveProgress(); renderLisSeg();
 }));
 lisResoBtns.forEach(b => b.addEventListener('click', () => {
-  progress.lis.reso = b.dataset.reso === 'on'; saveProgress(); renderLisSeg();
+  progress.lis.reso = b.dataset.reso; saveProgress(); renderLisSeg();
 }));
 lisKeyBtns.forEach(b => b.addEventListener('click', () => {
   progress.lis.keyEvery = +b.dataset.ke; saveProgress(); renderLisSeg();
@@ -4471,6 +4522,18 @@ blockBtns.forEach(b => b.addEventListener('click', () => {
   renderBlockSeg();
 }));
 renderBlockSeg();
+
+// 不正解のあとのスケール再生（永続化）
+const resoBtns = [...document.querySelectorAll('#resoSeg button')];
+function renderResoSeg(){
+  resoBtns.forEach(b => b.classList.toggle('active', b.dataset.reso === progress.reso));
+}
+resoBtns.forEach(b => b.addEventListener('click', () => {
+  progress.reso = b.dataset.reso;
+  saveProgress();
+  renderResoSeg();
+}));
+renderResoSeg();
 
 // テンポ（早送り・永続化）
 const speedBtns = [...document.querySelectorAll('#speedSeg button')];
