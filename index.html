@@ -913,6 +913,101 @@ main{padding:16px 16px 8px;}
 .repCard{border:none; box-shadow:var(--shadow); border-radius:20px;}
 footer{font-size:11px;}
 
+/* ═══ 2026-09-07 アプリらしさ：タブバー／道の一覧／大きな数字／2列 ═══ */
+.ic{stroke-width:2.2;}
+
+/* 下タブバー */
+#tabbar{
+  position:fixed; left:0; right:0; bottom:0; z-index:30; display:flex; justify-content:center; gap:4px;
+  background:rgba(255,255,255,.94); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border-top:1px solid var(--line); padding:6px 10px calc(8px + env(safe-area-inset-bottom, 0px));
+}
+#tabbar button{
+  flex:1; max-width:150px; display:flex; flex-direction:column; align-items:center; gap:3px;
+  background:transparent; border:none; color:var(--t3); font-size:11px; font-weight:700; padding:6px 4px; border-radius:12px;
+}
+#tabbar button .ic{width:24px; height:24px;}
+#tabbar button.on{color:var(--acc);}
+#tabbar button:active{background:var(--s2); transform:none;}
+body:has(#tabbar:not([hidden])) main{padding-bottom:92px;}
+body:has(#tabbar:not([hidden])) footer{padding-bottom:84px;}
+
+/* ヒーロー：大きな数字 */
+.heroStats{display:flex; gap:8px; margin-top:16px;}
+.heroStats .stat{flex:1; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.2); border-radius:16px; padding:10px 6px 9px; text-align:center;}
+.heroStats .stat b{display:block; font-family:var(--fontD); font-size:30px; font-weight:600; color:#fff; line-height:1; letter-spacing:.01em;}
+.heroStats .stat b small{font-size:14px; font-weight:600; margin-left:2px;}
+.heroStats .stat span{display:block; font-size:11px; color:rgba(255,255,255,.85); margin-top:5px; font-weight:600;}
+.heroGhost{
+  width:100%; margin-top:9px; display:flex; align-items:center; justify-content:center; gap:8px;
+  background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.24); color:#fff;
+  padding:12px; border-radius:14px; font-size:13px; font-weight:600;
+}
+.heroGhost .ic{color:#fff;}
+
+/* ステージ一覧＝道 */
+#stageList{padding-left:2px;}
+.grpTtl{margin:24px 0 2px; padding-left:56px;}
+.stageRow{
+  position:relative; background:transparent; box-shadow:none; border-radius:0;
+  padding:9px 6px 9px 0; margin:0; gap:12px; align-items:center;
+}
+.stageRow::before{content:''; position:absolute; left:20.5px; top:0; bottom:0; width:3px; background:var(--s3); border-radius:2px;}
+.grpTtl + .stageRow::before{top:50%;}
+.stageRow:has(+ .grpTtl)::before, .stageRow:last-child::before{bottom:50%;}
+.stageRow.cleared::before{background:var(--ok);}
+.stageRow > div.node{flex:0 0 44px; width:44px; min-width:44px;}  /* 「1つ目のdivを伸ばす」既存規則より後ろで上書き */
+.stageRow > div.node + div{flex:1; min-width:0;}                   /* 文字ブロックが2つ目のdivになったので伸ばす */
+.stageRow .node{
+  position:relative; z-index:1; width:44px; height:44px; flex:none; border-radius:50%;
+  background:var(--s1); box-shadow:var(--shadow); display:flex; align-items:center; justify-content:center; color:var(--t3);
+}
+.stageRow .node .ic{width:20px; height:20px; stroke-width:2.6;}
+.stageRow.cleared .node{background:var(--ok); color:#fff; box-shadow:0 8px 18px -10px rgba(23,184,119,.9);}
+.stageRow.perfect .node{background:var(--acc); color:#fff; box-shadow:0 8px 18px -10px rgba(255,90,60,.9);}
+.stageRow.next .node{background:var(--acc); color:#fff; animation:nodePulse 1.8s ease-in-out infinite;}
+.stageRow.locked .node{background:var(--s2); color:var(--t3); box-shadow:none;}
+@keyframes nodePulse{0%,100%{box-shadow:0 0 0 4px var(--acct), 0 10px 22px -10px rgba(255,90,60,.8);} 50%{box-shadow:0 0 0 11px rgba(255,90,60,.05), 0 10px 22px -10px rgba(255,90,60,.8);}}
+.stageRow:active{background:transparent; transform:none;}
+.stageRow.next .nm{color:var(--accd);}
+.stageRow .nm{font-size:16px;}
+.stageRow .ds{font-size:12px;}
+.stageRow::after{opacity:.6;}
+@media (prefers-reduced-motion: reduce){.stageRow.next .node{animation:none;}}
+
+/* PC・タブレット横向き：2列に並べ直す（別デザインは作らない） */
+@media (min-width: 768px){
+  main{max-width:960px; padding:22px 24px 8px;}
+  .hwrap, .sheetBox{max-width:960px;}
+  .hero{padding:28px 28px 24px;}
+  .heroTitle{font-size:28px;}
+  #stageList{display:grid; grid-template-columns:1fr 1fr; column-gap:28px; align-items:start;}
+  #stageList .grpTtl{grid-column:1 / -1;}
+  #scrQuiz{display:grid; grid-template-columns:1fr 1fr; column-gap:28px; align-items:start;
+    grid-template-rows:auto auto auto auto auto auto auto auto auto auto auto;}
+  #scrQuiz > .qbar{grid-column:1 / -1; grid-row:1;}
+  #scrQuiz > #dots{grid-column:1; grid-row:2;}
+  #scrQuiz > #modeChip{grid-column:1; grid-row:3;}
+  #scrQuiz > .soundStage{grid-column:1; grid-row:4; min-height:140px;}
+  #scrQuiz > .listenRow{grid-column:1; grid-row:5;}
+  #scrQuiz > #singBtn{grid-column:1; grid-row:6;}
+  #scrQuiz > #feedback{grid-column:1; grid-row:7;}
+  #scrQuiz > #staffWrap{grid-column:1; grid-row:8;}
+  #scrQuiz > #hintLine{grid-column:1; grid-row:9;}
+  #scrQuiz > #melBar{grid-column:2; grid-row:2;}
+  #scrQuiz > #answers{grid-column:2; grid-row:3 / 10; align-self:start; grid-template-columns:repeat(3, 1fr); gap:12px;}
+  #scrQuiz > #answers.chordGrid{grid-template-columns:repeat(2, 1fr);}
+  #scrQuiz > #answers button{padding:18px 4px 15px;}
+  #scrQuiz > #nextBtn{grid-column:2; grid-row:10;}
+  #scrQuiz > #result, #scrQuiz > #diagResult{grid-column:1 / -1; grid-row:11;}
+  #repBody{display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:start;}
+  #tabbar{padding-left:24px; padding-right:24px;}
+}
+@media (min-width: 1100px){
+  main{max-width:1040px;}
+  .hwrap, .sheetBox{max-width:1040px;}
+}
+
 /* 使い方ガイド：姉妹アプリと同じ「💡 これ、知ってましたか？」形式 */
 .modal h3{font-size:18px; font-weight:700; color:#1a1a2e; border-bottom:2px solid var(--s2); padding-bottom:12px; margin-bottom:12px;}
 .modal .gIntro{font-size:13px; color:var(--t2); margin:0 0 6px; line-height:1.6;}
@@ -1064,13 +1159,7 @@ footer{
       <p class="heroSub">音を聴いて、ドレミのどれかを当てるだけ。</p>
       <div class="heroStats" id="heroStats"></div>
       <button id="heroCta" hidden></button>
-      <div class="heroTools">
-        <button id="diagBtn"><svg class="ic"><use href="#i-target"/></svg>レベル診断</button>
-        <button id="reportBtn"><svg class="ic"><use href="#i-chart"/></svg>マイレポート</button>
-      </div>
-      <div class="heroTools">
-        <button id="lisBtn"><svg class="ic"><use href="#i-headphones"/></svg>かけ流し（聴くだけ）</button>
-      </div>
+      <button id="diagBtn" class="heroGhost"><svg class="ic"><use href="#i-target"/></svg>レベル診断で、自分に合うステージを知る</button>
     </div>
     <div id="stageList"></div>
   </section>
@@ -1171,6 +1260,13 @@ footer{
     </div>
   </section>
 </main>
+
+<nav id="tabbar" aria-label="メニュー" hidden>
+  <button id="tabHome" class="on"><svg class="ic"><use href="#i-note"/></svg><span>ホーム</span></button>
+  <button id="lisBtn"><svg class="ic"><use href="#i-headphones"/></svg><span>かけ流し</span></button>
+  <button id="reportBtn"><svg class="ic"><use href="#i-chart"/></svg><span>レポート</span></button>
+  <button id="tabSet"><svg class="ic"><use href="#i-sliders"/></svg><span>設定</span></button>
+</nav>
 
 <footer>© 2026 ギタースクールTSG — All Rights Reserved. 無断複製・転載を禁じます</footer>
 
@@ -2253,22 +2349,23 @@ function showStaff(q, ids){
 function renderHeroStats(){
   const el = $('heroStats');
   el.textContent = '';
-  const mk = (name, t) => {
-    const s = document.createElement('span');
-    if(name) s.appendChild(ico(name));
-    const b = document.createElement('span'); b.textContent = t;
-    s.appendChild(b); el.appendChild(s);
+  const stat = (num, unit, label) => {
+    const d = document.createElement('div'); d.className = 'stat';
+    const b = document.createElement('b'); b.textContent = String(num);
+    if(unit){ const sm = document.createElement('small'); sm.textContent = unit; b.appendChild(sm); }
+    const l = document.createElement('span'); l.textContent = label;
+    d.appendChild(b); d.appendChild(l); el.appendChild(d);
   };
-  let cleared = 0, perfect = 0;
+  let cleared = 0;
   for(const st of STAGES){
     const b = progress.bestRate[st.id];
     if(b !== undefined && b >= CLEAR_RATE) cleared++;
-    if(b === 100) perfect++;
   }
-  mk('trophy', 'クリア ' + cleared + ' / ' + STAGES.length);
-  if(perfect) mk('bloom', 'パーフェクト ' + perfect);
-  if(progress.streak.n > 0) mk('flame', '連続 ' + progress.streak.n + '日');
-  if(!Object.keys(progress.best).length) mk(null, 'まずは入門①から');
+  let ok = 0, tot = 0;
+  for(const k in progress.stats){ ok += progress.stats[k][0]; tot += progress.stats[k][1]; }
+  stat(tot ? Math.round(ok / tot * 100) : '—', tot ? '%' : '', '正答率');
+  stat(cleared, '', 'クリア / ' + STAGES.length);
+  stat(progress.streak.n, '日', '連続');
   renderHeroCta();
 }
 
@@ -2295,6 +2392,7 @@ function renderStageList(){
   renderHeroStats();
   stageListEl.textContent = '';
   let lastGrp = null;
+  const nextMarked = {}; // グループごとに「次に挑むステージ」を1つだけ光らせる
   for(const st of STAGES){
     if(st.grp !== lastGrp){
       const h = document.createElement('div');
@@ -2314,6 +2412,16 @@ function renderStageList(){
     }
     const row = document.createElement('button');
     row.className = 'stageRow';
+    {
+      const cl = bestOf(st.id) >= CLEAR_RATE, un = isUnlocked(st);
+      if(cl) row.classList.add('cleared');
+      if(bestOf(st.id) === 100) row.classList.add('perfect');
+      if(!cl && un && !nextMarked[st.grp]){ row.classList.add('next'); nextMarked[st.grp] = true; }
+      const node = document.createElement('div');
+      node.className = 'node';
+      node.appendChild(ico(cl ? 'check' : (un ? 'play' : 'lock')));
+      row.appendChild(node);
+    }
     const left = document.createElement('div');
     const nm = document.createElement('div');
     nm.className = 'nm';
@@ -4865,6 +4973,23 @@ function syncHdrH(){
 }
 syncHdrH();
 window.addEventListener('resize', syncHdrH);
+
+// ── 下タブバー ────────────────────────────────
+// ホーム／かけ流し／レポート／設定。かけ流し・レポートのボタンは既存のIDをそのまま使っている。
+// どの画面にいるかは各 section の hidden を監視して決める（画面遷移の関数を触らずに済む）
+$('tabHome').addEventListener('click', () => { if(!scrQuiz.hidden) return; lisStop(); showSelect(); });
+$('reportBtn').addEventListener('click', () => lisStop());
+$('tabSet').addEventListener('click', () => $('setBtn').click());
+function syncTabbar(){
+  const bar = $('tabbar');
+  bar.hidden = !scrQuiz.hidden; // 出題中は隠す（誤タップ防止・回答ボタンの場所を空ける）
+  const on = !scrSelect.hidden ? 'tabHome' : !$('scrListen').hidden ? 'lisBtn' : !$('scrReport').hidden ? 'reportBtn' : null;
+  for(const id of ['tabHome', 'lisBtn', 'reportBtn', 'tabSet']) $(id).classList.toggle('on', id === on);
+}
+if(typeof MutationObserver !== 'undefined'){
+  new MutationObserver(syncTabbar).observe(document.body, {attributes:true, subtree:true, attributeFilter:['hidden']});
+}
+syncTabbar();
 
 // ── 初期化 ────────────────────────────────────
 
