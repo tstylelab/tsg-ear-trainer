@@ -1346,7 +1346,7 @@ footer{color:var(--t2);opacity:1;font-size:11px;}
 }
 @media (max-width:430px){
   #scrQuiz>.qbar{display:grid;grid-template-columns:64px minmax(0,1fr) 80px;gap:0 6px;}
-  #scrQuiz>.qbar>.navBtn{grid-column:1;grid-row:1 / 3;}
+  #scrQuiz>.qbar>.navBtn{grid-column:1;grid-row:1 / 3;padding:6px 4px;gap:2px;white-space:nowrap;}
   #stageName{grid-column:2;grid-row:1;min-width:0;font-size:13px;}
   #qNum{grid-column:2;grid-row:2;font-size:12px;margin:0;}
   #cadBtn{grid-column:3;grid-row:1 / 3;}
@@ -1374,6 +1374,32 @@ footer{color:var(--t2);opacity:1;font-size:11px;}
   #answers{gap:7px;} #answers button{min-height:56px;}
 }
 @media (prefers-reduced-motion:reduce){.soundStage.playing .soundWave{animation:none;}}
+
+/* Familiar skills and guided first use stay behind a single optional entry. */
+#masteryPanel{background:#fff;border:1px solid var(--line);border-radius:14px;margin:14px 0;padding:0 12px;font-size:13px;}
+#masteryPanel summary,#resDetails summary{cursor:pointer;min-height:44px;padding:12px 0;font-weight:700;color:var(--t2);}
+#masteryPanel p{line-height:1.7;margin:8px 0;color:var(--t2);}
+#masteryLevel{width:100%;min-height:48px;font:inherit;font-size:16px;color:var(--t1);background:var(--s0);border:1px solid var(--line2);border-radius:10px;padding:10px 6px;margin-top:6px;}
+#masteryApply{width:100%;min-height:48px;background:var(--acc);color:white;padding:12px;border-radius:12px;font-size:14px;}
+#masteryMessage:empty{display:none;}
+.masteryItem{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line);}
+.masteryItem span{flex:1;min-width:0;overflow-wrap:anywhere;}
+.masteryItem button{min-height:44px;flex:none;padding:10px;background:var(--s2);font-size:12px;}
+#introDialog{width:calc(100% - 32px);max-width:420px;max-height:calc(100dvh - 32px);overflow:auto;border:1px solid var(--line);border-radius:22px;padding:24px;color:var(--t1);background:white;box-shadow:var(--shadow);}
+#introDialog::backdrop{background:rgba(20,38,60,.45);}
+#introDialog h2{font-size:21px;margin:0 0 12px;}
+#introDialog p{font-size:14px;line-height:1.7;}
+#introDialog button{min-height:48px;padding:12px;font-size:15px;border-radius:12px;}
+#introPlay,#introStart{width:100%;background:var(--acc);color:#fff;margin:8px 0;}
+.introAnswers{display:flex;gap:10px;}
+.introAnswers button{flex:1;background:var(--s2);border:1px solid var(--line2);font-size:20px;}
+.introAnswers button:disabled{opacity:.5;}
+#introDialog .secondary{width:100%;background:var(--s2);color:var(--t2);margin-top:10px;}
+#resDetails{order:6;text-align:left;border-top:1px solid var(--line);margin-top:16px;}
+#nextStageBtn{background:var(--acc);}
+#nextStageBtn .lb{white-space:normal;}
+#againBtn.secondary{background:var(--s2);color:var(--t2);}
+summary:focus-visible,select:focus-visible{outline:3px solid #226fa5;outline-offset:3px;}
 
 </style>
 </head>
@@ -1471,6 +1497,16 @@ footer{color:var(--t2);opacity:1;font-size:11px;}
       <div id="courseStages" hidden>
         <button id="courseBack" class="courseBack"><svg class="ic"><use href="#i-left"/></svg>練習の種類を選ぶ</button>
         <h2 id="courseTitle" class="sectionTitle" tabindex="-1"></h2>
+        <details id="masteryPanel">
+          <summary>開始レベル・習得済みの設定</summary>
+          <p>すでに分かるところは、練習せずに習得済みにできます。成績は変わらず、後から取り消せます。</p>
+          <label for="masteryLevel">習得済みにする範囲</label>
+          <select id="masteryLevel"></select>
+          <p id="masteryRange"></p>
+          <button id="masteryApply">ここまで習得済みにする</button>
+          <p id="masteryMessage" role="status"></p>
+          <details id="masteryUndo" hidden><summary id="masteryUndoLabel">習得済みを取り消す</summary><div id="masteryList"></div></details>
+        </details>
         <div id="stageList"></div>
       </div>
     </div>
@@ -1522,7 +1558,7 @@ footer{color:var(--t2);opacity:1;font-size:11px;}
 
     <div class="soundStage" id="soundStage">
 <svg class="soundWave" viewBox="0 0 165 50" aria-hidden="true"><rect x="0" y="21.5" width="5" height="7" rx="2.5"/><rect x="10" y="19" width="5" height="12" rx="2.5"/><rect x="20" y="15.5" width="5" height="19" rx="2.5"/><rect x="30" y="11" width="5" height="28" rx="2.5"/><rect x="40" y="16" width="5" height="18" rx="2.5"/><rect x="50" y="8.5" width="5" height="33" rx="2.5"/><rect x="60" y="4" width="5" height="42" rx="2.5"/><rect x="70" y="11.5" width="5" height="27" rx="2.5"/><rect x="80" y="1.5" width="5" height="47" rx="2.5"/><rect x="90" y="7.5" width="5" height="35" rx="2.5"/><rect x="100" y="12.5" width="5" height="25" rx="2.5"/><rect x="110" y="5.5" width="5" height="39" rx="2.5"/><rect x="120" y="10.5" width="5" height="29" rx="2.5"/><rect x="130" y="15.5" width="5" height="19" rx="2.5"/><rect x="140" y="11.5" width="5" height="27" rx="2.5"/><rect x="150" y="17" width="5" height="16" rx="2.5"/><rect x="160" y="20.5" width="5" height="9" rx="2.5"/></svg>
-      <div id="playLabel">&nbsp;</div>
+      <div id="playLabel" aria-live="polite">&nbsp;</div>
     </div>
 
     <div class="listenRow">
@@ -1532,7 +1568,7 @@ footer{color:var(--t2);opacity:1;font-size:11px;}
       <button id="endBtn" hidden><svg class="ic"><use href="#i-check"/></svg>終える</button>
     </div>
     <button id="singBtn" hidden><svg class="ic"><use href="#i-ear"/></svg>歌いました</button>
-    <div id="feedback">&nbsp;</div>
+    <div id="feedback" role="status">&nbsp;</div>
     <div id="staffWrap" class="empty">
       <div id="staffSvg"></div>
       <div id="staffCap"></div>
@@ -1549,11 +1585,11 @@ footer{color:var(--t2);opacity:1;font-size:11px;}
       <div id="resRank"></div>
       <div id="scoreRing"><div class="inner"><b id="resScore"></b><span id="resMax"></span></div></div>
       <div id="resMsg"></div>
-      <div id="resLog"></div>
+      <details id="resDetails"><summary>答え合わせ・詳しい成績</summary><div id="resLog"></div></details>
       <button id="nextStageBtn" hidden></button>
       <div class="resBtns">
         <button id="againBtn">もう一度</button>
-        <button id="selectBtn">ステージ選択</button>
+        <button id="selectBtn">練習を選ぶ</button>
       </div>
     </div>
 
@@ -1569,6 +1605,18 @@ footer{color:var(--t2);opacity:1;font-size:11px;}
     </div>
   </section>
 </main>
+<dialog id="introDialog" aria-labelledby="introTitle">
+  <h2 id="introTitle">まずは1問、操作を体験</h2>
+  <p>音を聴いて、下の答えを押すだけです。体験は成績に入りません。</p>
+  <button id="introPlay">① お手本「ド → ミ」を聴く</button>
+  <p id="introGuide" role="status">最初はド、次にミが鳴ります。</p>
+  <div class="introAnswers">
+    <button data-intro="0" disabled>ド</button><button data-intro="4" disabled>ミ</button><button data-intro="7" disabled>ソ</button>
+  </div>
+  <button id="introStart" hidden>③ 練習を始める</button>
+  <button id="introSkip" class="secondary">操作は分かるので、練習へ</button>
+  <button id="introClose" class="secondary">ホームに戻る</button>
+</dialog>
 
 <nav id="tabbar" aria-label="メニュー" hidden>
   <button id="tabHome" class="on"><svg class="ic"><use href="#i-note"/></svg><span>ホーム</span></button>
@@ -2012,13 +2060,15 @@ function bestOf(id){
   const v = progress.bestRate[id];
   return v === undefined ? -1 : v;
 }
+function isMastered(id){ return progress.mastered[id] === true; }
+function stageDone(id){ return bestOf(id) >= CLEAR_RATE || isMastered(id); }
 
 // ステージ解放判定：画面のグループ見出し(grp)ごとの並び順で、前のステージをクリア（正答率CLEAR_RATE以上）すると解放。
 // gkは挙動の分類（mono/mel/chord）で、コース分けとは別物なのでチェーンには使わない。
 // 「すべて自由」設定なら常に解放。各グループの先頭は常に解放
 function isUnlocked(st){
   if(progress.unlockMode === 'free') return true;
-  if(bestOf(st.id) >= CLEAR_RATE) return true; // 一度クリアしたステージは常に解放
+  if(stageDone(st.id)) return true; // クリア・自己申告の習得済みは常に解放
   const chain = STAGES.filter(s => s.grp === st.grp);
   const idx = chain.findIndex(s => s.id === st.id);
   if(idx <= 0) return true;
@@ -2027,7 +2077,7 @@ function isUnlocked(st){
     const di = chain.findIndex(s => s.id === progress.diagUnlock);
     if(idx <= di) return true;
   }
-  return bestOf(chain[idx - 1].id) >= CLEAR_RATE;
+  return stageDone(chain[idx - 1].id);
 }
 
 // レベルチップの色分け（先頭2文字で判定）
@@ -2050,7 +2100,7 @@ function lsSet(k, v){ try{ localStorage.setItem(k, v); }catch(e){} }
 
 // 生JSON→検証済み進捗オブジェクト（localStorage・バックアップ読み込みの両方で使う）
 function validateProgress(j){
-  const p = {v:2, best:{}, bestRate:{}, lastStage:null, playMode:'melodic',
+  const p = {v:2, best:{}, bestRate:{}, mastered:{}, introDone:false, lastStage:null, playMode:'melodic',
              unlockMode:'free', unlockChosen:false, scaffold:3, sessionLen:'q10', diagUnlock:null,
              noteName:'deg', singFirst:'off',
              cadEvery:'auto', speed:1, blockRep:0, rootEvery:1, scaleBtn:'on', traceAns:'off',
@@ -2060,6 +2110,12 @@ function validateProgress(j){
              recentMiss:[], streak:{last:null, n:0}, stats:{}};
   const statKeyOk = k => typeof k === 'string' && (/^d(\d|1[01])$/.test(k) || !!CHORDS[k]);
   if(j && typeof j === 'object'){
+    p.introDone = j.introDone === true;
+    if(j.mastered && typeof j.mastered === 'object'){
+      for(const st of STAGES){
+        if(Object.prototype.hasOwnProperty.call(j.mastered, st.id) && j.mastered[st.id] === true) p.mastered[st.id] = true;
+      }
+    }
     // 旧フィールド cadence（ON/OFF）は足場の段に読み替える
     if(j.cadence === 'off') p.scaffold = 0;
     if(Number.isInteger(j.scaffold) && j.scaffold >= 0 && j.scaffold < SCAFFOLD.length) p.scaffold = j.scaffold;
@@ -2668,12 +2724,13 @@ function renderHeroStats(){
   let cleared = 0;
   for(const st of STAGES){
     const b = progress.bestRate[st.id];
-    if(b !== undefined && b >= CLEAR_RATE) cleared++;
+    if(stageDone(st.id)) cleared++;
   }
   let ok = 0, tot = 0;
   for(const k in progress.stats){ ok += progress.stats[k][0]; tot += progress.stats[k][1]; }
   stat(tot ? Math.round(ok / tot * 100) : '—', tot ? '%' : '', '正答率');
-  stat(cleared, '', 'クリア / ' + STAGES.length);
+  stat(cleared, '', '完了 / ' + STAGES.length);
+  el.title = '完了は、練習でクリアしたステージと自己申告の習得済みを合わせた数です。';
   stat(progress.streak.n, '日', '連続');
   renderHeroCta();
 }
@@ -2681,18 +2738,23 @@ function renderHeroStats(){
 // 「つづきから」ボタン：前回のステージが未クリアならそこへ、そうでなければ次に挑戦すべき未クリアステージへ
 function renderHeroCta(){
   const btn = $('heroCta');
-  let target = STAGES.find(st => isUnlocked(st) && bestOf(st.id) < CLEAR_RATE);
+  let target = STAGES.find(st => isUnlocked(st) && !stageDone(st.id));
   // レベル診断のおすすめステージが未クリアならそちらを優先
   const drec = STAGES.find(st => st.id === progress.diagUnlock);
-  if(drec && bestOf(drec.id) < CLEAR_RATE) target = drec;
+  if(drec && !stageDone(drec.id)) target = drec;
   const last = STAGES.find(st => st.id === progress.lastStage);
-  if(last && isUnlocked(last) && bestOf(last.id) < CLEAR_RATE) target = last;
-  if(!target){ $('heroStageName').textContent = '全ステージクリア！ 練習を選んで復習しよう。'; btn.hidden = true; return; } // 全ステージクリア済み
-  const started = Object.keys(progress.best).length > 0;
+  if(last && isUnlocked(last) && !stageDone(last.id)) target = last;
+  if(!target){
+    $('heroStageName').textContent = '全ステージ完了！ 好きな練習で復習しよう。';
+    setIconText(btn, 'play', '練習を選ぶ'); btn.setAttribute('aria-label', '練習を選ぶ');
+    btn.onclick = () => chooseCourse(null); btn.hidden = false; return;
+  }
   $('heroStageName').textContent = target.lv + ' ' + target.name + (drec && target === drec ? '（おすすめ）' : '');
-  setIconText(btn, 'play', started || last ? 'つづきから' : 'はじめる');
-  btn.setAttribute('aria-label', (started || last ? 'つづきから：' : 'はじめる：') + target.lv + ' ' + target.name);
-  btn.onclick = () => enterStage(target);
+  setIconText(btn, 'play', '練習を始める');
+  btn.setAttribute('aria-label', '練習を始める：' + target.lv + ' ' + target.name);
+  const firstTry = target.id === 's1' && !progress.introDone && !Object.keys(progress.stats).length && !Object.keys(progress.mastered).length && !Object.keys(progress.bestRate).length;
+  if(firstTry){ setIconText(btn, 'play', '1問ためして始める'); btn.setAttribute('aria-label', '1問ためして始める'); }
+  btn.onclick = () => { if(firstTry) openIntro(target); else enterStage(target); };
   btn.hidden = false;
 }
 
@@ -2700,7 +2762,93 @@ function renderHeroCta(){
 
 let selectedCourse = null;
 const courseLabels = {mono:'単音のトレーニング', mel:'メロディのトレーニング', chord:'コードのトレーニング'};
+function setMasteredThrough(id){
+  const st = STAGES.find(s => s.id === id);
+  if(!st) return 0;
+  const chain = STAGES.filter(s => s.gk === st.gk);
+  let changed = 0;
+  for(const s of chain.slice(0, chain.findIndex(s => s.id === id) + 1)){
+    if(!stageDone(s.id)){ progress.mastered[s.id] = true; changed++; }
+  }
+  saveProgress();
+  return changed;
+}
+function undoMastered(id){
+  if(!STAGES.some(s => s.id === id)) return;
+  delete progress.mastered[id];
+  saveProgress();
+}
+function renderMasteryRange(){
+  const chain = STAGES.filter(s => s.gk === selectedCourse);
+  const idx = chain.findIndex(s => s.id === $('masteryLevel').value);
+  $('masteryRange').textContent = idx < 0 ? '' : 'この練習の先頭から「' + chain[idx].lv + ' ' + chain[idx].name + '」まで（' + (idx + 1) + 'ステージ）。クリア済みの成績はそのまま残ります。';
+}
+function renderMastery(){
+  const sel = $('masteryLevel'), previous = sel.value;
+  sel.textContent = '';
+  const chain = STAGES.filter(s => s.gk === selectedCourse);
+  for(const st of chain){
+    const opt = document.createElement('option'); opt.value = st.id; opt.textContent = st.lv + ' ' + st.name; sel.appendChild(opt);
+  }
+  if(chain.length) sel.value = chain.some(s => s.id === previous) ? previous : chain[0].id;
+  renderMasteryRange();
+  const list = $('masteryList'); list.textContent = '';
+  const known = chain.filter(s => isMastered(s.id));
+  $('masteryUndo').hidden = known.length === 0;
+  $('masteryUndoLabel').textContent = '習得済みを取り消す（' + known.length + '件）';
+  for(const st of chain.filter(s => isMastered(s.id))){
+    const row = document.createElement('div'); row.className = 'masteryItem';
+    const label = document.createElement('span'); label.textContent = st.lv + ' ' + st.name;
+    const undo = document.createElement('button'); undo.textContent = '取り消す';
+    undo.setAttribute('aria-label', st.lv + ' ' + st.name + 'の習得済みを取り消す');
+    undo.onclick = () => { undoMastered(st.id); renderStageList(); $('masteryMessage').textContent = st.lv + ' ' + st.name + 'の習得済みを取り消しました。'; $('masteryApply').focus(); };
+    row.appendChild(label); row.appendChild(undo); list.appendChild(row);
+  }
+}
+$('masteryLevel').addEventListener('change', renderMasteryRange);
+$('masteryApply').addEventListener('click', () => {
+  const count = setMasteredThrough($('masteryLevel').value);
+  renderStageList();
+  $('masteryMessage').textContent = count ? count + 'ステージを習得済みにしました。おすすめも更新しました。' : '選んだ範囲はすでに完了しています。';
+});
+
+let introTarget = null, introPlayed = false;
+function openIntro(target){
+  introTarget = target; introPlayed = false;
+  $('introGuide').textContent = '最初はド、次にミが鳴ります。';
+  $('introStart').hidden = true;
+  $('introSkip').hidden = false;
+  document.querySelectorAll('[data-intro]').forEach(b => b.disabled = true);
+  $('introDialog').showModal();
+}
+$('introPlay').addEventListener('click', () => {
+  ensureAudio(); stopAll(); useSpd(1);
+  const t = audioCtx.currentTime + 0.05;
+  playNote(48, t, 0.9, 0.8); playNote(52, t + 1, 0.9, 1.2);
+  introPlayed = true;
+  $('introGuide').textContent = '② 2つ目の音は「ミ」です。「ミ」を押してみましょう。';
+  document.querySelectorAll('[data-intro]').forEach(b => b.disabled = false);
+});
+document.querySelectorAll('[data-intro]').forEach(b => b.addEventListener('click', () => {
+  if(!introPlayed) return;
+  if(b.dataset.intro !== '4'){ $('introGuide').textContent = '今回は「ミ」を押してみましょう。何度でも聴き直せます。'; return; }
+  $('introGuide').textContent = '正解！ このように音を聴いて答えます。練習へ進みましょう。';
+  $('introSkip').hidden = true;
+  $('introStart').hidden = false; $('introStart').focus();
+}));
+function finishIntro(){
+  const target = introTarget;
+  progress.introDone = true; saveProgress(); $('introDialog').close();
+  if(target){ enterStage(target); startRound(); }
+}
+$('introStart').addEventListener('click', finishIntro);
+$('introSkip').addEventListener('click', finishIntro);
+$('introClose').addEventListener('click', () => $('introDialog').close());
+$('introDialog').addEventListener('close', () => { if(scrQuiz.hidden) stopAll(); });
+
 function chooseCourse(course){
+  $('masteryPanel').open = false;
+  $('masteryMessage').textContent = '';
   selectedCourse = Object.prototype.hasOwnProperty.call(courseLabels, course) ? course : null;
   renderStageList();
   if(selectedCourse) $('courseTitle').focus();
@@ -2713,6 +2861,7 @@ function renderStageList(){
   $('courseStages').hidden = selectedCourse === null;
   $('courseTitle').textContent = courseLabels[selectedCourse] || '';
   scrSelect.classList.toggle('choosing', selectedCourse !== null);
+  renderMastery();
   renderHeroStats();
   stageListEl.textContent = '';
   let lastGrp = null;
@@ -2724,7 +2873,7 @@ function renderStageList(){
       h.className = 'grpTtl';
       h.textContent = st.grp;
       const gsts = STAGES.filter(s => s.grp === st.grp);
-      const gcl = gsts.filter(s => bestOf(s.id) >= CLEAR_RATE).length;
+      const gcl = gsts.filter(s => stageDone(s.id)).length;
       const cnt = document.createElement('span');
       cnt.className = 'grpCnt';
       cnt.appendChild(ico('star'));
@@ -2738,7 +2887,7 @@ function renderStageList(){
     const row = document.createElement('button');
     row.className = 'stageRow';
     {
-      const cl = bestOf(st.id) >= CLEAR_RATE, un = isUnlocked(st);
+      const cl = stageDone(st.id), un = isUnlocked(st);
       if(cl) row.classList.add('cleared');
       if(bestOf(st.id) === 100) row.classList.add('perfect');
       if(!cl && un && !nextMarked[st.grp]){ row.classList.add('next'); nextMarked[st.grp] = true; }
@@ -2761,7 +2910,7 @@ function renderStageList(){
       lastC.textContent = '前回';
       nm.appendChild(lastC);
     }
-    if(progress.diagUnlock === st.id && bestOf(st.id) < CLEAR_RATE){
+    if(progress.diagUnlock === st.id && !stageDone(st.id)){
       const recC = document.createElement('span');
       recC.className = 'lastChip';
       recC.textContent = 'おすすめ';
@@ -2779,6 +2928,9 @@ function renderStageList(){
       row.disabled = true;
       ds.textContent = '前のステージをクリアすると開きます';
       bd.appendChild(ico('lock'));
+    }else if(isMastered(st.id) && !(best >= CLEAR_RATE)){
+      bd.textContent = '習得済み';
+      bd.title = '自己申告。練習の成績は変更していません。';
     }else if(best !== undefined){
       const bn = document.createElement('span');
       bn.textContent = 'ベスト ' + best + '%';
@@ -3022,6 +3174,8 @@ function renderReport(){
   mk(null, '答えた数 ' + tot + '問');
   if(tot) mk(null, '正解率 ' + Math.round(okc / tot * 100) + '%');
   mk('trophy', 'クリア ' + cleared + '/' + STAGES.length);
+  const selfCount = STAGES.filter(st => isMastered(st.id) && bestOf(st.id) < CLEAR_RATE).length;
+  if(selfCount) mk('check', '習得済み（自己申告） ' + selfCount);
   if(perfect) mk('bloom', 'パーフェクト ' + perfect);
   if(progress.streak.n > 0) mk('flame', '連続 ' + progress.streak.n + '日');
   c1.appendChild(sum);
@@ -3125,7 +3279,8 @@ function renderReport(){
     const l = document.createElement('span'); l.textContent = st.lv + ' ' + st.name;
     const v = document.createElement('span'); v.className = 'repVal';
     const b = progress.bestRate[st.id];
-    if(b === undefined) v.textContent = isUnlocked(st) ? '未挑戦' : 'ロック中';
+    if(isMastered(st.id) && !(b >= CLEAR_RATE)) v.textContent = '習得済み（自己申告）' + (b === undefined ? '' : '／ベスト ' + b + '%');
+    else if(b === undefined) v.textContent = isUnlocked(st) ? '未挑戦' : 'ロック中';
     else v.textContent = 'ベスト ' + b + '%' + (b === 100 ? '（パーフェクト）' : (b >= CLEAR_RATE ? '（クリア）' : ''));
     r.appendChild(l); r.appendChild(v);
     c4.appendChild(r);
@@ -3184,10 +3339,10 @@ function resetRoundUI(){
   curSession = sessionOf();
   roundTotal = curSession.n || 0;
   roundDeadline = 0;
-  roundMode = (curStage && curStage.gk === 'mono' && bestOf(curStage.id) < CLEAR_RATE) ? 'block' : 'inter';
+  roundMode = (progress.blockRep > 0 && curStage && curStage.gk === 'mono' && !stageDone(curStage.id)) ? 'block' : 'inter';
   blockDeg = null; blockLeft = 0;
   renderQNum();
-  setIconText(listenBtn, 'play', 'スタート');
+  setIconText(listenBtn, 'play', '音を聴いて始める');
   listenBtn.classList.remove('busy');
   setPlaying(false);
   listenBtn.hidden = false;
@@ -3197,7 +3352,7 @@ function resetRoundUI(){
   resultEl.hidden = true;
   answersEl.hidden = false;
   setFeedback('', '');
-  setPlayLabel('回答ボタンを押すと、その音を試聴できます。スタートで出題開始', false);
+  setPlayLabel('①「音を聴いて始める」を押してください。', false);
   renderDots();
   renderModeChip();
   renderAnswers();
@@ -3372,11 +3527,11 @@ function statRate(key){
   return s[0] / s[1];
 }
 
-function pickWeighted(pool, keyOf){
+function pickWeighted(pool, keyOf, allowRepeat = false){
   // 直近で間違えた音は、次のラウンドで必ずもう一度出す
   for(let i = 0; i < progress.recentMiss.length; i++){
     const k = progress.recentMiss[i];
-    const hit = pool.find(p => keyOf(p) === k && !(pool.length > 1 && p === lastAnsVal));
+    const hit = pool.find(p => keyOf(p) === k && !(!allowRepeat && pool.length > 1 && p === lastAnsVal));
     if(hit !== undefined){
       progress.recentMiss.splice(i, 1);
       saveProgress();
@@ -3384,7 +3539,7 @@ function pickWeighted(pool, keyOf){
     }
   }
   const ws = pool.map(p => {
-    if(pool.length > 1 && p === lastAnsVal) return 0;  // 連続同一は避ける
+    if(!allowRepeat && pool.length > 1 && p === lastAnsVal) return 0;
     const r = statRate(keyOf(p));
     return r === null ? 2 : 1 + 3 * (1 - r);          // 苦手ほど重い
   });
@@ -3477,7 +3632,7 @@ function makeQuestion(){
     return {type:'mel', cls, offs: melOffsets(cls), root: roundRoot, scale: roundScale};
   }
   if(curStage.chords){
-    const c = pickWeighted(curStage.chords, k => k);
+    const c = pickWeighted(curStage.chords, k => k, curStage.id === 'c1');
     lastAnsVal = c;
     return {type:'chord', chord:c, root: 45 + rnd(11)};
   }
@@ -3675,20 +3830,20 @@ function playStimulus(){
   const t0 = audioCtx.currentTime + 0.08;
   if(curQ.type === 'chord'){
     playChordPhrase(curQ.root, curQ.chord, t0);
-    setPlayLabel('この響きは？', true);
+    setPlayLabel('② 聴こえたコードを下から選んでください。', true);
   }else if(curQ.type === 'mel'){
     playMelPhrase(curQ.root, curQ.cls, t0, curQ.offs);
-    setPlayLabel(curQ.cls.length + '音のメロディです。順番に答えてください', true);
+    setPlayLabel('② ' + curQ.cls.length + '音を、聴こえた順番に選んでください。', true);
   }else if(!rootShown()){
     playNote(curQ.root + degOffOf(curQ), t0, 0.95, T(1.6));
-    setPlayLabel('この音は？（キーは最初に鳴らしたルート）', true);
+    setPlayLabel('② 聴こえた音を選んでください（基準は最初の音）。', true);
   }else{
     playDegPhrase(curQ.root, degOffOf(curQ), t0);
     if(progress.playMode === 'harmonic'){
-      setPlayLabel('ルートと同時に鳴っている音は？', true);
+    setPlayLabel('② 基準の音に重なっている音を選んでください。', true);
     }else{
-      setPlayLabel('ルート…', true);
-      later(() => setPlayLabel('この音は？', true), Math.round(T(1.25) * 1000));
+      setPlayLabel('① 基準の音 → 問題の音が鳴ります。', true);
+      later(() => setPlayLabel('② 2つ目に聴こえた音を選んでください。', true), Math.round(T(1.25) * 1000));
     }
   }
 }
@@ -3700,7 +3855,7 @@ function startRound(){
   roundTotal = curSession.n || 0;
   roundDeadline = curSession.sec ? Date.now() + curSession.sec * 1000 : 0;
   // ブロック練習から始め、すでにクリア済みのステージ・メロディ・コードは最初からミックスで出す
-  roundMode = (progress.blockRep > 0 && curStage.gk === 'mono' && bestOf(curStage.id) < CLEAR_RATE)
+  roundMode = (progress.blockRep > 0 && curStage.gk === 'mono' && !stageDone(curStage.id))
             ? 'block' : 'inter';
   blockDeg = null; blockLeft = 0;
   recentMel = [];
@@ -4117,6 +4272,7 @@ function onNext(){
 // ── 結果 ──────────────────────────────────────
 
 function showResult(){
+  $('resDetails').open = false;
   clearAdv();
   stopAll();
   stopTick();
@@ -4264,18 +4420,23 @@ function showResult(){
   }
 
   // クリアして次のステージが解放されていれば、その場で進めるボタンを出す（ベスト更新の後に判定）
-  const chain = STAGES.filter(s => s.grp === curStage.grp);
-  const nxt = chain[chain.findIndex(s => s.id === curStage.id) + 1];
+  const chain = STAGES.filter(s => s.gk === curStage.gk);
+  const nxt = chain.slice(chain.findIndex(s => s.id === curStage.id) + 1).find(s => !stageDone(s.id));
   const nsBtn = $('nextStageBtn');
   if(cleared && nxt && isUnlocked(nxt)){
     setIconText(nsBtn, 'play', '次のステージへ：' + nxt.lv + ' ' + nxt.name);
     nsBtn.onclick = () => enterStage(nxt);
     nsBtn.hidden = false;
     $('againBtn').classList.add('secondary');
+  }else if(cleared){
+    setIconText(nsBtn, 'play', '次の練習を選ぶ');
+    nsBtn.onclick = () => { selectedCourse = null; showSelect(); };
+    nsBtn.hidden = false; $('againBtn').classList.add('secondary');
   }else{
     nsBtn.hidden = true;
     $('againBtn').classList.remove('secondary');
   }
+  $('againBtn').textContent = cleared ? 'もう一度練習する' : 'このステージをもう一度';
 }
 
 // ── かけ流し（受動リスニング） ────────────────
@@ -5010,7 +5171,7 @@ renderUnlockSeg();
 const cadBtn = $('cadBtn');
 
 function renderScaffoldBtn(){
-  $('cadLbl').textContent = SCAFFOLD[progress.scaffold].n;
+  $('cadLbl').textContent = '補助設定';
   renderCadFreq();
   renderRootEvery();
   renderScaleSeg();
@@ -5191,6 +5352,10 @@ $('impFile').addEventListener('change', e => {
     try{
       const imp = validateProgress(JSON.parse(reader.result));
       let merged = 0;
+      for(const st of STAGES){
+        if(imp.mastered[st.id] && !progress.mastered[st.id]){ progress.mastered[st.id] = true; merged++; }
+      }
+      progress.introDone = progress.introDone || imp.introDone;
       for(const k in imp.bestRate){
         if(progress.bestRate[k] === undefined || imp.bestRate[k] > progress.bestRate[k]){
           progress.bestRate[k] = imp.bestRate[k];
@@ -5230,7 +5395,7 @@ $('impFile').addEventListener('change', e => {
       renderUnlockSeg();
       renderNameSeg();
       renderSingSeg();
-      setBkMsg(merged ? '読み込みました（' + merged + '件のベストを反映）' : '読み込みました（今の記録の方が良いため変更なし）');
+      setBkMsg('読み込みました（ベスト・統計・習得済みを現在の記録と統合しました）');
     }catch(err){
       setBkMsg('読み込めませんでした。このアプリで書き出したファイルか確認してください');
     }

@@ -3,6 +3,8 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const root = path.resolve(__dirname, '..');
+const port = Number(process.argv[2] || 4178);
+if(!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('Invalid preview port');
 const mime = {'.html':'text/html; charset=utf-8','.json':'application/json','.js':'text/javascript','.png':'image/png','.svg':'image/svg+xml'};
 http.createServer((req,res) => {
   let url;
@@ -14,4 +16,4 @@ http.createServer((req,res) => {
     res.writeHead(200,{'Content-Type':mime[path.extname(rel)]||'application/octet-stream','Cache-Control':'no-store','X-Robots-Tag':'noindex, nofollow'});
     res.end(data);
   });
-}).listen(4178,'127.0.0.1',()=>console.log('Ear Trainer preview: http://127.0.0.1:4178/?mute=1'));
+}).listen(port,'127.0.0.1',()=>console.log('Ear Trainer preview: http://127.0.0.1:' + port + '/?mute=1'));
