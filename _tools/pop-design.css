@@ -201,3 +201,34 @@ footer{color:var(--t2);opacity:1;font-size:11px;}
 #nextStageBtn .lb{white-space:normal;}
 #againBtn.secondary{background:var(--s2);color:var(--t2);}
 summary:focus-visible,select:focus-visible{outline:3px solid #226fa5;outline-offset:3px;}
+
+/* Listening: one clear entry, reversible focus marks, no extra animation. */
+.lisHomeEntry{display:flex;align-items:center;gap:14px;width:100%;min-height:84px;padding:18px;margin-bottom:24px;border:2px solid #8abede;border-radius:18px;background:#eaf5fc;color:var(--t1);text-align:left;box-shadow:var(--shadow);}
+.lisHomeEntry>.ic{width:27px;height:27px;color:#28749e;flex:none;}
+.lisHomeEntry>.ic:last-child{width:18px;margin-left:auto;}
+.lisHomeEntry strong{display:block;font-size:21px;}
+.lisHomeEntry small{display:block;font-size:13px;line-height:1.6;margin-top:4px;font-weight:500;}
+.lisMark{min-height:44px;padding:10px 12px;border:1px solid #91aec1;border-radius:12px;background:#f4f9fd;color:#284c65;font-size:13px;font-weight:700;}
+.lisMark[aria-pressed="true"]{background:#dfedf8;border-color:#347ca9;color:#194b6d;}
+.lisMark:disabled{opacity:.45;}
+#lisMarkCurrent{display:block;width:100%;margin:12px auto 0;max-width:340px;font-size:15px;}
+.lisOptions{min-width:0;margin-top:8px;}
+.lisFocusSwitch{display:flex;align-items:center;gap:10px;min-height:48px;margin-top:14px;font-size:15px;font-weight:700;cursor:pointer;}
+.lisFocusSwitch input{width:22px;height:22px;accent-color:#28749e;flex:none;}
+.lisFocusNote{font-size:13px;line-height:1.65;color:var(--t2);margin:4px 0 10px;}
+.lisFocusNote:empty{display:none;}
+#lisFocusDetails{border-top:1px solid var(--line);margin-top:12px;}
+#lisFocusDetails summary{padding:14px 0;min-height:44px;cursor:pointer;font-size:14px;font-weight:700;}
+#lisFocusList{max-height:260px;overflow:auto;}
+.lisFocusRow{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding:6px 0;font-size:13px;line-height:1.6;}
+.lisFocusRow span{min-width:0;overflow-wrap:anywhere;}
+.lisFocusRow button{min-height:44px;flex:none;padding:10px 14px;background:var(--s2);color:var(--t1);border-radius:10px;}
+.lisHistoryRow{display:flex;align-items:stretch;gap:6px;margin-bottom:8px;}
+.lisHistoryRow .lisH{flex:1;min-width:0;width:auto;margin:0;}
+.lisHistoryRow .lisMark{flex:0 0 94px;box-shadow:none;}
+.lisHistoryRow .hA{min-width:0;overflow-wrap:anywhere;white-space:normal;overflow:visible;text-overflow:clip;}
+.lisHistoryRow .hS{display:block;margin:3px 0 0;line-height:1.5;font-size:12px;}
+.lisHistoryRow .hN{font-size:10px;width:28px;}
+.lisHistoryRow .hK{width:18px;}
+@media(min-width:900px){#scrListen>.lisOptions{grid-column:1;grid-row:4;}}
+@media(max-width:420px){.lisHistoryRow .lisH{gap:5px;padding:12px 8px;}.lisHistoryRow .lisMark{flex-basis:80px;padding:8px 5px;font-size:12px;}.lisHomeEntry{padding:14px;gap:10px;}}

@@ -1401,6 +1401,37 @@ footer{color:var(--t2);opacity:1;font-size:11px;}
 #againBtn.secondary{background:var(--s2);color:var(--t2);}
 summary:focus-visible,select:focus-visible{outline:3px solid #226fa5;outline-offset:3px;}
 
+/* Listening: one clear entry, reversible focus marks, no extra animation. */
+.lisHomeEntry{display:flex;align-items:center;gap:14px;width:100%;min-height:84px;padding:18px;margin-bottom:24px;border:2px solid #8abede;border-radius:18px;background:#eaf5fc;color:var(--t1);text-align:left;box-shadow:var(--shadow);}
+.lisHomeEntry>.ic{width:27px;height:27px;color:#28749e;flex:none;}
+.lisHomeEntry>.ic:last-child{width:18px;margin-left:auto;}
+.lisHomeEntry strong{display:block;font-size:21px;}
+.lisHomeEntry small{display:block;font-size:13px;line-height:1.6;margin-top:4px;font-weight:500;}
+.lisMark{min-height:44px;padding:10px 12px;border:1px solid #91aec1;border-radius:12px;background:#f4f9fd;color:#284c65;font-size:13px;font-weight:700;}
+.lisMark[aria-pressed="true"]{background:#dfedf8;border-color:#347ca9;color:#194b6d;}
+.lisMark:disabled{opacity:.45;}
+#lisMarkCurrent{display:block;width:100%;margin:12px auto 0;max-width:340px;font-size:15px;}
+.lisOptions{min-width:0;margin-top:8px;}
+.lisFocusSwitch{display:flex;align-items:center;gap:10px;min-height:48px;margin-top:14px;font-size:15px;font-weight:700;cursor:pointer;}
+.lisFocusSwitch input{width:22px;height:22px;accent-color:#28749e;flex:none;}
+.lisFocusNote{font-size:13px;line-height:1.65;color:var(--t2);margin:4px 0 10px;}
+.lisFocusNote:empty{display:none;}
+#lisFocusDetails{border-top:1px solid var(--line);margin-top:12px;}
+#lisFocusDetails summary{padding:14px 0;min-height:44px;cursor:pointer;font-size:14px;font-weight:700;}
+#lisFocusList{max-height:260px;overflow:auto;}
+.lisFocusRow{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--line);padding:6px 0;font-size:13px;line-height:1.6;}
+.lisFocusRow span{min-width:0;overflow-wrap:anywhere;}
+.lisFocusRow button{min-height:44px;flex:none;padding:10px 14px;background:var(--s2);color:var(--t1);border-radius:10px;}
+.lisHistoryRow{display:flex;align-items:stretch;gap:6px;margin-bottom:8px;}
+.lisHistoryRow .lisH{flex:1;min-width:0;width:auto;margin:0;}
+.lisHistoryRow .lisMark{flex:0 0 94px;box-shadow:none;}
+.lisHistoryRow .hA{min-width:0;overflow-wrap:anywhere;white-space:normal;overflow:visible;text-overflow:clip;}
+.lisHistoryRow .hS{display:block;margin:3px 0 0;line-height:1.5;font-size:12px;}
+.lisHistoryRow .hN{font-size:10px;width:28px;}
+.lisHistoryRow .hK{width:18px;}
+@media(min-width:900px){#scrListen>.lisOptions{grid-column:1;grid-row:4;}}
+@media(max-width:420px){.lisHistoryRow .lisH{gap:5px;padding:12px 8px;}.lisHistoryRow .lisMark{flex-basis:80px;padding:8px 5px;font-size:12px;}.lisHomeEntry{padding:14px;gap:10px;}}
+
 </style>
 </head>
 <body>
@@ -1491,7 +1522,7 @@ summary:focus-visible,select:focus-visible{outline:3px solid #226fa5;outline-off
       <div class="heroStats" id="heroStats" aria-label="これまでの練習記録"></div>
     </div>
     <div class="coursePanel">
-      <div id="courseChooser"><h2 class="sectionTitle">練習を選ぶ</h2><p class="sectionLead">気になる練習から、はじめよう。</p><div class="courseCards"><button class="courseCard" data-course="mono" aria-controls="courseStages"><svg viewBox="0 0 56 56" fill="none" stroke-width="3" aria-hidden="true"><circle cx="28" cy="28" r="23" stroke="#afd6ef"/><circle cx="28" cy="28" r="16" stroke="#6aaee0"/><circle cx="28" cy="28" r="9" fill="#f36c5c" stroke="none"/></svg><span class="courseCopy"><strong>単音</strong><span>1音ずつ聴き分ける</span></span><span class="courseCount">15ステージ</span><svg class="ic"><use href="#i-right"/></svg></button>
+      <div id="courseChooser"><button id="lisHomeBtn" class="lisHomeEntry"><svg class="ic"><use href="#i-headphones"/></svg><span><strong>かけ流し</strong><small>答えずに聴く・苦手な音をくり返す</small></span><svg class="ic"><use href="#i-right"/></svg></button><h2 class="sectionTitle">練習を選ぶ</h2><p class="sectionLead">気になる練習から、はじめよう。</p><div class="courseCards"><button class="courseCard" data-course="mono" aria-controls="courseStages"><svg viewBox="0 0 56 56" fill="none" stroke-width="3" aria-hidden="true"><circle cx="28" cy="28" r="23" stroke="#afd6ef"/><circle cx="28" cy="28" r="16" stroke="#6aaee0"/><circle cx="28" cy="28" r="9" fill="#f36c5c" stroke="none"/></svg><span class="courseCopy"><strong>単音</strong><span>1音ずつ聴き分ける</span></span><span class="courseCount">15ステージ</span><svg class="ic"><use href="#i-right"/></svg></button>
 <button class="courseCard" data-course="mel" aria-controls="courseStages"><svg viewBox="0 0 56 56" fill="none" stroke-width="3" aria-hidden="true"><path d="M18 38V16l24-5v23" stroke="#559bd1" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="12" cy="40" rx="8" ry="6" fill="#69aee0" stroke="none"/><ellipse cx="36" cy="36" rx="8" ry="6" fill="#69aee0" stroke="none"/></svg><span class="courseCopy"><strong>メロディ</strong><span>音の流れをつかむ</span></span><span class="courseCount">6ステージ</span><svg class="ic"><use href="#i-right"/></svg></button>
 <button class="courseCard" data-course="chord" aria-controls="courseStages"><svg viewBox="0 0 56 56" fill="none" stroke-width="3" aria-hidden="true"><circle cx="28" cy="19" r="15" fill="#91c5e9" stroke="none"/><circle cx="18" cy="35" r="15" fill="#70b0df" fill-opacity=".8" stroke="none"/><circle cx="38" cy="35" r="15" fill="#347eae" fill-opacity=".8" stroke="none"/></svg><span class="courseCopy"><strong>コード</strong><span>響きの違いを聴く</span></span><span class="courseCount">3ステージ</span><svg class="ic"><use href="#i-right"/></svg></button></div></div>
       <div id="courseStages" hidden>
@@ -1532,10 +1563,17 @@ summary:focus-visible,select:focus-visible{outline:3px solid #226fa5;outline-off
       <div class="lisDeg" id="lisDeg">—</div>
       <div class="lisSrc" id="lisSrc"></div>
       <button id="lisToggle"><svg class="ic"><use href="#i-play"/></svg>はじめる</button>
+      <button id="lisMarkCurrent" class="lisMark" disabled aria-pressed="false">今の音を苦手に登録</button>
       <div class="lisChips" id="lisChips"></div>
     </div>
     <button id="lisBack1" disabled><svg class="ic"><use href="#i-repeat"/></svg>さっきの音をもう一度</button>
-    <button id="lisSetBtn"><svg class="ic"><use href="#i-sliders"/></svg>流す内容をえらぶ</button>
+    <div class="lisOptions">
+      <button id="lisSetBtn"><svg class="ic"><use href="#i-sliders"/></svg>流す内容をえらぶ</button>
+      <label class="lisFocusSwitch"><input type="checkbox" id="lisFocusOn">苦手を多めに流す</label>
+      <p id="lisFocusStatus" class="lisFocusNote"></p>
+      <details id="lisFocusDetails"><summary id="lisFocusSummary">登録した苦手（0件）</summary><div id="lisFocusList"></div></details>
+      <p id="lisFocusMessage" class="lisFocusNote" role="status"></p>
+    </div>
     <div id="lisStaffWrap" hidden>
       <div id="lisStaffSvg"></div>
       <div id="lisStaffCap"></div>
@@ -2105,7 +2143,7 @@ function validateProgress(j){
              noteName:'deg', singFirst:'off',
              cadEvery:'auto', speed:1, blockRep:0, rootEvery:1, scaleBtn:'on', traceAns:'off',
              reso:'down',
-             lis:{pick:['s3'], gap:'normal', reso:'down', keyEvery:4, sleep:0, cad:'key', speed:1, fixedKey:false},
+             lis:{pick:['s3'], gap:'normal', reso:'down', keyEvery:4, sleep:0, cad:'key', speed:1, fixedKey:false, focus:[], focusOn:false},
              conf:{}, daily:{}, dir:{up:[0,0], down:[0,0]},
              recentMiss:[], streak:{last:null, n:0}, stats:{}};
   const statKeyOk = k => typeof k === 'string' && (/^d(\d|1[01])$/.test(k) || !!CHORDS[k]);
@@ -2150,6 +2188,8 @@ function validateProgress(j){
       if(L.cad === 'each' || L.cad === 'off') p.lis.cad = L.cad;
       if(SPEEDS.indexOf(L.speed) >= 0) p.lis.speed = L.speed;
       if(L.fixedKey === true) p.lis.fixedKey = true;
+      p.lis.focus = lisCleanFocus(L.focus);
+      p.lis.focusOn = L.focusOn === true;
     }
     if(j.unlockChosen === true) p.unlockChosen = true;
     if(j.unlockMode === 'seq' && j.unlockChosen === true) p.unlockMode = 'seq';
@@ -4454,6 +4494,131 @@ let lisOn = false, lisTimer = null, lisRevealT = null, lisClock = null;
 let lisRoot = 48, lisCount = 0, lisSince = 0, lisPrevCls = null;
 let lisHist = [], lisDeadline = 0, lisWake = null, lisWakeNG = false;
 let lisScale = null; // そのキーのあいだ使うスケール（フレーズごとにバラバラだと調が定まらない）
+let lisCurrent = null;
+
+// 手動の苦手はキーを含めず、音階・方向・ルート省略を区別する。最大64件。
+function lisFocusContext(src){
+  return src.minor ? 'minor' : src.pool && src.pool.length === 12 ? 'chromatic' : 'major';
+}
+function lisFocusKey(f){
+  const q = f.q, src = LIS_SRC.find(s => s.id === f.srcId);
+  if(q.type === 'chord') return 'chord:' + q.chord;
+  if(q.type === 'mel') return 'mel:' + q.scale + ':' + q.cls.join(',');
+  return ['deg', lisFocusContext(src), q.down, q.noRoot, q.cls].join(':');
+}
+function lisFocusMatches(f, src, dynamic = false){
+  const q = f.q;
+  if(q.type === 'chord') return !!src.chords && src.chords.includes(q.chord);
+  if(q.type === 'mel') return src.mel === q.cls.length && src.scales.includes(q.scale);
+  if(src.chords || src.mel) return false;
+  const pool = src.weak ? (dynamic ? lisWeakPool() : ALL12) : src.pool;
+  return pool.includes(q.cls) && !!src.minor === q.minor && !!src.noRoot === q.noRoot
+    && lisFocusContext(src) === lisFocusContext(LIS_SRC.find(s => s.id === f.srcId))
+    && (src.dir === 'both' || (src.dir === 'down') === q.down);
+}
+function lisCleanFocus(items){
+  if(!Array.isArray(items)) return [];
+  const result = [], seen = new Set();
+  for(const item of items.slice(0, 256)){
+    if(!item || !item.q) continue;
+    const src = LIS_SRC.find(s => s.id === item.srcId), q = item.q;
+    if(!src) continue;
+    let clean;
+    if(q.type === 'deg' && Number.isInteger(q.cls) && q.cls >= 0 && q.cls < 12
+      && typeof q.down === 'boolean' && typeof q.minor === 'boolean' && typeof q.noRoot === 'boolean'){
+      clean = {type:'deg', cls:q.cls, down:q.down, minor:q.minor, noRoot:q.noRoot};
+    }else if(q.type === 'chord' && src.chords && src.chords.includes(q.chord)){
+      clean = {type:'chord', chord:q.chord};
+    }else if(q.type === 'mel' && src.mel && Array.isArray(q.cls) && q.cls.length === src.mel
+      && src.scales.includes(q.scale) && q.cls.every(c => Number.isInteger(c) && SCALES[q.scale].iv.includes(c))){
+      clean = {type:'mel', cls:q.cls.slice(), scale:q.scale};
+    }else continue;
+    const f = {srcId:src.id, q:clean};
+    if(!lisFocusMatches(f, src)) continue;
+    const key = lisFocusKey(f);
+    if(seen.has(key)) continue;
+    result.push(f); seen.add(key);
+    if(result.length === 64) break;
+  }
+  return result;
+}
+function lisFocusOf(it){ return {srcId:it.src ? it.src.id : it.srcId, q:it.q}; }
+function lisIsMarked(it){
+  const key = lisFocusKey(lisFocusOf(it));
+  return progress.lis.focus.some(f => lisFocusKey(f) === key);
+}
+function lisToggleFocus(it){
+  if(!it) return;
+  const f = lisCleanFocus([lisFocusOf(it)])[0];
+  if(!f) return;
+  const key = lisFocusKey(f), index = progress.lis.focus.findIndex(v => lisFocusKey(v) === key);
+  if(index >= 0){
+    progress.lis.focus.splice(index, 1);
+    $('lisFocusMessage').textContent = '苦手の登録を解除しました。';
+  }else{
+    if(progress.lis.focus.length >= 64){
+      $('lisFocusMessage').textContent = '登録は64件までです。慣れたものを解除してください。';
+      return;
+    }
+    progress.lis.focus.push(f);
+    progress.lis.focusOn = true;
+    $('lisFocusMessage').textContent = '苦手に登録しました。選んだ内容の中で多めに流します。';
+  }
+  saveProgress();
+  renderLisFocus();
+}
+function lisFocusLabel(f){
+  const q = f.q, src = LIS_SRC.find(s => s.id === f.srcId);
+  if(q.type === 'chord') return 'コード・' + CHORDS[q.chord].label;
+  if(q.type === 'mel') return SCALES[q.scale].n + '・' + q.cls.map(shortDeg).join(' → ');
+  const context = {minor:'マイナー', major:'メジャー', chromatic:'12度数'}[lisFocusContext(src)];
+  return context + '・' + (q.down ? '下降' : '上行') + '・' + degLabel(q.cls) + (q.noRoot ? '（ルート省略）' : '');
+}
+function updateLisMarkButton(b, it, current = false){
+  const on = !!it && lisIsMarked(it);
+  b.disabled = !it;
+  b.setAttribute('aria-pressed', String(on));
+  b.textContent = on ? (current ? '苦手登録済み ✓' : '登録済み ✓') : current ? '今の音を苦手に登録' : '苦手に登録';
+  b.setAttribute('aria-label', it ? lisFocusLabel(lisFocusOf(it)) + (on ? '：苦手を解除' : '：苦手に登録') : '今の音を苦手に登録');
+}
+function renderLisFocus(){
+  updateLisMarkButton($('lisMarkCurrent'), lisCurrent, true);
+  $('lisFocusOn').checked = progress.lis.focusOn;
+  $('lisFocusSummary').textContent = '登録した苦手（' + progress.lis.focus.length + '件）';
+  const picks = lisPicks();
+  const count = progress.lis.focus.filter(f => picks.some(s => lisFocusMatches(f, s, true))).length;
+  $('lisFocusStatus').textContent = !progress.lis.focus.length ? '分からなかった音は「苦手に登録」。あとで解除できます。'
+    : !progress.lis.focusOn ? '通常の出題バランスです。苦手の登録は残ります。'
+    : count ? '選んだ内容に合う苦手 ' + count + '件を多めに流します。ほかの音も流れます。'
+    : '今の内容に合う苦手はありません。通常どおり流します。';
+  const el = $('lisFocusList'); el.textContent = '';
+  for(const f of progress.lis.focus){
+    const row = document.createElement('div'); row.className = 'lisFocusRow';
+    const label = document.createElement('span'); label.textContent = lisFocusLabel(f);
+    const b = document.createElement('button'); b.textContent = '解除';
+    b.setAttribute('aria-label', label.textContent + '：苦手を解除');
+    b.addEventListener('click', () => { lisToggleFocus(f); $('lisFocusSummary').focus(); });
+    row.appendChild(label); row.appendChild(b); el.appendChild(row);
+  }
+  // 履歴のボタンを作り直さないので、クリックやキーボードのフォーカスを保つ。
+  document.querySelectorAll('#lisHist .lisMark').forEach(b => {
+    const h = lisHist[Number(b.dataset.index)];
+    if(h) updateLisMarkButton(b, h);
+  });
+}
+function lisFocusedItem(picks){
+  if(!progress.lis.focusOn || !progress.lis.focus.length) return null;
+  const eligible = progress.lis.focus.map(f => ({f, sources:picks.filter(s =>
+    lisFocusMatches(f, s, true) && (f.q.type !== 'mel' || !s.scales.includes(lisScale) || f.q.scale === lisScale))
+  })).filter(v => v.sources.length);
+  // 35%を登録した苦手に振り分け、残りは元の抽選をそのまま使う。
+  if(!eligible.length || Math.random() >= 0.35) return null;
+  const chosen = pickOf(eligible), src = pickOf(chosen.sources);
+  const q = {...chosen.f.q, root:lisRoot};
+  if(q.type === 'mel'){ q.cls = q.cls.slice(); q.offs = melOffsets(q.cls); lisPrevCls = q.cls[q.cls.length - 1]; }
+  else if(q.type === 'deg') lisPrevCls = q.cls;
+  return {src, q};
+}
 
 // 選ばれたネタが使うスケールの中から1つ選ぶ
 function pickLisScale(picks){
@@ -4502,6 +4667,8 @@ function lisPickCls(pool){
 // 次に流す1件を作る（選ばれたネタから1つ引き、その中身を組み立てる）
 function lisMakeItem(){
   const picks = lisPicks();
+  const focused = lisFocusedItem(picks);
+  if(focused) return focused;
   const src = picks[rnd(picks.length)];
   if(src.chords){
     return {src, q:{type:'chord', chord: src.chords[rnd(src.chords.length)], root: lisRoot}};
@@ -4566,6 +4733,8 @@ function lisStep(){
   if(!lisOn) return;  // stopAllで止まっていないか念のため確認
   const picks = lisPicks();
   if(!picks.length){ lisStop('流す内容が選ばれていません'); return; }
+  lisCurrent = null;
+  updateLisMarkButton($('lisMarkCurrent'), null, true);
   useSpd(progress.lis.speed);
   const ke = progress.lis.keyEvery;
   // キーを作り直すタイミング（0=変えない ならラウンド最初の1回だけ）
@@ -4610,7 +4779,9 @@ function lisStep(){
 
 // ── 履歴（新しい順。ページを閉じるまで保持） ──
 function lisHistPush(it){
-  lisHist.unshift({q: it.q, name: it.src.n});
+  lisCurrent = it;
+  updateLisMarkButton($('lisMarkCurrent'), it, true);
+  lisHist.unshift({q: it.q, name: it.src.n, srcId: it.src.id});
   if(lisHist.length > LIS_HIST_MAX) lisHist.pop();
   $('lisBack1').disabled = false;
   renderLisHist();
@@ -4635,7 +4806,12 @@ function renderLisHist(active){
     a.appendChild(sm);
     b.appendChild(n); b.appendChild(k); b.appendChild(a); b.appendChild(ico('play'));
     b.addEventListener('click', () => lisReplay(i));
-    el.appendChild(b);
+    const row = document.createElement('div'); row.className = 'lisHistoryRow';
+    const mark = document.createElement('button'); mark.className = 'lisMark';
+    mark.dataset.index = String(i);
+    updateLisMarkButton(mark, h);
+    mark.addEventListener('click', () => lisToggleFocus(h));
+    row.appendChild(b); row.appendChild(mark); el.appendChild(row);
   });
 }
 
@@ -4643,6 +4819,8 @@ function renderLisHist(active){
 function lisReplay(i){
   const h = lisHist[i];
   if(!h) return;
+  lisCurrent = h;
+  updateLisMarkButton($('lisMarkCurrent'), h, true);
   ensureAudio();
   const wasOn = lisOn;
   lisPause();
@@ -4746,6 +4924,9 @@ function showListen(){
   $('scrListen').hidden = false;
   $('modeChip').textContent = '';
   lisHist = [];
+  lisCurrent = null;
+  $('lisFocusMessage').textContent = '';
+  renderLisFocus();
   lisCount = 0; lisSince = 0; lisPrevCls = null;
   lisPause();
   $('lisKey').textContent = 'KEY —';
@@ -4755,6 +4936,7 @@ function showListen(){
   $('lisBack1').disabled = true;
   renderLisHist();
   renderLisSeg();
+  window.scrollTo(0, 0);
 }
 
 // ── 内容えらびシート ──
@@ -4787,6 +4969,7 @@ function renderLisSrcList(){
         saveProgress();
         renderLisSrcList();
         renderLisChips();
+        renderLisFocus();
       });
       el.appendChild(b);
     }
@@ -4798,6 +4981,7 @@ function lisSetPick(ids){
   saveProgress();
   renderLisSrcList();
   renderLisChips();
+  renderLisFocus();
 }
 
 const lisGapBtns = [...document.querySelectorAll('#lisGapSeg button')];
@@ -4860,6 +5044,13 @@ function closeLisSheet(){ $('lisSheet').hidden = true; }
 $('lisBtn').addEventListener('click', showListen);
 $('lisBackBtn').addEventListener('click', () => { lisStop(); showSelect(); });
 $('lisSetBtn').addEventListener('click', openLisSheet);
+$('lisHomeBtn').addEventListener('click', showListen);
+$('lisMarkCurrent').addEventListener('click', () => lisToggleFocus(lisCurrent));
+$('lisFocusOn').addEventListener('change', () => {
+  progress.lis.focusOn = $('lisFocusOn').checked;
+  saveProgress(); renderLisFocus();
+  $('lisFocusMessage').textContent = progress.lis.focusOn ? '苦手を多めに流します。' : '通常の出題バランスに戻しました。';
+});
 $('lisShClose').addEventListener('click', closeLisSheet);
 $('lisShBack').addEventListener('click', closeLisSheet);
 $('lisBack1').addEventListener('click', () => lisReplay(0));
@@ -5356,6 +5547,8 @@ $('impFile').addEventListener('change', e => {
         if(imp.mastered[st.id] && !progress.mastered[st.id]){ progress.mastered[st.id] = true; merged++; }
       }
       progress.introDone = progress.introDone || imp.introDone;
+      // 苦手の登録も統合するが、この端末の「多めに流す」ON/OFFは維持する。
+      progress.lis.focus = lisCleanFocus(progress.lis.focus.concat(imp.lis.focus));
       for(const k in imp.bestRate){
         if(progress.bestRate[k] === undefined || imp.bestRate[k] > progress.bestRate[k]){
           progress.bestRate[k] = imp.bestRate[k];
@@ -5395,7 +5588,8 @@ $('impFile').addEventListener('change', e => {
       renderUnlockSeg();
       renderNameSeg();
       renderSingSeg();
-      setBkMsg('読み込みました（ベスト・統計・習得済みを現在の記録と統合しました）');
+      renderLisFocus();
+      setBkMsg('読み込みました（ベスト・統計・習得済み・苦手の登録を現在の記録と統合しました）');
     }catch(err){
       setBkMsg('読み込めませんでした。このアプリで書き出したファイルか確認してください');
     }
@@ -5417,6 +5611,7 @@ document.addEventListener('keydown', e => {
   // かけ流し画面：Space=再生/停止、←=さっきの音
   if(!$('scrListen').hidden){
     if(!$('lisSheet').hidden || !$('helpModal').hidden || !$('setModal').hidden) return;
+    if(e.target.closest('button,input,summary,select,textarea,a')) return;
     if(e.key === ' '){ e.preventDefault(); $('lisToggle').click(); }
     else if(e.key === 'ArrowLeft' && !$('lisBack1').disabled){ e.preventDefault(); $('lisBack1').click(); }
     return;
