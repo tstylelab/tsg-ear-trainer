@@ -28,6 +28,14 @@
 
 ## 作業場所
 
+### 2026-09-27 度数固定ショートカット
+
+- 単音・メロディは1〜7を度数に固定、Shift+2/3/5/6/7で♭2/♭3/♭5/♭6/♭7。選択範囲外は無反応。コードは表示順の番号を維持。
+- PCの回答ボタンに対応キーを表示、ヘルプ更新。上段数字とテンキーをcodeで判定。WindowsのNumLock ON + Shiftで方向キーとして通知される場合も対応。
+- 長押し・IME変換中・Ctrl/Alt/Meta併用・入力欄操作では発火させない。
+- 変更前タグ `backup/pre-degree-shortcuts-20260927`。bundle `E:\ドキュメント\ギター教材リスト\tsg-ear-trainer-before-degree-shortcuts-20260927.bundle` を作成・検証済み。
+- `test-shortcuts.cjs`で全12音、キー種別、Windows通知形式、コースの範囲、メロディ、コード、表示ラベル、回答後の無効化を確認。既存4テストもPASS。物理テンキーによる実機操作は未検証。
+
 - 作業コピー: `E:\ドキュメント\ギター教材リスト\tsg-ear-trainer`
 - ブランチ: `codex/ear-trainer-pop-preview`
 - 変更前: `6a6593265a6402ce4029d50d5791f3d661a2160b`

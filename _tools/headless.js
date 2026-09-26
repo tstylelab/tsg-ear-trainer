@@ -24,7 +24,8 @@ const $id = id => { if(!els.has(id)) els.set(id, mkEl(id)); return els.get(id); 
 const document = {
   getElementById: $id, querySelector: sel => $id('sel:' + sel), querySelectorAll: () => [],
   createElement: tag => mkEl('new:' + tag), createElementNS: (ns, tag) => mkEl('ns:' + tag),
-  createTextNode: t => ({textContent: t}), addEventListener(){}, removeEventListener(){},
+  createTextNode: t => ({textContent: t}), listeners:{},
+  addEventListener(type, fn){ (this.listeners[type] ||= []).push(fn); }, removeEventListener(){},
   documentElement: mkEl('html'), body: mkEl('body'), visibilityState: 'visible', title: ''
 };
 const window = { addEventListener(){}, removeEventListener(){}, innerWidth:375, innerHeight:667, scrollTo(){}, scrollY:0,
