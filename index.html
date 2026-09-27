@@ -1401,16 +1401,40 @@ footer{color:var(--t2);opacity:1;font-size:11px;}
 #againBtn.secondary{background:var(--s2);color:var(--t2);}
 summary:focus-visible,select:focus-visible{outline:3px solid #226fa5;outline-offset:3px;}
 .answerShortcut{display:none;}
+.reviewCard{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:14px;align-items:center;padding:12px 14px;border:1px solid #bed6e7;border-left:4px solid #78add2;border-radius:14px;background:#fff;margin:0 0 12px;text-align:left;}
+.reviewCard h3{font-size:16px;margin:0;line-height:1.5;}
+.reviewCard p{grid-column:1;font-size:12px;line-height:1.5;margin:2px 0 0;color:var(--t2);}
+.reviewActions{grid-column:2;grid-row:1/3;display:flex;gap:6px;}
+.reviewActions button{flex:none;min-width:58px;min-height:44px;padding:10px 12px;border:1px solid #bad1e1;border-radius:10px;background:#f1f7fc;color:var(--t1);font-weight:700;font-size:13px;}
+.reviewActions button:last-child{background:#e3eff9;border-color:#91b6d2;}
+.reviewActions button:hover:not(:disabled){background:#dcecf7;border-color:#73a6c9;}
+.reviewActions button:disabled{opacity:.45;cursor:default;}
+.reviewCard .reviewSmall{font-size:12px;margin-bottom:0;}
+.reviewDetails{grid-column:1/-1;grid-row:4;margin-top:4px;font-size:12px;}
+.reviewDetails summary{cursor:pointer;color:#28638c;min-height:32px;line-height:32px;width:fit-content;}
+.reviewDetails summary:focus-visible{outline:2px solid #28638c;outline-offset:2px;border-radius:4px;}
+.reviewList{list-style:none;margin:4px 0 0;padding:0;max-height:300px;overflow:auto;border-top:1px solid #dce7ef;}
+.reviewList li{display:grid;gap:3px;padding:10px 2px;border-bottom:1px solid #e5edf3;}
+.reviewList strong{font-size:15px;color:var(--t1);}
+.reviewList span,.reviewList small{font-size:12px;line-height:1.5;color:var(--t2);}
+.reviewRemove,.reviewNotice button{justify-self:start;min-height:44px;padding:8px 12px;border:1px solid #bad1e1;border-radius:8px;background:#f1f7fc;color:var(--t1);font-size:12px;cursor:pointer;}
+.reviewNotice{grid-column:1/-1;grid-row:5;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px;padding-top:8px;}
+.reviewDetails>p{margin-bottom:8px;}
+@media(min-width:600px){.reviewList li{grid-template-columns:minmax(0,1fr) auto;}.reviewList strong,.reviewList span,.reviewList small{grid-column:1;}.reviewRemove{grid-column:2;grid-row:1/4;align-self:center;}}
+#resultReview{order:5;width:100%;margin-top:18px;}
+#lisReviewBanner{padding:10px;margin:8px 0 16px;border-radius:12px;background:#edf5fa;font-size:14px;}
+#lisReviewBanner p{font-size:12px;}
+#lisReviewExit{min-height:44px;padding:10px 14px;border:1px solid #aac4d5;border-radius:10px;background:white;color:var(--t1);}
 @media(hover:hover) and (pointer:fine){
   #answers .answerShortcut{display:block;font-family:inherit;font-size:11px;font-weight:500;line-height:1.3;color:var(--t2);margin-top:4px;}
 }
 
 /* Listening: one clear entry, reversible focus marks, no extra animation. */
-.lisHomeEntry{display:flex;align-items:center;gap:14px;width:100%;min-height:84px;padding:18px;margin-bottom:24px;border:2px solid #8abede;border-radius:18px;background:#eaf5fc;color:var(--t1);text-align:left;box-shadow:var(--shadow);}
+.lisHomeEntry{display:flex;align-items:center;gap:12px;width:100%;min-height:62px;padding:10px 14px;margin-bottom:16px;border:1px solid #a6c9e1;border-radius:14px;background:#eaf5fc;color:var(--t1);text-align:left;box-shadow:none;}
 .lisHomeEntry>.ic{width:27px;height:27px;color:#28749e;flex:none;}
 .lisHomeEntry>.ic:last-child{width:18px;margin-left:auto;}
-.lisHomeEntry strong{display:block;font-size:21px;}
-.lisHomeEntry small{display:block;font-size:13px;line-height:1.6;margin-top:4px;font-weight:500;}
+.lisHomeEntry strong{display:block;font-size:17px;}
+.lisHomeEntry small{display:block;font-size:12px;line-height:1.5;margin-top:2px;font-weight:500;}
 .lisMark{min-height:44px;padding:10px 12px;border:1px solid #91aec1;border-radius:12px;background:#f4f9fd;color:#284c65;font-size:13px;font-weight:700;}
 .lisMark[aria-pressed="true"]{background:#dfedf8;border-color:#347ca9;color:#194b6d;}
 .lisMark:disabled{opacity:.45;}
@@ -1435,6 +1459,47 @@ summary:focus-visible,select:focus-visible{outline:3px solid #226fa5;outline-off
 .lisHistoryRow .hK{width:18px;}
 @media(min-width:900px){#scrListen>.lisOptions{grid-column:1;grid-row:4;}}
 @media(max-width:420px){.lisHistoryRow .lisH{gap:5px;padding:12px 8px;}.lisHistoryRow .lisMark{flex-basis:80px;padding:8px 5px;font-size:12px;}.lisHomeEntry{padding:14px;gap:10px;}}
+@media(min-width:900px){.courseCard{min-height:82px;padding-top:12px;padding-bottom:12px;}.courseCards{gap:10px;}}
+@media(max-width:600px){
+  .reviewCard{grid-template-columns:1fr;padding:10px 12px;gap:0;}
+  .reviewActions{grid-column:1;grid-row:3;margin-top:8px;}
+  .reviewActions button{flex:1;min-width:0;}
+  .lisHomeEntry{padding:10px 12px;}
+}
+main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!important;margin:0 0 10px!important;font-size:11px!important;line-height:1.5;color:var(--t2);}
+
+/* Listening: one player and a compact settings/history column. */
+#scrListen:not([hidden]){display:block;}
+.lisWorkspace{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;align-items:start;}
+.lisPlayer,.lisSidebar{min-width:0;}
+.lisPlayer .lisCard{padding:20px;border:1px solid #c6dff0;background:#e4f2fc;border-radius:20px;box-shadow:none;}
+.lisPlayerHeading{display:flex;align-items:center;justify-content:center;gap:8px;font-size:15px;font-weight:700;margin-bottom:20px;color:#386a8e;}
+.lisPlayer .lisKey{color:#466782;font-size:13px;}
+.lisPlayer .lisDeg{font-size:48px;min-height:58px;margin:10px 0;color:var(--t1);}
+.lisPlayer .lisSrc{color:#466782;font-size:13px;line-height:1.6;}
+.lisPlayer #lisToggle{min-height:52px;background:#df4334;box-shadow:none;border-radius:12px;margin-top:20px;}
+.lisPlayer #lisToggle.on{background:white;color:var(--t1);border:1px solid #aac8de;}
+.lisPlayer #lisMarkCurrent{max-width:none;background:#fff;border:1px solid #a9c9df;border-radius:10px;min-height:44px;margin-top:10px;}
+.lisPlayer #lisMarkCurrent[aria-pressed="true"]{background:#d1e8f7;color:#225c83;}
+.lisPlayer #lisBack1{background:white;border:1px solid #c6d9e7;box-shadow:none;border-radius:12px;font-size:14px;min-height:48px;padding:12px;margin-top:10px;}
+.lisPlayer #lisBack1:disabled,.lisPlayer #lisMarkCurrent:disabled{opacity:.55;}
+.lisGuide{font-size:12px;line-height:1.7;color:var(--t2);margin:12px 4px 0;}
+.lisSidebar{display:grid;gap:16px;}
+.lisSidebar .lisOptions,.lisHistoryPanel{margin:0;padding:18px;background:#fff;border:1px solid #d1e2ee;border-radius:16px;}
+.lisSectionHeading{font-size:16px;margin:0 0 12px;color:var(--t1);}
+.lisSidebar #lisSetBtn{margin:0;min-height:44px;background:#edf5fb;border:1px solid #bed6e7;box-shadow:none;border-radius:10px;color:var(--t1);}
+.lisSidebar .lisFocusSwitch{margin-top:10px;font-size:14px;min-height:44px;}
+.lisSidebar .lisFocusNote{font-size:12px;line-height:1.6;margin:6px 0;}
+.lisSidebar .lisFocusNote:empty{display:none;}
+.lisSidebar #lisFocusDetails{margin-top:10px;}
+.lisSidebar #lisFocusDetails summary{min-height:44px;padding:12px 0;font-size:13px;cursor:pointer;}
+.lisHistoryPanel .lisHTtl{margin:0 0 10px;font-size:11px;letter-spacing:0;}
+.lisHistoryPanel #lisHist{max-height:360px;overflow:auto;}
+.lisHistoryEmpty{margin:0;padding:14px 0;color:var(--t2);font-size:13px;line-height:1.8;}
+#lisHist:not(:empty)+.lisHistoryEmpty{display:none;}
+.lisHistoryPanel .lisH{box-shadow:none;border:1px solid #d5e5f0;border-radius:10px;}
+@media(min-width:800px){.lisWorkspace{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;}.lisPlayer{position:sticky;top:calc(var(--hdrH,68px) + 18px);}}
+@media(max-width:420px){.lisPlayer .lisCard{padding:16px;}.lisSidebar .lisOptions,.lisHistoryPanel{padding:14px;}}
 
 </style>
 </head>
@@ -1526,6 +1591,7 @@ summary:focus-visible,select:focus-visible{outline:3px solid #226fa5;outline-off
       <div class="heroStats" id="heroStats" aria-label="これまでの練習記録"></div>
     </div>
     <div class="coursePanel">
+      <div id="homeReview" class="reviewCard"></div>
       <div id="courseChooser"><button id="lisHomeBtn" class="lisHomeEntry"><svg class="ic"><use href="#i-headphones"/></svg><span><strong>かけ流し</strong><small>答えずに聴く・苦手な音をくり返す</small></span><svg class="ic"><use href="#i-right"/></svg></button><h2 class="sectionTitle">練習を選ぶ</h2><p class="sectionLead">気になる練習から、はじめよう。</p><div class="courseCards"><button class="courseCard" data-course="mono" aria-controls="courseStages"><svg viewBox="0 0 56 56" fill="none" stroke-width="3" aria-hidden="true"><circle cx="28" cy="28" r="23" stroke="#afd6ef"/><circle cx="28" cy="28" r="16" stroke="#6aaee0"/><circle cx="28" cy="28" r="9" fill="#f36c5c" stroke="none"/></svg><span class="courseCopy"><strong>単音</strong><span>1音ずつ聴き分ける</span></span><span class="courseCount">15ステージ</span><svg class="ic"><use href="#i-right"/></svg></button>
 <button class="courseCard" data-course="mel" aria-controls="courseStages"><svg viewBox="0 0 56 56" fill="none" stroke-width="3" aria-hidden="true"><path d="M18 38V16l24-5v23" stroke="#559bd1" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="12" cy="40" rx="8" ry="6" fill="#69aee0" stroke="none"/><ellipse cx="36" cy="36" rx="8" ry="6" fill="#69aee0" stroke="none"/></svg><span class="courseCopy"><strong>メロディ</strong><span>音の流れをつかむ</span></span><span class="courseCount">6ステージ</span><svg class="ic"><use href="#i-right"/></svg></button>
 <button class="courseCard" data-course="chord" aria-controls="courseStages"><svg viewBox="0 0 56 56" fill="none" stroke-width="3" aria-hidden="true"><circle cx="28" cy="19" r="15" fill="#91c5e9" stroke="none"/><circle cx="18" cy="35" r="15" fill="#70b0df" fill-opacity=".8" stroke="none"/><circle cx="38" cy="35" r="15" fill="#347eae" fill-opacity=".8" stroke="none"/></svg><span class="courseCopy"><strong>コード</strong><span>響きの違いを聴く</span></span><span class="courseCount">3ステージ</span><svg class="ic"><use href="#i-right"/></svg></button></div></div>
@@ -1562,29 +1628,42 @@ summary:focus-visible,select:focus-visible{outline:3px solid #226fa5;outline-off
       <button id="lisBackBtn" class="navBtn"><svg class="ic"><use href="#i-left"/></svg>もどる</button>
       <span class="repTitle"><svg class="ic"><use href="#i-headphones"/></svg>かけ流し</span>
     </div>
+    <div class="lisWorkspace">
+    <div class="lisPlayer">
     <div class="lisCard">
+      <div class="lisPlayerHeading"><svg class="ic"><use href="#i-headphones"/></svg>聴いて、音に慣れよう</div>
       <div class="lisKey" id="lisKey">KEY —</div>
       <div class="lisDeg" id="lisDeg">—</div>
       <div class="lisSrc" id="lisSrc"></div>
+      <div id="lisReviewBanner" hidden><b>復習のかけ流し</b><p>最近の間違いと登録した苦手を流しています。</p><button id="lisReviewExit">通常のかけ流しに戻す</button></div>
       <button id="lisToggle"><svg class="ic"><use href="#i-play"/></svg>はじめる</button>
       <button id="lisMarkCurrent" class="lisMark" disabled aria-pressed="false">今の音を苦手に登録</button>
       <div class="lisChips" id="lisChips"></div>
     </div>
     <button id="lisBack1" disabled><svg class="ic"><use href="#i-repeat"/></svg>さっきの音をもう一度</button>
+    <div id="lisStaffWrap" hidden>
+      <div id="lisStaffSvg"></div>
+      <div id="lisStaffCap"></div>
+    </div>
+    <p class="lisGuide">答えなくてOK。気になった音は聴き直したり、苦手に登録できます。</p>
+    </div>
+    <div class="lisSidebar">
     <div class="lisOptions">
+      <h2 class="lisSectionHeading">聴く内容</h2>
       <button id="lisSetBtn"><svg class="ic"><use href="#i-sliders"/></svg>流す内容をえらぶ</button>
       <label class="lisFocusSwitch"><input type="checkbox" id="lisFocusOn">苦手を多めに流す</label>
       <p id="lisFocusStatus" class="lisFocusNote"></p>
       <details id="lisFocusDetails"><summary id="lisFocusSummary">登録した苦手（0件）</summary><div id="lisFocusList"></div></details>
       <p id="lisFocusMessage" class="lisFocusNote" role="status"></p>
     </div>
-    <div id="lisStaffWrap" hidden>
-      <div id="lisStaffSvg"></div>
-      <div id="lisStaffCap"></div>
-    </div>
+    <div class="lisHistoryPanel">
+    <h2 class="lisSectionHeading">最近流れた音</h2>
     <div class="lisHTtl" id="lisHTtl" hidden><svg class="ic"><use href="#i-book"/></svg>流れた音（タップで聴き直し）</div>
     <div id="lisHist"></div>
-    <p class="repNote">答えなくてOK。聴き流すだけで、キーの中の響きに耳が慣れていきます。分からなかった音は<b>さっきの音をもう一度</b>で確認できます。</p>
+    <p class="lisHistoryEmpty">再生すると、ここに音が並びます。<br>タップで聴き直し・苦手登録ができます。</p>
+    </div>
+    </div>
+    </div>
   </section>
 
   <!-- クイズ画面 -->
@@ -1627,6 +1706,7 @@ summary:focus-visible,select:focus-visible{outline:3px solid #226fa5;outline-off
       <div id="resRank"></div>
       <div id="scoreRing"><div class="inner"><b id="resScore"></b><span id="resMax"></span></div></div>
       <div id="resMsg"></div>
+      <div id="resultReview" class="reviewCard"></div>
       <details id="resDetails"><summary>答え合わせ・詳しい成績</summary><div id="resLog"></div></details>
       <button id="nextStageBtn" hidden></button>
       <div class="resBtns">
@@ -2149,10 +2229,11 @@ function validateProgress(j){
              reso:'down',
              lis:{pick:['s3'], gap:'normal', reso:'down', keyEvery:4, sleep:0, cad:'key', speed:1, fixedKey:false, focus:[], focusOn:false},
              conf:{}, daily:{}, dir:{up:[0,0], down:[0,0]},
-             recentMiss:[], streak:{last:null, n:0}, stats:{}};
+             recentMiss:[], review:[], streak:{last:null, n:0}, stats:{}};
   const statKeyOk = k => typeof k === 'string' && (/^d(\d|1[01])$/.test(k) || !!CHORDS[k]);
   if(j && typeof j === 'object'){
     p.introDone = j.introDone === true;
+    p.review = cleanReview(j.review);
     if(j.mastered && typeof j.mastered === 'object'){
       for(const st of STAGES){
         if(Object.prototype.hasOwnProperty.call(j.mastered, st.id) && j.mastered[st.id] === true) p.mastered[st.id] = true;
@@ -2901,6 +2982,7 @@ function chooseCourse(course){
 document.querySelectorAll('[data-course]').forEach(btn => btn.addEventListener('click', () => chooseCourse(btn.dataset.course)));
 $('courseBack').addEventListener('click', () => chooseCourse(null));
 function renderStageList(){
+  renderReviewEntries();
   $('courseChooser').hidden = selectedCourse !== null;
   $('courseStages').hidden = selectedCourse === null;
   $('courseTitle').textContent = courseLabels[selectedCourse] || '';
@@ -2991,6 +3073,7 @@ function renderStageList(){
 }
 
 function showSelect(){
+  reviewSession=null;
   clearAdv();
   stopAll();
   stopTick();
@@ -3349,11 +3432,11 @@ function showReport(){
 
 // ── クイズ画面 ────────────────────────────────
 
-function enterStage(st){
+function enterStage(st, keepLast = false){
+  reviewSession=null;
   curStage = st;
   roundPool = null; roundScale = null; recentMel = [];
-  progress.lastStage = st.id;
-  saveProgress();
+  if(!keepLast){progress.lastStage = st.id;saveProgress();}
   lisStop();
   scrSelect.hidden = true;
   $('scrListen').hidden = true;
@@ -3451,6 +3534,7 @@ function renderDots(){
 function renderModeChip(){
   const el = $('modeChip');
   el.textContent = '';
+  if(reviewSession && reviewSession.current){el.textContent=reviewTitle(reviewSession.current);return;}
   if(!curStage || diag) return;
   const mk = (name, t, hot) => {
     const s = document.createElement('span');
@@ -3474,6 +3558,248 @@ function renderModeChip(){
   if(progress.sessionLen !== 'q10') mk('headphones', curSession.label); // 既定（クイック）のときは出さない
 }
 
+// BEGIN SHARED REVIEW
+// Shared review records. Audio assets and normal stage progression stay independent.
+let reviewSession = null, lisReviewMode = false, lisReviewLast = null;
+function reviewKey(r){
+  const q = r.q;
+  return [r.stageId,q.type,q.scale || '',q.type === 'mel' ? q.cls.join(',') + '/' + q.offs.join(',')
+    : q.type === 'chord' ? q.chord : [q.cls,q.down,q.off,q.noRoot].join(','),r.playMode].join(':');
+}
+function cleanReview(items){
+  if(!Array.isArray(items)) return [];
+  const map = new Map();
+  for(const r of items.slice(0,512)){
+    if(!r || !r.q) continue;
+    const st = STAGES.find(s => s.id === r.stageId), q = r.q;
+    if(!st || !Number.isInteger(q.root) || q.root < 40 || q.root > 60) continue;
+    const clean = {type:q.type,root:q.root};
+    if(q.type === 'chord' && st.chords && st.chords.includes(q.chord)) clean.chord = q.chord;
+    else if(q.type === 'mel' && st.mel && st.scales.includes(q.scale) && Array.isArray(q.cls)
+      && q.cls.length === st.mel && q.cls.every(c => Number.isInteger(c) && SCALES[q.scale].iv.includes(c))
+      && Array.isArray(q.offs) && q.offs.length === q.cls.length
+      && q.offs.every((o,i) => Number.isInteger(o) && ((o%12)+12)%12 === q.cls[i] && q.root+o>=40 && q.root+o<=84)){
+      clean.cls=q.cls.slice(); clean.offs=q.offs.slice(); clean.scale=q.scale;
+    }else if(q.type === 'deg' && st.pool && st.pool.includes(q.cls) && typeof q.down === 'boolean'
+      && (st.dir === 'both' || (st.dir === 'down') === q.down) && Number.isInteger(q.off)
+      && ((q.off%12)+12)%12 === q.cls && q.root+q.off>=40 && q.root+q.off<=74
+      && (st.wide ? (q.down ? q.off<0 : q.off>0) : q.off===degOffset(q.cls,q.down))){
+      clean.cls=q.cls; clean.down=q.down; clean.off=q.off; clean.noRoot=q.noRoot===true;
+      clean.minor=stageMinor(st);
+    }else continue;
+    const num = (v,max) => Number.isFinite(v) ? Math.max(0,Math.min(max,Math.floor(v))) : 0;
+    const entry={stageId:st.id,q:clean,playMode:['melodic','harmonic','both'].includes(r.playMode)?r.playMode:'melodic',
+      misses:num(r.misses,9999), streak:num(r.streak,20), lastMiss:num(r.lastMiss,Date.now()),
+      updated:num(r.updated,Date.now()), manual:r.manual===true, excluded:r.excluded===true};
+    const key=reviewKey(entry), old=map.get(key);
+    if(!old || entry.updated>old.updated) map.set(key,entry);
+  }
+  return [...map.values()].sort((a,b)=>b.updated-a.updated).slice(0,128);
+}
+function captureReviewRecord(){
+  const q=JSON.parse(JSON.stringify(curQ));
+  if(q.type==='deg'){q.off=degOffOf(q);q.noRoot=!rootShown();}
+  return {stageId:curStage.id,q,playMode:reviewSession ? reviewSession.current.playMode : progress.playMode};
+}
+function recordReviewAnswer(ok,assisted){
+  if(assisted || diag) return;
+  const raw=captureReviewRecord(), key=reviewKey(raw);
+  let r=progress.review.find(v=>reviewKey(v)===key);
+  if(!r && ok && !(reviewSession && reviewSession.current.manual)) return;
+  const now=Date.now();
+  if(!r){r={...raw,misses:0,streak:0,lastMiss:ok?0:now,updated:now,manual:false};progress.review.push(r);}
+  r.updated=now;
+  if(ok) r.streak=Math.min(20,r.streak+1);
+  else {r.misses=Math.min(9999,r.misses+1);r.streak=0;r.lastMiss=now;r.excluded=false;}
+  progress.review=cleanReview(progress.review);
+  saveProgress();
+}
+function focusToReview(f){
+  const src=LIS_SRC.find(s=>s.id===f.srcId), q={...f.q};
+  if(!src) return null;
+  let st;
+  if(q.type==='mel'){
+    st=STAGES.find(s=>s.id===src.id); q.cls=q.cls.slice();q.offs=melOffsets(q.cls);q.root=48;
+  }else if(q.type==='chord') {st=STAGES.find(s=>s.id===src.id);q.root=48;}
+  else {
+    st=STAGES.find(s=>s.id===src.id && s.pool);
+    if(!st) st=STAGES.find(s=>s.id===(q.down?'s10':'s5'));
+    q.off=degOffset(q.cls,q.down);q.root=q.down?60:48;
+  }
+  const r=cleanReview([{stageId:st.id,q,playMode:'melodic',manual:true,updated:0}])[0];
+  if(r) r.focusKey=lisFocusKey(f);
+  return r || null;
+}
+function reviewCandidates(){
+  const map=new Map(progress.review.map(r=>[reviewKey(r),{...r}]));
+  for(const f of progress.lis.focus){
+    const r=focusToReview(f); if(!r) continue;
+    const key=reviewKey(r), old=map.get(key);
+    map.set(key,old ? {...old,manual:true,focusKey:r.focusKey} : r);
+  }
+  return [...map.values()].filter(r=>!r.excluded && (r.misses>0 || r.manual));
+}
+function dismissReview(key){
+  const item=reviewCandidates().find(r=>reviewKey(r)===key);if(!item)return;
+  const previous=progress.review.find(r=>reviewKey(r)===key);
+  const saved=previous?JSON.parse(JSON.stringify(previous)):null;
+  const focus=progress.lis.focus.filter(f=>{const r=focusToReview(f);return r && reviewKey(r)===key;});
+  progress.lis.focus=progress.lis.focus.filter(f=>!focus.includes(f));
+  if(previous){previous.excluded=true;previous.manual=false;previous.updated=Date.now();}
+  else progress.review.push({...item,excluded:true,manual:false,updated:Date.now()});
+  progress.review=cleanReview(progress.review);saveProgress();
+  return ()=>{
+    progress.review=progress.review.filter(r=>reviewKey(r)!==key);
+    if(saved)progress.review.push(saved);
+    progress.lis.focus=lisCleanFocus(progress.lis.focus.concat(focus));
+    progress.review=cleanReview(progress.review);saveProgress();
+  };
+}
+function reviewWeight(r){
+  const days=Math.max(0,(Date.now()-r.lastMiss)/86400000);
+  return (1 + 4/(1+days) + Math.min(5,r.misses) + (r.manual?2:0))/(1+r.streak*r.streak);
+}
+function reviewDraw(pool){
+  let x=Math.random()*pool.reduce((n,r)=>n+reviewWeight(r),0);
+  for(const r of pool){x-=reviewWeight(r);if(x<=0)return r;}
+  return pool[pool.length-1];
+}
+function reviewQueue(n){
+  const all=reviewCandidates(), result=[]; let left=[];
+  if(!all.length)return result;
+  while(result.length<n){
+    if(!left.length) left=all.slice();
+    const eligible=left.filter(r=>!result.length || reviewKey(r)!==reviewKey(result[result.length-1]));
+    const r=reviewDraw(eligible.length?eligible:left);
+    result.push(JSON.parse(JSON.stringify(r)));left=left.filter(v=>reviewKey(v)!==reviewKey(r));
+  }
+  return result;
+}
+function reviewTitle(r){
+  const st=STAGES.find(s=>s.id===r.stageId), q=r.q;
+  if(q.type==='chord')return 'コード：響きの種類を選ぶ';
+  if(q.type==='mel')return 'メロディ：'+q.cls.length+'音を順番に選ぶ（'+SCALES[q.scale].n+'）';
+  return '単音：'+(q.down?'下降':'上行')+'・'+(stageMinor(st)?'マイナー':st.pool.length===12?'12度数':'メジャー')+
+    (q.noRoot?'（ルート省略）':'');
+}
+function renderReviewEntries(){
+  const count=reviewCandidates().length;
+  for(const id of ['homeReview','resultReview']){
+    const el=$(id);el.textContent='';
+    const title=document.createElement('h3');title.textContent='間違いを復習';el.appendChild(title);
+    const p=document.createElement('p');p.textContent=count ? '最近の間違い・苦手 '+count+'件'
+      : '間違えた問題がここにたまります';el.appendChild(p);
+    const row=document.createElement('div');row.className='reviewActions';
+    for(const [label,n] of [['5問',5],['10問',10],['かけ流し',0]]){
+      const b=document.createElement('button');b.textContent=label;b.disabled=!count;
+      b.title=n ? n+'問を復習。記録が少ないときは同じ問題もくり返します。' : '間違えた問題・登録した苦手をかけ流し';
+      b.addEventListener('click',()=>n?startReview(n):startReviewListening());row.appendChild(b);
+    }
+    el.appendChild(row);
+    if(count){
+      const details=document.createElement('details');details.className='reviewDetails';
+      const summary=document.createElement('summary');summary.textContent='内容を見る（'+count+'件）';
+      details.appendChild(summary);
+      const help=document.createElement('p');help.textContent='外しても履歴は残ります。また間違えたり、苦手に登録すると復習に戻ります。';details.appendChild(help);
+      const list=document.createElement('ul');list.className='reviewList';
+      const records=reviewCandidates().sort((a,b)=>b.lastMiss-a.lastMiss || b.misses-a.misses);
+      for(const r of records){
+        const item=document.createElement('li');
+        const name=document.createElement('strong');name.textContent=lisAnsText(r.q);
+        const context=document.createElement('span');context.textContent=reviewTitle(r);
+        const info=document.createElement('small');
+        info.textContent='間違い '+r.misses+'回'+(r.manual?' ・ 手動登録あり':' ・ 自動記録');
+        item.appendChild(name);item.appendChild(context);item.appendChild(info);
+        const remove=document.createElement('button');remove.className='reviewRemove';remove.textContent='復習から外す';
+        remove.setAttribute('aria-label',name.textContent+'・'+context.textContent+'を復習から外す');
+        remove.addEventListener('click',()=>{
+          const undo=dismissReview(reviewKey(r));if(!undo)return;
+          renderReviewEntries();
+          const host=$(id), notice=document.createElement('div');notice.className='reviewNotice';notice.setAttribute('role','status');
+          const msg=document.createElement('span');msg.textContent=name.textContent+'を復習から外しました。';
+          const back=document.createElement('button');back.textContent='元に戻す';
+          back.addEventListener('click',()=>{undo();renderReviewEntries();});
+          notice.appendChild(msg);notice.appendChild(back);host.appendChild(notice);
+          const expanded=host.querySelector('details');if(expanded)expanded.open=true;
+          back.focus();
+        });
+        item.appendChild(remove);list.appendChild(item);
+      }
+      details.appendChild(list);el.appendChild(details);
+    }
+  }
+}
+function startReview(n){
+  if(n!==5 && n!==10)return;
+  const queue=reviewQueue(n);if(!queue.length)return;
+  diag=null;enterStage(STAGES.find(s=>s.id===queue[0].stageId),true);
+  reviewSession={queue,current:null,n};
+  curSession={n};roundTotal=n;roundDeadline=0;roundMode='inter';
+  $('cadBtn').hidden=true; $('endBtn').hidden=true;
+  nextReviewQuestion();window.scrollTo(0,0);
+}
+function nextReviewQuestion(){
+  clearAdv();stopAll();stopTick();stopDrone(0.1);hideStaff();hideHint();
+  if(qi>=reviewSession.n){showResult();return;}
+  const r=reviewSession.queue[qi++];reviewSession.current=r;
+  curStage=STAGES.find(s=>s.id===r.stageId);curQ=JSON.parse(JSON.stringify(r.q));
+  roundRoot=curQ.root;roundScale=curQ.scale || null;roundPool=roundScale?SCALES[roundScale].iv:null;
+  phase='reviewReady';melInput=[];scaleUsed=false;
+  $('singBtn').hidden=true;rootBtn.hidden=true;$('scaleBtn').hidden=true;
+  $('melBar').hidden=true;nextBtn.hidden=true;resultEl.hidden=true;answersEl.hidden=false;
+  answersEl.classList.add('locked');renderAnswers();renderQNum();renderDots();
+  stageNameEl.textContent='復習 '+qi+' / '+reviewSession.n;
+  $('modeChip').textContent=reviewTitle(r);
+  setFeedback('','');setPlayLabel('問題の種類を確認して、音を聴いてください。',false);
+  listenBtn.hidden=false;listenBtn.classList.remove('busy');setPlaying(false);
+  setIconText(listenBtn,'play','この問題を聴く');
+}
+function playReviewQuestion(){
+  if(!reviewSession || phase!=='reviewReady')return;
+  ensureAudio();useSpd(progress.speed);phase='listen';
+  setIconText(listenBtn,'note','キーの響き…');listenBtn.classList.add('busy');
+  const play=()=>{
+    if(!reviewSession || phase!=='listen')return;
+    phase='q';answersEl.classList.remove('locked');listenBtn.classList.remove('busy');
+    setIconText(listenBtn,'volume','もう一度聴く');renderMelBar(false);renderScaleBtn();playStimulus();
+  };
+  if(curQ.type==='chord'){play();return;}
+  const d=playShortCadence(curQ.root,stageMinor(curStage)||isMinorScale(curQ.scale),audioCtx.currentTime+0.06);
+  later(play,Math.round((d+0.2)*1000));
+}
+function showReviewResult(){
+  const n=answersLog.length, rate=n?Math.round(score/n*100):0;
+  $('resRank').textContent='復習完了';$('resScore').textContent=rate;$('resMax').textContent='%';
+  $('scoreRing').style.background='conic-gradient(var(--acc) '+rate+'%, var(--s3) 0)';
+  $('resMsg').textContent=n+'問中 '+score+'問正解。'+(scaleCount?'スケールを使った問題は正解数に含めません。':'')+'通常コースのベスト記録は変わりません。';
+  $('resDetails').hidden=true;$('nextStageBtn').hidden=true;
+  $('againBtn').textContent='もう'+reviewSession.n+'問復習';$('againBtn').classList.remove('secondary');
+  renderReviewEntries();
+}
+function startReviewListening(){
+  if(!reviewCandidates().length)return;
+  showListen();lisReviewMode=true;lisReviewLast=null;
+  $('lisReviewBanner').hidden=false;$('lisSetBtn').hidden=true;
+  $('lisFocusOn').disabled=true;
+  $('lisFocusStatus').textContent='コースをまたいで、間違えた問題と登録した苦手を流します。聴くだけでは習得扱いになりません。';
+  $('lisToggle').click();
+}
+function reviewListeningStep(){
+  const all=reviewCandidates();if(!all.length){lisStop('復習する問題はありません');return;}
+  const pool=all.filter(r=>reviewKey(r)!==lisReviewLast), r=reviewDraw(pool.length?pool:all);
+  lisReviewLast=reviewKey(r);useSpd(progress.lis.speed);
+  const q={...JSON.parse(JSON.stringify(r.q)),reviewId:reviewKey(r),playMode:r.playMode};
+  const it={src:{id:'review',n:reviewTitle(r)},q};
+  lisRoot=q.root;lisCurrent=null;updateLisMarkButton($('lisMarkCurrent'),null,true);
+  $('lisKey').textContent='KEY '+spellNote(q.root,false).name;$('lisDeg').textContent='…';$('lisSrc').textContent=reviewTitle(r);
+  const t=audioCtx.currentTime+0.06;
+  const lead=q.type==='chord'?0:playShortCadence(q.root,q.minor||isMinorScale(q.scale),t)+T(0.25);
+  const dur=lisPlayItem(q,t+lead,progress.lis.reso);
+  lisRevealT=setTimeout(()=>{if(!lisOn || !lisReviewMode)return;$('lisDeg').textContent=lisAnsText(q);lisHistPush(it);},(lead+dur)*1000);
+  lisTimer=setTimeout(lisStep,(lead+dur+T(LIS_PAUSE[progress.lis.gap]))*1000);
+}
+
+// END SHARED REVIEW
 function degreeShortcut(c){
   return ['1','Shift+2','2','Shift+3','3','4','Shift+5','5','Shift+6','6','Shift+7','7'][c];
 }
@@ -3743,7 +4069,7 @@ function degOffset(cls, down){
 
 // ルート＋度数の再生（設定「鳴らし方」に従う）。出題・答え合わせ・練習試聴・復習で共通
 function playDegPhrase(root, off, t0){
-  const mode = progress.playMode;
+  const mode = reviewSession ? reviewSession.current.playMode : progress.playMode;
   if(mode === 'harmonic'){
     playNote(root, t0, 0.9, T(1.9));
     playNote(root + off, t0, 0.9, T(1.9));
@@ -3882,6 +4208,7 @@ function renderScaleBtn(){
 
 // この問題でルートを鳴らすか（キーの支えの設定。メロディ・コードには効かない）
 function rootShown(){
+  if(reviewSession && curQ)return !curQ.noRoot;
   if(!curStage || curStage.gk !== 'mono') return true;
   const r = progress.rootEvery;
   if(r === 1) return true;
@@ -3907,7 +4234,7 @@ function playStimulus(){
     setPlayLabel('② 聴こえた音を選んでください（基準は最初の音）。', true);
   }else{
     playDegPhrase(curQ.root, degOffOf(curQ), t0);
-    if(progress.playMode === 'harmonic'){
+    if((reviewSession ? reviewSession.current.playMode : progress.playMode) === 'harmonic'){
     setPlayLabel('② 基準の音に重なっている音を選んでください。', true);
     }else{
       setPlayLabel('① 基準の音 → 問題の音が鳴ります。', true);
@@ -3917,6 +4244,7 @@ function playStimulus(){
 }
 
 function startRound(){
+  if(reviewSession){startReview(reviewSession.n);return;}
   ensureAudio();
   useSpd(progress.speed);
   curSession = sessionOf();
@@ -4025,6 +4353,7 @@ function resetRoundUIKeepScreen(){
 }
 
 function nextQuestion(){
+  if(reviewSession){nextReviewQuestion();return;}
   clearAdv();
   stopAll();
   clearAnswerHl();
@@ -4103,6 +4432,7 @@ function melJudge(){
   const correct = curQ.cls;
   const ok = correct.every((c, i) => melInput[i] === c);
   const assisted = scaleUsed;
+  recordReviewAnswer(ok,assisted);
   const cLabel = correct.map(c => shortDeg(c)).join(' → ');
   const gLabel = melInput.map(c => shortDeg(c)).join(' → ');
   answersLog.push({ok: ok && !assisted, assisted, correct: cLabel, given: gLabel, q: Object.assign({}, curQ),
@@ -4184,6 +4514,7 @@ function answer(val){
   const correctVal = curQ.type === 'chord' ? curQ.chord : curQ.cls;
   const ok = val === correctVal;
   const assisted = scaleUsed; // 出題中にスケールボタンを使った
+  recordReviewAnswer(ok,assisted);
   const cLabel = curQ.type === 'chord' ? CHORDS[correctVal].label : degLabel(correctVal);
   const gLabel = curQ.type === 'chord' ? CHORDS[val].label : degLabel(val);
   const statKey = curQ.type === 'chord' ? correctVal : 'd' + correctVal;
@@ -4340,6 +4671,7 @@ function onNext(){
 // ── 結果 ──────────────────────────────────────
 
 function showResult(){
+  $('resDetails').hidden=false;
   $('resDetails').open = false;
   clearAdv();
   stopAll();
@@ -4362,6 +4694,8 @@ function showResult(){
   $('singBtn').hidden = true;
   nextBtn.hidden = true;
   resultEl.hidden = false;
+  renderReviewEntries();
+  if(reviewSession){showReviewResult();return;}
 
   // 練習ストリーク（ラウンド完走で当日をカウント）
   const now = new Date(); const pad2 = n => String(n).padStart(2, '0');
@@ -4572,11 +4906,21 @@ function lisCleanFocus(items){
 }
 function lisFocusOf(it){ return {srcId:it.src ? it.src.id : it.srcId, q:it.q}; }
 function lisIsMarked(it){
+  if(it.q.reviewId){const r=reviewCandidates().find(r=>reviewKey(r)===it.q.reviewId);return !!(r && r.manual);}
   const key = lisFocusKey(lisFocusOf(it));
   return progress.lis.focus.some(f => lisFocusKey(f) === key);
 }
 function lisToggleFocus(it){
   if(!it) return;
+  if(it.q.reviewId){
+    const item=reviewCandidates().find(r=>reviewKey(r)===it.q.reviewId);
+    if(!item)return;
+    if(item.focusKey)progress.lis.focus=progress.lis.focus.filter(f=>lisFocusKey(f)!==item.focusKey);
+    let r=progress.review.find(r=>reviewKey(r)===it.q.reviewId);
+    if(!r){r={...item,manual:false};progress.review.push(r);}
+    else r.manual=!item.manual;
+    r.updated=Date.now();progress.review=cleanReview(progress.review);saveProgress();renderLisFocus();return;
+  }
   const f = lisCleanFocus([lisFocusOf(it)])[0];
   if(!f) return;
   const key = lisFocusKey(f), index = progress.lis.focus.findIndex(v => lisFocusKey(v) === key);
@@ -4589,6 +4933,8 @@ function lisToggleFocus(it){
       return;
     }
     progress.lis.focus.push(f);
+    const restored=focusToReview(f);
+    if(restored){const record=progress.review.find(r=>reviewKey(r)===reviewKey(restored));if(record){record.excluded=false;record.updated=Date.now();}}
     progress.lis.focusOn = true;
     $('lisFocusMessage').textContent = '苦手に登録しました。選んだ内容の中で多めに流します。';
   }
@@ -4607,7 +4953,8 @@ function updateLisMarkButton(b, it, current = false){
   b.disabled = !it;
   b.setAttribute('aria-pressed', String(on));
   b.textContent = on ? (current ? '苦手登録済み ✓' : '登録済み ✓') : current ? '今の音を苦手に登録' : '苦手に登録';
-  b.setAttribute('aria-label', it ? lisFocusLabel(lisFocusOf(it)) + (on ? '：苦手を解除' : '：苦手に登録') : '今の音を苦手に登録');
+  const label=it && it.q.reviewId ? lisAnsText(it.q) : it ? lisFocusLabel(lisFocusOf(it)) : '';
+  b.setAttribute('aria-label', it ? label + (on ? '：苦手を解除' : '：苦手に登録') : '今の音を苦手に登録');
 }
 function renderLisFocus(){
   updateLisMarkButton($('lisMarkCurrent'), lisCurrent, true);
@@ -4628,6 +4975,18 @@ function renderLisFocus(){
     b.addEventListener('click', () => { lisToggleFocus(f); $('lisFocusSummary').focus(); });
     row.appendChild(label); row.appendChild(b); el.appendChild(row);
   }
+  const manual=progress.review.filter(r=>r.manual);
+  $('lisFocusOn').disabled=lisReviewMode || (!progress.lis.focus.length && manual.length>0);
+  if(!lisReviewMode && manual.length && !progress.lis.focus.length)$('lisFocusStatus').textContent='復習中に登録した苦手は、ホームの「復習 → かけ流し」で聴けます。';
+  $('lisFocusSummary').textContent='登録した苦手（'+(progress.lis.focus.length+manual.length)+'件）';
+  for(const r of manual){
+    const row=document.createElement('div');row.className='lisFocusRow';
+    const label=document.createElement('span');label.textContent=reviewTitle(r)+'・'+lisAnsText(r.q);
+    const b=document.createElement('button');b.textContent='解除';
+    b.addEventListener('click',()=>{lisToggleFocus({q:{...r.q,reviewId:reviewKey(r)}});$('lisFocusSummary').focus();});
+    row.appendChild(label);row.appendChild(b);el.appendChild(row);
+  }
+  if(lisReviewMode)$('lisFocusStatus').textContent='コースをまたいで、間違えた問題と登録した苦手を流します。聴くだけでは習得扱いになりません。';
   // 履歴のボタンを作り直さないので、クリックやキーボードのフォーカスを保つ。
   document.querySelectorAll('#lisHist .lisMark').forEach(b => {
     const h = lisHist[Number(b.dataset.index)];
@@ -4718,6 +5077,16 @@ function lisMakeItem(){
 
 // 1件を鳴らす。返り値は鳴り終わるまでの秒数（次までの間隔の計算に使う）
 function lisPlayItem(q, t0, reso){
+  if(q.reviewId && q.type==='deg'){
+    const mode=q.playMode || 'melodic',off=degOffOf(q);
+    if(q.noRoot){playNote(q.root+off,t0,0.95,T(1.6));return T(2);}
+    if(mode==='harmonic' || mode==='both'){
+      const delay=mode==='both'?T(2.95):0;
+      if(mode==='both'){playNote(q.root,t0,1,T(1.15));playNote(q.root+off,t0+T(1.25),.95,T(1.6));}
+      playNote(q.root,t0+delay,.9,T(1.9));playNote(q.root+off,t0+delay,.9,T(1.9));return delay+T(2.2);
+    }
+    playNote(q.root,t0,1,T(1.15));playNote(q.root+off,t0+T(1.25),.95,T(1.6));return T(3.2);
+  }
   if(q.type === 'chord'){
     playChordPhrase(q.root, q.chord, t0);
     return T(2.2);
@@ -4759,6 +5128,7 @@ function lisStep(){
   if(progress.lis.sleep && Date.now() >= lisDeadline){ lisStop('スリープタイマーで停止しました'); return; }
   stopAll();          // 前の音の後始末（liveNodesを溜めない）
   if(!lisOn) return;  // stopAllで止まっていないか念のため確認
+  if(lisReviewMode){reviewListeningStep();return;}
   const picks = lisPicks();
   if(!picks.length){ lisStop('流す内容が選ばれていません'); return; }
   lisCurrent = null;
@@ -4930,8 +5300,8 @@ function renderLisChips(){
     sp.appendChild(document.createTextNode(text));
     el.appendChild(sp);
   };
-  const n = progress.lis.pick.length;
-  add('headphones', n === 0 ? '流す内容が未選択' : n + '種類をミックス', n === 0 ? 'warn' : '');
+  const n = lisReviewMode ? reviewCandidates().length : progress.lis.pick.length;
+  add('headphones', lisReviewMode ? '復習対象 '+n+'件' : n === 0 ? '流す内容が未選択' : n + '種類をミックス', n === 0 ? 'warn' : '');
   if(lisOn){
     if(lisWake) add('shield', '画面を消しません', 'hot');
     else if(lisWakeNG) add('x', '画面が消えると止まります', 'warn');
@@ -4940,6 +5310,8 @@ function renderLisChips(){
 }
 
 function showListen(){
+  reviewSession=null;lisReviewMode=false;
+  $('lisReviewBanner').hidden=true;$('lisSetBtn').hidden=false;$('lisFocusOn').disabled=false;
   clearAdv();
   stopAll();
   stopTick();
@@ -5072,6 +5444,7 @@ function closeLisSheet(){ $('lisSheet').hidden = true; }
 $('lisBtn').addEventListener('click', showListen);
 $('lisBackBtn').addEventListener('click', () => { lisStop(); showSelect(); });
 $('lisSetBtn').addEventListener('click', openLisSheet);
+$('lisReviewExit').addEventListener('click', showListen);
 $('lisHomeBtn').addEventListener('click', showListen);
 $('lisMarkCurrent').addEventListener('click', () => lisToggleFocus(lisCurrent));
 $('lisFocusOn').addEventListener('change', () => {
@@ -5099,7 +5472,7 @@ $('lisPreAll').addEventListener('click', () => lisSetPick(LIS_SRC.map(v => v.id)
 $('lisToggle').addEventListener('click', () => {
   ensureAudio();
   if(lisOn){ lisStop(); return; }
-  if(!progress.lis.pick.length){ openLisSheet(); return; }
+  if(!lisReviewMode && !progress.lis.pick.length){ openLisSheet(); return; }
   $('lisStaffWrap').hidden = true;
   lisOn = true;
   setIconText($('lisToggle'), 'check', 'とめる');
@@ -5276,6 +5649,7 @@ $('diagSelBtn').addEventListener('click', () => { diag = null; showSelect(); });
 
 listenBtn.addEventListener('click', () => {
   ensureAudio(); // ユーザー操作内で同期的にresume（iOS対策）
+  if(reviewSession && phase==='reviewReady'){playReviewQuestion();return;}
   if(phase === 'idle' || phase === 'result') startRound();
   else if(phase === 'q' || phase === 'reveal'){
     playStimulus();
@@ -5319,7 +5693,7 @@ $('backBtn').addEventListener('click', () => {
   }
   showSelect();
 });
-$('againBtn').addEventListener('click', () => { resetRoundUI(); startRound(); });
+$('againBtn').addEventListener('click', () => { if(reviewSession){startReview(reviewSession.n);return;} resetRoundUI(); startRound(); });
 $('selectBtn').addEventListener('click', showSelect);
 $('reportBtn').addEventListener('click', showReport);
 $('repBackBtn').addEventListener('click', showSelect);
@@ -5575,6 +5949,7 @@ $('impFile').addEventListener('change', e => {
         if(imp.mastered[st.id] && !progress.mastered[st.id]){ progress.mastered[st.id] = true; merged++; }
       }
       progress.introDone = progress.introDone || imp.introDone;
+      progress.review = cleanReview(progress.review.concat(imp.review));
       // 苦手の登録も統合するが、この端末の「多めに流す」ON/OFFは維持する。
       progress.lis.focus = lisCleanFocus(progress.lis.focus.concat(imp.lis.focus));
       for(const k in imp.bestRate){
