@@ -278,6 +278,13 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
 .lisPlayer .lisKey{color:#466782;font-size:13px;}
 .lisPlayer .lisDeg{font-size:48px;min-height:58px;margin:10px 0;color:var(--t1);}
 .lisPlayer .lisSrc{color:#466782;font-size:13px;line-height:1.6;}
+.lisTonic{display:flex;justify-content:center;align-items:center;gap:6px;width:100%;min-height:44px;margin-top:8px;border:1px solid #a9c9df;border-radius:10px;background:transparent;color:var(--t1);font-size:13px;}
+.lisTonic:disabled{opacity:.5;}
+#lisTonicMode{margin:0;gap:6px;}
+#lisTonicMode button{font-size:13px;line-height:1.5;min-height:46px;padding:8px 6px;border-radius:10px;}
+#lisTonicMode button.active{background:#d8edf9;border-color:#73a9ce;color:#193d5b;}
+#lisTonicNote{margin:8px 0 12px;}
+#lisSheet button:disabled{opacity:.5;cursor:default;}
 .lisPlayer #lisToggle{min-height:52px;background:#df4334;box-shadow:none;border-radius:12px;margin-top:20px;}
 .lisPlayer #lisToggle.on{background:white;color:var(--t1);border:1px solid #aac8de;}
 .lisPlayer #lisMarkCurrent{max-width:none;background:#fff;border:1px solid #a9c9df;border-radius:10px;min-height:44px;margin-top:10px;}

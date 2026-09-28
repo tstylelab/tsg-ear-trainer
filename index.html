@@ -1477,6 +1477,13 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
 .lisPlayer .lisKey{color:#466782;font-size:13px;}
 .lisPlayer .lisDeg{font-size:48px;min-height:58px;margin:10px 0;color:var(--t1);}
 .lisPlayer .lisSrc{color:#466782;font-size:13px;line-height:1.6;}
+.lisTonic{display:flex;justify-content:center;align-items:center;gap:6px;width:100%;min-height:44px;margin-top:8px;border:1px solid #a9c9df;border-radius:10px;background:transparent;color:var(--t1);font-size:13px;}
+.lisTonic:disabled{opacity:.5;}
+#lisTonicMode{margin:0;gap:6px;}
+#lisTonicMode button{font-size:13px;line-height:1.5;min-height:46px;padding:8px 6px;border-radius:10px;}
+#lisTonicMode button.active{background:#d8edf9;border-color:#73a9ce;color:#193d5b;}
+#lisTonicNote{margin:8px 0 12px;}
+#lisSheet button:disabled{opacity:.5;cursor:default;}
 .lisPlayer #lisToggle{min-height:52px;background:#df4334;box-shadow:none;border-radius:12px;margin-top:20px;}
 .lisPlayer #lisToggle.on{background:white;color:var(--t1);border:1px solid #aac8de;}
 .lisPlayer #lisMarkCurrent{max-width:none;background:#fff;border:1px solid #a9c9df;border-radius:10px;min-height:44px;margin-top:10px;}
@@ -1592,7 +1599,7 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
     </div>
     <div class="coursePanel">
       <div id="homeReview" class="reviewCard"></div>
-      <div id="courseChooser"><button id="lisHomeBtn" class="lisHomeEntry"><svg class="ic"><use href="#i-headphones"/></svg><span><strong>かけ流し</strong><small>答えずに聴く・苦手な音をくり返す</small></span><svg class="ic"><use href="#i-right"/></svg></button><h2 class="sectionTitle">練習を選ぶ</h2><p class="sectionLead">気になる練習から、はじめよう。</p><div class="courseCards"><button class="courseCard" data-course="mono" aria-controls="courseStages"><svg viewBox="0 0 56 56" fill="none" stroke-width="3" aria-hidden="true"><circle cx="28" cy="28" r="23" stroke="#afd6ef"/><circle cx="28" cy="28" r="16" stroke="#6aaee0"/><circle cx="28" cy="28" r="9" fill="#f36c5c" stroke="none"/></svg><span class="courseCopy"><strong>単音</strong><span>1音ずつ聴き分ける</span></span><span class="courseCount">15ステージ</span><svg class="ic"><use href="#i-right"/></svg></button>
+      <div id="courseChooser"><button id="lisHomeBtn" class="lisHomeEntry"><svg class="ic"><use href="#i-headphones"/></svg><span><strong>かけ流し</strong><small>答えずに聴く・苦手な音をくり返す</small></span><svg class="ic"><use href="#i-right"/></svg></button><h2 class="sectionTitle">練習を選ぶ</h2><p class="sectionLead">気になる練習から、はじめよう。</p><div class="courseCards"><button class="courseCard" data-course="mono" aria-controls="courseStages"><svg viewBox="0 0 56 56" fill="none" stroke-width="3" aria-hidden="true"><circle cx="28" cy="28" r="23" stroke="#afd6ef"/><circle cx="28" cy="28" r="16" stroke="#6aaee0"/><circle cx="28" cy="28" r="9" fill="#f36c5c" stroke="none"/></svg><span class="courseCopy"><strong>単音</strong><span>1音ずつ聴き分ける</span></span><span class="courseCount">18ステージ</span><svg class="ic"><use href="#i-right"/></svg></button>
 <button class="courseCard" data-course="mel" aria-controls="courseStages"><svg viewBox="0 0 56 56" fill="none" stroke-width="3" aria-hidden="true"><path d="M18 38V16l24-5v23" stroke="#559bd1" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="12" cy="40" rx="8" ry="6" fill="#69aee0" stroke="none"/><ellipse cx="36" cy="36" rx="8" ry="6" fill="#69aee0" stroke="none"/></svg><span class="courseCopy"><strong>メロディ</strong><span>音の流れをつかむ</span></span><span class="courseCount">6ステージ</span><svg class="ic"><use href="#i-right"/></svg></button>
 <button class="courseCard" data-course="chord" aria-controls="courseStages"><svg viewBox="0 0 56 56" fill="none" stroke-width="3" aria-hidden="true"><circle cx="28" cy="19" r="15" fill="#91c5e9" stroke="none"/><circle cx="18" cy="35" r="15" fill="#70b0df" fill-opacity=".8" stroke="none"/><circle cx="38" cy="35" r="15" fill="#347eae" fill-opacity=".8" stroke="none"/></svg><span class="courseCopy"><strong>コード</strong><span>響きの違いを聴く</span></span><span class="courseCount">3ステージ</span><svg class="ic"><use href="#i-right"/></svg></button></div></div>
       <div id="courseStages" hidden>
@@ -1638,6 +1645,7 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
       <div id="lisReviewBanner" hidden><b>復習のかけ流し</b><p>最近の間違いと登録した苦手を流しています。</p><button id="lisReviewExit">通常のかけ流しに戻す</button></div>
       <button id="lisToggle"><svg class="ic"><use href="#i-play"/></svg>はじめる</button>
       <button id="lisMarkCurrent" class="lisMark" disabled aria-pressed="false">今の音を苦手に登録</button>
+      <button id="lisTonic" class="lisTonic" disabled><svg class="ic"><use href="#i-note"/></svg>主音を確認</button>
       <div class="lisChips" id="lisChips"></div>
     </div>
     <button id="lisBack1" disabled><svg class="ic"><use href="#i-repeat"/></svg>さっきの音をもう一度</button>
@@ -1650,6 +1658,10 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
     <div class="lisSidebar">
     <div class="lisOptions">
       <h2 class="lisSectionHeading">聴く内容</h2>
+      <div id="lisTonicMode" class="segRow" aria-label="主音の聴き方">
+        <button data-tonic="each">主音を毎回聴く</button><button data-tonic="memory">主音を覚えて聴く</button>
+      </div>
+      <p id="lisTonicNote" class="lisFocusNote"></p>
       <button id="lisSetBtn"><svg class="ic"><use href="#i-sliders"/></svg>流す内容をえらぶ</button>
       <label class="lisFocusSwitch"><input type="checkbox" id="lisFocusOn">苦手を多めに流す</label>
       <p id="lisFocusStatus" class="lisFocusNote"></p>
@@ -1762,7 +1774,7 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
       <button data-re="4">4問に1回</button>
       <button data-re="0">鳴らさない</button>
     </div>
-    <p class="sheetNote">ルートが毎問鳴ると「2音の距離を測る」だけで解けてしまいます。<b>外していくほど、頭の中に主音を保ち続ける力＝相対音感そのものが鍛えられます</b>（耳コピで実際に使うのはこちら）。鳴らさない設定でも、ラウンドの最初とルートボタンでキーは確認できます。</p>
+    <p class="sheetNote">毎問の主音を減らすと、覚えた主音を手がかりに答える練習になります。鳴らさない設定でも、ラウンドの最初とルートボタンでキーを確認できます。「応用：主音を覚えて答える」では、設定を変えずに4問ごとの主音確認を試せます。</p>
 
     <div class="sheetSub">スケールボタン（出題中に音階をなぞる）</div>
     <div class="segRow" id="scaleBtnSeg">
@@ -1812,6 +1824,7 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
       <button data-gap="slow">ゆっくり</button><button data-gap="normal">ふつう</button><button data-gap="fast">はやい</button>
     </div>
     <div class="sheetSub">音のあとのスケール再生</div>
+    <p class="sheetNote">「主音を覚えて聴く」では、スケール再生なし・キー確認は4音ごとになります。「毎回聴く」に戻すと、下の設定も元に戻ります。</p>
     <div class="segRow" id="lisResoSeg">
       <button data-reso="down">音→主音</button><button data-reso="up">主音→音</button><button data-reso="both">両方</button><button data-reso="off">なし</button>
     </div>
@@ -2118,6 +2131,9 @@ const STAGES = [
   {gk:'mono', id:'s14', grp:'単音（度数当て）', lv:'実戦①', name:'メジャー・キーランダム', desc:'メジャー7音・上下／キーが毎回変わる', pool:MAJ7,  dir:'both'},
   {gk:'mono', id:'s15', grp:'単音（度数当て）', lv:'実戦②', name:'マイナー・キーランダム', desc:'マイナー7音・上下／キーが毎回変わる', pool:MIN7, dir:'both'},
   {gk:'mono', id:'s16', grp:'単音（度数当て）', lv:'実戦③', name:'12度数・キーランダム',   desc:'12音・上下／キーが毎回変わる',  pool:ALL12,  dir:'both'},
+  {gk:'mono', id:'t1', grp:'応用：主音を覚えて答える', lv:'応用①', name:'メジャー7音', desc:'主音を4問ごとに確認・上下／ラウンドごとにキー変更', pool:MAJ7, dir:'both', tonicMemory:true},
+  {gk:'mono', id:'t2', grp:'応用：主音を覚えて答える', lv:'応用②', name:'マイナー7音', desc:'主音を4問ごとに確認・上下／ラウンドごとにキー変更', pool:MIN7, dir:'both', tonicMemory:true},
+  {gk:'mono', id:'t3', grp:'応用：主音を覚えて答える', lv:'応用③', name:'12音', desc:'主音を4問ごとに確認・上下／ラウンドごとにキー変更', pool:ALL12, dir:'both', tonicMemory:true},
 
   // メロディ聴音（ディクテーション）：複数の音を順番に答える。単音より一段実戦的。
   // 2コースに分ける。本線は「よく使う動き」＝曲に実際に出てくる形（順次進行が主役・
@@ -2227,7 +2243,7 @@ function validateProgress(j){
              noteName:'deg', singFirst:'off',
              cadEvery:'auto', speed:1, blockRep:0, rootEvery:1, scaleBtn:'on', traceAns:'off',
              reso:'down',
-             lis:{pick:['s3'], gap:'normal', reso:'down', keyEvery:4, sleep:0, cad:'key', speed:1, fixedKey:false, focus:[], focusOn:false},
+             lis:{pick:['s3'], gap:'normal', reso:'down', keyEvery:4, sleep:0, cad:'key', speed:1, fixedKey:false, focus:[], focusOn:false, tonicMode:'each'},
              conf:{}, daily:{}, dir:{up:[0,0], down:[0,0]},
              recentMiss:[], review:[], streak:{last:null, n:0}, stats:{}};
   const statKeyOk = k => typeof k === 'string' && (/^d(\d|1[01])$/.test(k) || !!CHORDS[k]);
@@ -2273,6 +2289,7 @@ function validateProgress(j){
       if(L.cad === 'each' || L.cad === 'off') p.lis.cad = L.cad;
       if(SPEEDS.indexOf(L.speed) >= 0) p.lis.speed = L.speed;
       if(L.fixedKey === true) p.lis.fixedKey = true;
+      if(L.tonicMode === 'memory') p.lis.tonicMode = 'memory';
       p.lis.focus = lisCleanFocus(L.focus);
       p.lis.focusOn = L.focusOn === true;
     }
@@ -3442,7 +3459,8 @@ function enterStage(st, keepLast = false){
   $('scrListen').hidden = true;
   scrQuiz.hidden = false;
   stageNameEl.textContent = st.lv + ' ' + st.name;
-  $('cadBtn').hidden = !!st.chords; // コードはキーの支えを使わないため非表示
+  setIconText(rootBtn,'note',st.tonicMemory?'主音を確認':'ルート');
+  $('cadBtn').hidden = !!st.chords || !!st.tonicMemory;
   renderScaffoldBtn();
   resetRoundUI();
 }
@@ -3545,6 +3563,11 @@ function renderModeChip(){
     s.appendChild(b);
     el.appendChild(s);
   };
+  if(tonicMemoryCourse()){
+    mk('note','主音を4問ごとに確認',true);
+    mk(null,'出題中の主音確認は補助あり',false);
+    return;
+  }
   if(curStage.gk !== 'chord' && progress.scaffold !== 3){
     mk('note', SCAFFOLD[progress.scaffold].n, progress.scaffold >= 3); // 既定（カデンツ）のときは出さない
   }
@@ -3746,6 +3769,7 @@ function nextReviewQuestion(){
   roundRoot=curQ.root;roundScale=curQ.scale || null;roundPool=roundScale?SCALES[roundScale].iv:null;
   phase='reviewReady';melInput=[];scaleUsed=false;
   $('singBtn').hidden=true;rootBtn.hidden=true;$('scaleBtn').hidden=true;
+  if(curStage.tonicMemory){rootBtn.hidden=false;setIconText(rootBtn,'note','主音を確認');}
   $('melBar').hidden=true;nextBtn.hidden=true;resultEl.hidden=true;answersEl.hidden=false;
   answersEl.classList.add('locked');renderAnswers();renderQNum();renderDots();
   stageNameEl.textContent='復習 '+qi+' / '+reviewSession.n;
@@ -3771,7 +3795,7 @@ function showReviewResult(){
   const n=answersLog.length, rate=n?Math.round(score/n*100):0;
   $('resRank').textContent='復習完了';$('resScore').textContent=rate;$('resMax').textContent='%';
   $('scoreRing').style.background='conic-gradient(var(--acc) '+rate+'%, var(--s3) 0)';
-  $('resMsg').textContent=n+'問中 '+score+'問正解。'+(scaleCount?'スケールを使った問題は正解数に含めません。':'')+'通常コースのベスト記録は変わりません。';
+  $('resMsg').textContent=n+'問中 '+score+'問正解。'+(scaleCount?'補助音を使った問題は正解数に含めません。':'')+'通常コースのベスト記録は変わりません。';
   $('resDetails').hidden=true;$('nextStageBtn').hidden=true;
   $('againBtn').textContent='もう'+reviewSession.n+'問復習';$('againBtn').classList.remove('secondary');
   renderReviewEntries();
@@ -3779,6 +3803,7 @@ function showReviewResult(){
 function startReviewListening(){
   if(!reviewCandidates().length)return;
   showListen();lisReviewMode=true;lisReviewLast=null;
+  $('lisTonicMode').hidden=true;renderLisSeg();
   $('lisReviewBanner').hidden=false;$('lisSetBtn').hidden=true;
   $('lisFocusOn').disabled=true;
   $('lisFocusStatus').textContent='コースをまたいで、間違えた問題と登録した苦手を流します。聴くだけでは習得扱いになりません。';
@@ -3791,6 +3816,7 @@ function reviewListeningStep(){
   const q={...JSON.parse(JSON.stringify(r.q)),reviewId:reviewKey(r),playMode:r.playMode};
   const it={src:{id:'review',n:reviewTitle(r)},q};
   lisRoot=q.root;lisCurrent=null;updateLisMarkButton($('lisMarkCurrent'),null,true);
+  lisReferenceRoot=q.root;$('lisTonic').disabled=false;
   $('lisKey').textContent='KEY '+spellNote(q.root,false).name;$('lisDeg').textContent='…';$('lisSrc').textContent=reviewTitle(r);
   const t=audioCtx.currentTime+0.06;
   const lead=q.type==='chord'?0:playShortCadence(q.root,q.minor||isMinorScale(q.scale),t)+T(0.25);
@@ -4133,6 +4159,14 @@ function playShortCadence(root, minor, t0){
 }
 
 // カデンツを鳴らし直す間隔（問題数・0なら最初だけ）。
+function tonicMemoryCourse(){return !!(curStage && curStage.tonicMemory && !reviewSession && !diag);}
+function tonicMemoryAssistance(){return !!(curStage && curStage.tonicMemory && !diag);}
+// 同じ基準を保持するため、和音で調性を示してから最後に主音を単独提示する。
+function playMemoryAnchor(root,minor,t0){
+  const d=playShortCadence(root,minor,t0);
+  playNote(root,t0+d+T(.15),1,T(1.1));
+  return d+T(1.5);
+}
 // おまかせ＝メロディだけ毎問。単音は毎問ルートが鳴るので入れ直す必要がない
 function cadGap(){
   if(!curStage || curStage.chords) return 0; // コードはキー文脈に依存しないので不要
@@ -4146,8 +4180,15 @@ function cadGap(){
 // 2問目以降にキーの響きを入れ直してから出題する
 function playQuestionWithKey(){
   useSpd(progress.speed);
+  if(tonicMemoryCourse() && qi > 1 && (qi-1)%4===0){
+    ensureAudio();stopAll();phase='listen';answersEl.classList.add('locked');
+    const d=playMemoryAnchor(roundRoot,stageMinor(curStage),audioCtx.currentTime+0.06);
+    setPlayLabel('4問の区切りです。主音を覚えてください。',true);
+    later(()=>{phase='q';answersEl.classList.remove('locked');playStimulus();applySingGate();},Math.round((d+.15)*1000));
+    return true;
+  }
   const gap = cadGap();
-  if(progress.scaffold >= 3 && gap > 0 && qi > 1 && (qi - 1) % gap === 0 && roundRoot !== null && !diag){
+  if(!tonicMemoryCourse() && progress.scaffold >= 3 && gap > 0 && qi > 1 && (qi - 1) % gap === 0 && roundRoot !== null && !diag){
     ensureAudio();
     stopAll();
     setPlaying(true);
@@ -4201,7 +4242,7 @@ function playTrace(root, pool, off, t0){
 
 // スケールボタンの表示（設定ON・コード以外・診断以外・出題中〜答え合わせ中）
 function renderScaleBtn(){
-  const show = progress.scaleBtn === 'on' && curStage && curStage.gk !== 'chord' && !diag &&
+  const show = !tonicMemoryCourse() && progress.scaleBtn === 'on' && curStage && curStage.gk !== 'chord' && !diag &&
                (phase === 'q' || phase === 'sing' || phase === 'reveal');
   $('scaleBtn').hidden = !show;
 }
@@ -4209,6 +4250,7 @@ function renderScaleBtn(){
 // この問題でルートを鳴らすか（キーの支えの設定。メロディ・コードには効かない）
 function rootShown(){
   if(reviewSession && curQ)return !curQ.noRoot;
+  if(tonicMemoryCourse())return false;
   if(!curStage || curStage.gk !== 'mono') return true;
   const r = progress.rootEvery;
   if(r === 1) return true;
@@ -4296,9 +4338,13 @@ function startRound(){
   const minor = stageMinor(curStage) || isMinorScale(roundScale); // マイナー系はマイナーカデンツ
   const t0 = audioCtx.currentTime + 0.08;
   phase = 'listen';
-  const sc = progress.scaffold;
+  const sc = tonicMemoryCourse() ? 3 : progress.scaffold;
   let delay;
-  if(sc >= 3){
+  if(tonicMemoryCourse()){
+    delay=Math.round((playMemoryAnchor(roundRoot,minor,t0)+.15)*1000);
+    setPlayLabel('主音を覚えてください。このあと4問、問題の音だけが鳴ります。',true);
+    rootBtn.hidden=false;
+  }else if(sc >= 3){
     playCadence(roundRoot, minor, t0);
     setPlayLabel('キーの響きを聴いてから出題が始まります', true);
     delay = Math.round(T(3.5) * 1000);
@@ -4325,7 +4371,7 @@ function startRound(){
     delay += Math.round((roundPool.length + 1) * T(0.26) * 1000) + Math.round(T(0.5) * 1000);
   }
   if(curStage.mel) rootBtn.hidden = false; // メロディはいつでもキーを確かめられるように
-  if(curStage.gk === 'mono' && progress.rootEvery !== 1){
+  if(!tonicMemoryCourse() && curStage.gk === 'mono' && progress.rootEvery !== 1){
     // ルートを毎問鳴らさない設定のときは、最後にもう一度ルートを鳴らして覚えてもらう
     rootBtn.hidden = false;
     playNote(roundRoot, audioCtx.currentTime + delay / 1000 - 0.2, 1.0, T(1.6));
@@ -4376,8 +4422,8 @@ function nextQuestion(){
   renderDots();
   renderModeChip();
   renderMelBar(false);
-  playQuestionWithKey();
-  applySingGate();
+  const waitingForTonic=playQuestionWithKey();
+  if(!waitingForTonic)applySingGate();
   renderScaleBtn();
 }
 
@@ -4460,7 +4506,7 @@ function melJudge(){
   renderMelBar(true);
   showStaff();
   if(ok){
-    if(assisted) setFeedback('スケールを使ったので正解扱いになりません（答え ' + cLabel + '）', 'as', 'up');
+    if(assisted) setFeedback('補助音を使ったので正解扱いになりません（答え ' + cLabel + '）', 'as', 'up');
     else setFeedback('正解！ ' + cLabel, 'ok', 'check');
     advance(nextQuestion, Math.round(T(1.7) * 1000));
   }else{
@@ -4551,11 +4597,11 @@ function answer(val){
   if(ok){
     phase = 'reveal';
     if(cBtn) cBtn.classList.add('hlOk');
-    if(assisted) setFeedback('スケールを使ったので正解扱いになりません（答え ' + cLabel + '）', 'as', 'up');
+    if(assisted) setFeedback('補助音を使ったので正解扱いになりません（答え ' + cLabel + '）', 'as', 'up');
     else setFeedback('正解！ ' + cLabel, 'ok', 'check');
     showStaff();
     let wait = T(1.4); // 五線譜を一瞥できる長さ
-    if(progress.traceAns === 'on' && curQ.type === 'deg'){
+    if(!tonicMemoryCourse() && progress.traceAns === 'on' && curQ.type === 'deg'){
       ensureAudio(); useSpd(progress.speed); setPlaying(true);
       wait = playTrace(curQ.root, scalePoolFor(), degOffOf(curQ), audioCtx.currentTime + 0.05) + 0.6;
     }
@@ -4571,7 +4617,7 @@ function answer(val){
     // 正解をもう一度聴かせてから手動で次へ（設定で「なぞって止める」なら音階でたどる）
     later(() => {
       if(phase !== 'reveal') return;
-      if(progress.traceAns === 'on' && curQ.type === 'deg'){
+      if(!tonicMemoryCourse() && progress.traceAns === 'on' && curQ.type === 'deg'){
         ensureAudio(); useSpd(progress.speed); setPlaying(true);
         playTrace(curQ.root, scalePoolFor(), degOffOf(curQ), audioCtx.currentTime + 0.05);
       }else replayForReveal();
@@ -4587,6 +4633,9 @@ function replayForReveal(){
   useSpd(progress.speed);
   setPlaying(true);
   const t0 = audioCtx.currentTime + 0.05;
+  if(tonicMemoryCourse()){
+    playNote(curQ.root+degOffOf(curQ),t0,.95,T(1.6));return;
+  }
   if(curQ.type === 'chord'){
     playChordPhrase(curQ.root, curQ.chord, t0);
     return;
@@ -4726,7 +4775,7 @@ function showResult(){
   const ringColor = cleared ? 'var(--ok)' : 'var(--acc)';
   $('scoreRing').style.background = 'conic-gradient(' + ringColor + ' ' + rate + '%, var(--s3) 0)';
   $('resMsg').textContent = answered + '問中 ' + score + '問正解 ／ ' + msg +
-    (scaleCount ? '　※スケール' + scaleCount + '回使用（正解扱いなし）' : '');
+    (scaleCount ? '　※補助音' + scaleCount + '回使用（正解扱いなし）' : '');
 
   const log = $('resLog');
   log.textContent = '';
@@ -4853,7 +4902,7 @@ function showResult(){
 const LIS_STAFF = {wrap:'lisStaffWrap', svg:'lisStaffSvg', cap:'lisStaffCap'};
 
 let lisOn = false, lisTimer = null, lisRevealT = null, lisClock = null;
-let lisRoot = 48, lisCount = 0, lisSince = 0, lisPrevCls = null;
+let lisRoot = 48, lisCount = 0, lisSince = 0, lisPrevCls = null, lisReferenceRoot=48;
 let lisHist = [], lisDeadline = 0, lisWake = null, lisWakeNG = false;
 let lisScale = null; // そのキーのあいだ使うスケール（フレーズごとにバラバラだと調が定まらない）
 let lisCurrent = null;
@@ -4874,7 +4923,8 @@ function lisFocusMatches(f, src, dynamic = false){
   if(q.type === 'mel') return src.mel === q.cls.length && src.scales.includes(q.scale);
   if(src.chords || src.mel) return false;
   const pool = src.weak ? (dynamic ? lisWeakPool() : ALL12) : src.pool;
-  return pool.includes(q.cls) && !!src.minor === q.minor && !!src.noRoot === q.noRoot
+  const rootMatches=dynamic ? (lisMemoryMode() || !!src.noRoot)===q.noRoot : (!src.noRoot || q.noRoot);
+  return pool.includes(q.cls) && !!src.minor === q.minor && rootMatches
     && lisFocusContext(src) === lisFocusContext(LIS_SRC.find(s => s.id === f.srcId))
     && (src.dir === 'both' || (src.dir === 'down') === q.down);
 }
@@ -5016,6 +5066,25 @@ function pickLisScale(picks){
 }
 
 function lisPicks(){ return LIS_SRC.filter(v => progress.lis.pick.indexOf(v.id) >= 0); }
+function lisMemoryMode(){return !lisReviewMode && progress.lis.tonicMode==='memory';}
+function setLisTonicMode(mode){
+  if(lisReviewMode || !['each','memory'].includes(mode))return;
+  lisStop();lisCount=0;lisSince=0;lisCurrent=null;
+  updateLisMarkButton($('lisMarkCurrent'),null,true);
+  $('lisTonic').disabled=true;$('lisDeg').textContent='—';$('lisKey').textContent='KEY —';
+  $('lisStaffWrap').hidden=true;
+  progress.lis.tonicMode=mode;saveProgress();renderLisSeg();renderLisFocus();renderLisChips();
+  $('lisSrc').textContent='「はじめる」で新しい設定から再生します。';
+  setIconText($('lisToggle'),'play','はじめる');
+}
+function confirmLisTonic(){
+  if($('lisTonic').disabled)return;
+  ensureAudio();lisStop();useSpd(progress.lis.speed);
+  playNote(lisReferenceRoot,audioCtx.currentTime+.06,1,T(1.4));
+  $('lisKey').textContent='KEY '+spellNote(lisReferenceRoot,false).name;
+  $('lisSrc').textContent='主音を確認中・一時停止しています。「再開する」で続けられます。';
+  setIconText($('lisToggle'),'play','再開する');
+}
 
 // キーの取り方。下行を含むときは1オクターブ下まで鳴るので、キー自体を高めに取って
 // ギターの音域（およびピアノ音源の MIDI 40〜74）から外れないようにする
@@ -5072,7 +5141,7 @@ function lisMakeItem(){
   const c = lisPickCls(pool);
   lisPrevCls = c;
   const down = src.dir === 'down' ? true : (src.dir === 'both' ? Math.random() < 0.5 : false);
-  return {src, q:{type:'deg', cls:c, down, root: lisRoot, noRoot: !!src.noRoot, minor: !!src.minor}};
+  return {src, q:{type:'deg', cls:c, down, root: lisRoot, noRoot: lisMemoryMode() || !!src.noRoot, minor: !!src.minor}};
 }
 
 // 1件を鳴らす。返り値は鳴り終わるまでの秒数（次までの間隔の計算に使う）
@@ -5134,16 +5203,23 @@ function lisStep(){
   lisCurrent = null;
   updateLisMarkButton($('lisMarkCurrent'), null, true);
   useSpd(progress.lis.speed);
-  const ke = progress.lis.keyEvery;
+  const memory=lisMemoryMode();
+  const ke = memory ? 4 : progress.lis.keyEvery;
   // キーを作り直すタイミング（0=変えない ならラウンド最初の1回だけ）
   if(lisCount === 0 || (ke > 0 && lisSince >= ke)){
     lisRoot = lisPickRoot(picks);
+    lisReferenceRoot=lisRoot;
     lisScale = pickLisScale(picks); // このキーのあいだ使うスケールを決める
     $('lisKey').textContent = 'KEY ' + spellNote(lisRoot, false).name;
+    $('lisTonic').disabled=false;
     $('lisDeg').textContent = '…';
     lisSince = 0; lisCount++;
     const minorKey = lisScale ? isMinorScale(lisScale) : picks.every(v => v.minor);
-    if(progress.lis.cad === 'off'){
+    if(memory){
+      const d=playMemoryAnchor(lisRoot,minorKey,audioCtx.currentTime+.08);
+      $('lisSrc').textContent='主音を覚えてください。このあと4音、基準の音を省きます。';
+      lisTimer=setTimeout(lisStep,Math.round((d+.3)*1000));
+    }else if(progress.lis.cad === 'off'){
       playNote(lisRoot, audioCtx.currentTime + 0.08, 1.0, T(1.6));
       $('lisSrc').textContent = 'キーのルート音';
       lisTimer = setTimeout(lisStep, Math.round(T(2.4) * 1000));
@@ -5155,11 +5231,12 @@ function lisStep(){
     return;
   }
   const it = lisMakeItem();
+  lisReferenceRoot=lisRoot;$('lisKey').textContent='KEY '+spellNote(lisRoot,false).name;
   const t0 = audioCtx.currentTime + 0.06;
   // 「毎回」は1つずつ短いカデンツでキーを作り直す（聴き流していてもキーを見失わない）
-  const lead = progress.lis.cad === 'each'
+  const lead = !memory && progress.lis.cad === 'each'
              ? playShortCadence(lisRoot, lisScale ? isMinorScale(lisScale) : false, t0) + T(0.35) : 0;
-  const dur = lisPlayItem(it.q, t0 + lead, progress.lis.reso);
+  const dur = lisPlayItem(it.q, t0 + lead, memory ? 'off' : progress.lis.reso);
   $('lisDeg').textContent = '…';
   $('lisSrc').textContent = lisSrcLabel(it);
   // 答えは「その音が鳴った瞬間」に出す（先に鳴らすルートやカデンツのぶんだけ遅らせる）。
@@ -5217,6 +5294,7 @@ function renderLisHist(active){
 function lisReplay(i){
   const h = lisHist[i];
   if(!h) return;
+  lisReferenceRoot=h.q.root;$('lisTonic').disabled=false;
   lisCurrent = h;
   updateLisMarkButton($('lisMarkCurrent'), h, true);
   ensureAudio();
@@ -5301,6 +5379,7 @@ function renderLisChips(){
     el.appendChild(sp);
   };
   const n = lisReviewMode ? reviewCandidates().length : progress.lis.pick.length;
+  if(lisMemoryMode())add('note','主音を覚えて聴く・4音ごと');
   add('headphones', lisReviewMode ? '復習対象 '+n+'件' : n === 0 ? '流す内容が未選択' : n + '種類をミックス', n === 0 ? 'warn' : '');
   if(lisOn){
     if(lisWake) add('shield', '画面を消しません', 'hot');
@@ -5311,6 +5390,7 @@ function renderLisChips(){
 
 function showListen(){
   reviewSession=null;lisReviewMode=false;
+  $('lisTonicMode').hidden=false;$('lisTonic').disabled=true;
   $('lisReviewBanner').hidden=true;$('lisSetBtn').hidden=false;$('lisFocusOn').disabled=false;
   clearAdv();
   stopAll();
@@ -5391,13 +5471,22 @@ const lisSleepBtns = [...document.querySelectorAll('#lisSleepSeg button')];
 const lisCadBtns = [...document.querySelectorAll('#lisCadSeg button')];
 const lisSpeedBtns = [...document.querySelectorAll('#lisSpeedSeg button')];
 const lisKeyModeBtns = [...document.querySelectorAll('#lisKeyModeSeg button')];
+const lisTonicBtns = [...document.querySelectorAll('#lisTonicMode button')];
+lisTonicBtns.forEach(b=>b.addEventListener('click',()=>setLisTonicMode(b.dataset.tonic)));
+$('lisTonic').addEventListener('click',confirmLisTonic);
 
 function renderLisSeg(){
+  const memory=lisMemoryMode();
+  lisTonicBtns.forEach(b=>{b.classList.toggle('active',b.dataset.tonic===progress.lis.tonicMode);b.setAttribute('aria-pressed',String(b.dataset.tonic===progress.lis.tonicMode));});
+  $('lisTonicNote').textContent=lisReviewMode ? '復習では記録した出題条件を使い、問題ごとにキーを確認します。'
+    : memory ? '単音向け：主音を確認して4音。毎問の主音・音のあとのスケール再生は省きます。'
+    : '単音は主音→問題の音の順に再生します（「ルート省略」を選んだ場合を除く）。';
+  [...lisResoBtns,...lisCadBtns,...lisKeyBtns].forEach(b=>{b.disabled=memory;});
   lisGapBtns.forEach(b => b.classList.toggle('active', b.dataset.gap === progress.lis.gap));
-  lisResoBtns.forEach(b => b.classList.toggle('active', b.dataset.reso === progress.lis.reso));
-  lisKeyBtns.forEach(b => b.classList.toggle('active', +b.dataset.ke === progress.lis.keyEvery));
+  lisResoBtns.forEach(b => b.classList.toggle('active', b.dataset.reso === (memory?'off':progress.lis.reso)));
+  lisKeyBtns.forEach(b => b.classList.toggle('active', +b.dataset.ke === (memory?4:progress.lis.keyEvery)));
   lisSleepBtns.forEach(b => b.classList.toggle('active', +b.dataset.sl === progress.lis.sleep));
-  lisCadBtns.forEach(b => b.classList.toggle('active', b.dataset.cad === progress.lis.cad));
+  lisCadBtns.forEach(b => b.classList.toggle('active', b.dataset.cad === (memory?'key':progress.lis.cad)));
   lisSpeedBtns.forEach(b => b.classList.toggle('active', +b.dataset.sp === progress.lis.speed));
   lisKeyModeBtns.forEach(b => b.classList.toggle('active', (b.dataset.fk === '1') === progress.lis.fixedKey));
 }
@@ -5674,14 +5763,17 @@ $('scaleBtn').addEventListener('click', () => {
   playScaleWalk(roundRoot !== null ? roundRoot : curQ.root, scalePoolFor(), down, audioCtx.currentTime + 0.05);
 });
 
-rootBtn.addEventListener('click', () => {
+function confirmQuizTonic(){
   if(roundRoot === null) return;
+  if(tonicMemoryAssistance() && !['q','sing','reveal'].includes(phase))return;
+  if(tonicMemoryAssistance() && (phase==='q'||phase==='sing') && !scaleUsed){scaleUsed=true;scaleCount++;}
   ensureAudio();
   if(phase === 'reveal' && !diag) nextBtn.hidden = false;
   stopAll();
   playNote(roundRoot, audioCtx.currentTime + 0.05, 1.0, 1.5);
-  setPlayLabel('キーのルート音', true);
-});
+  setPlayLabel(tonicMemoryAssistance() ? '主音を確認しました'+(phase==='reveal'?'':'（この問題は補助あり）') : 'キーのルート音', true);
+}
+rootBtn.addEventListener('click',confirmQuizTonic);
 
 nextBtn.addEventListener('click', onNext);
 $('backBtn').addEventListener('click', () => {

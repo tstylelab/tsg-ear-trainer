@@ -185,6 +185,7 @@ function nextReviewQuestion(){
   roundRoot=curQ.root;roundScale=curQ.scale || null;roundPool=roundScale?SCALES[roundScale].iv:null;
   phase='reviewReady';melInput=[];scaleUsed=false;
   $('singBtn').hidden=true;rootBtn.hidden=true;$('scaleBtn').hidden=true;
+  if(curStage.tonicMemory){rootBtn.hidden=false;setIconText(rootBtn,'note','主音を確認');}
   $('melBar').hidden=true;nextBtn.hidden=true;resultEl.hidden=true;answersEl.hidden=false;
   answersEl.classList.add('locked');renderAnswers();renderQNum();renderDots();
   stageNameEl.textContent='復習 '+qi+' / '+reviewSession.n;
@@ -210,7 +211,7 @@ function showReviewResult(){
   const n=answersLog.length, rate=n?Math.round(score/n*100):0;
   $('resRank').textContent='復習完了';$('resScore').textContent=rate;$('resMax').textContent='%';
   $('scoreRing').style.background='conic-gradient(var(--acc) '+rate+'%, var(--s3) 0)';
-  $('resMsg').textContent=n+'問中 '+score+'問正解。'+(scaleCount?'スケールを使った問題は正解数に含めません。':'')+'通常コースのベスト記録は変わりません。';
+  $('resMsg').textContent=n+'問中 '+score+'問正解。'+(scaleCount?'補助音を使った問題は正解数に含めません。':'')+'通常コースのベスト記録は変わりません。';
   $('resDetails').hidden=true;$('nextStageBtn').hidden=true;
   $('againBtn').textContent='もう'+reviewSession.n+'問復習';$('againBtn').classList.remove('secondary');
   renderReviewEntries();
@@ -218,6 +219,7 @@ function showReviewResult(){
 function startReviewListening(){
   if(!reviewCandidates().length)return;
   showListen();lisReviewMode=true;lisReviewLast=null;
+  $('lisTonicMode').hidden=true;renderLisSeg();
   $('lisReviewBanner').hidden=false;$('lisSetBtn').hidden=true;
   $('lisFocusOn').disabled=true;
   $('lisFocusStatus').textContent='コースをまたいで、間違えた問題と登録した苦手を流します。聴くだけでは習得扱いになりません。';
@@ -230,6 +232,7 @@ function reviewListeningStep(){
   const q={...JSON.parse(JSON.stringify(r.q)),reviewId:reviewKey(r),playMode:r.playMode};
   const it={src:{id:'review',n:reviewTitle(r)},q};
   lisRoot=q.root;lisCurrent=null;updateLisMarkButton($('lisMarkCurrent'),null,true);
+  lisReferenceRoot=q.root;$('lisTonic').disabled=false;
   $('lisKey').textContent='KEY '+spellNote(q.root,false).name;$('lisDeg').textContent='…';$('lisSrc').textContent=reviewTitle(r);
   const t=audioCtx.currentTime+0.06;
   const lead=q.type==='chord'?0:playShortCadence(q.root,q.minor||isMinorScale(q.scale),t)+T(0.25);

@@ -7,13 +7,13 @@ const code = doc => doc.match(/<script>([\s\S]*?)<\/script>/)[1];
 const audio = doc => code(doc).split('let audioCtx = null;')[1].split('function renderHeroStats(){')[0];
 assert.equal(audio(html), audio(before), 'Audio engine/assets must match backup');
 const stages = doc => code(doc).split('const STAGES = [')[1].split('const LIS_SRC = [')[0];
-assert.equal(stages(html), stages(before), 'Stage definitions must match backup');
+assert.equal(stages(html).split('\n').filter(line=>!line.includes('tonicMemory:true')).join('\n'), stages(before), 'Original stages unchanged; memory courses are additive');
 const logo = doc => doc.slice(doc.indexOf('<div class="brand-main">'), doc.indexOf('id="setBtn"'));
 assert(logo(html).length > 100, 'Logo found');
 assert.equal(logo(html), logo(before), 'Original logo retained');
 new Function(code(html));
 const {ev, $} = require('./headless.js');
-for(const [course, count] of [['mono',15],['mel',6],['chord',3]]){
+for(const [course, count] of [['mono',18],['mel',6],['chord',3]]){
   ev(`chooseCourse('${course}')`);
   assert.equal($('courseChooser').hidden, true);
   assert.equal($('courseStages').hidden, false);
