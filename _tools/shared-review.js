@@ -15,7 +15,7 @@ function cleanReview(items){
     const clean = {type:q.type,root:q.root};
     if(q.type === 'chord' && st.chords && st.chords.includes(q.chord)) clean.chord = q.chord;
     else if(q.type === 'mel' && st.mel && st.scales.includes(q.scale) && Array.isArray(q.cls)
-      && q.cls.length === st.mel && q.cls.every(c => Number.isInteger(c) && SCALES[q.scale].iv.includes(c))
+      && q.cls.length === st.mel && q.cls.every(c => Number.isInteger(c)) && melodyFits(st,q)
       && Array.isArray(q.offs) && q.offs.length === q.cls.length
       && q.offs.every((o,i) => Number.isInteger(o) && ((o%12)+12)%12 === q.cls[i] && q.root+o>=40 && q.root+o<=84)){
       clean.cls=q.cls.slice(); clean.offs=q.offs.slice(); clean.scale=q.scale;

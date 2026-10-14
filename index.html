@@ -1518,6 +1518,12 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
 .melodyScaleButtons button:focus-visible{outline:3px solid #e14a39;outline-offset:2px;}
 .melodyChoice p{font-size:12px;line-height:1.6;color:var(--t2);margin:8px 0 0;}
 #quizMelodyChoice{width:100%;margin:0 0 14px;text-align:left;}
+.lisMelodyQuick{margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #d5e5f0;}
+.lisMelodyQuick>label,.lisMelodyScale legend{font-size:13px;font-weight:700;color:var(--t1);}
+.lisMelodyQuick select{display:block;width:100%;min-height:44px;margin:7px 0 10px;padding:9px 10px;font:inherit;font-size:14px;color:var(--t1);background:#fff;border:1px solid #aac8de;border-radius:9px;}
+.lisMelodyScale fieldset{border:0;padding:0;margin:0;min-width:0;}
+.lisMelodyScale legend{padding:0;margin-bottom:7px;}
+#lisSheetMelodyScale{margin:16px 0;padding:14px;background:#edf5fb;border-radius:12px;}
 
 </style>
 </head>
@@ -1670,6 +1676,12 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
     <div class="lisSidebar">
     <div class="lisOptions">
       <h2 class="lisSectionHeading">聴く内容</h2>
+      <div id="lisMelodyQuick" class="lisMelodyQuick">
+        <label for="lisMelodyLevel">メロディを選んで聴く</label>
+        <select id="lisMelodyLevel"></select>
+        <div id="lisMelodyScale" class="lisMelodyScale" hidden></div>
+        <p class="lisFocusNote">選ぶと、そのメロディだけに切り替わります。</p>
+      </div>
       <div id="lisTonicMode" class="segRow" aria-label="主音の聴き方">
         <button data-tonic="each">主音を毎回聴く</button><button data-tonic="memory">主音を覚えて聴く</button>
       </div>
@@ -1821,6 +1833,7 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
       <button id="lisPreAll"><svg class="ic"><use href="#i-star"/></svg>ぜんぶ</button>
     </div>
     <div id="lisSrcList"></div>
+    <div id="lisSheetMelodyScale" class="lisMelodyScale" hidden></div>
     <div class="sheetSub">再生スピード（早送り）</div>
     <div class="segRow" id="lisSpeedSeg">
       <button data-sp="1">ふつう</button>
@@ -1837,7 +1850,7 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
       <button data-gap="slow">ゆっくり</button><button data-gap="normal">ふつう</button><button data-gap="fast">はやい</button>
     </div>
     <div class="sheetSub">音のあとのスケール再生</div>
-    <p class="sheetNote">「主音を覚えて聴く」では、スケール再生なし・キー確認は4音ごとになります。「毎回聴く」に戻すと、下の設定も元に戻ります。</p>
+    <p class="sheetNote">「主音を覚えて聴く」では、スケール再生なし・キー確認は4問ごと（メロディは4フレーズ）になります。通常の聴き方に戻すと、下の設定も元に戻ります。</p>
     <div class="segRow" id="lisResoSeg">
       <button data-reso="down">音→主音</button><button data-reso="up">主音→音</button><button data-reso="both">両方</button><button data-reso="off">なし</button>
     </div>
@@ -1854,7 +1867,7 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
     <div class="segRow" id="lisSleepSeg">
       <button data-sl="0">なし</button><button data-sl="10">10分</button><button data-sl="20">20分</button><button data-sl="30">30分</button>
     </div>
-    <p class="sheetNote">チェックしたものだけが混ざって流れます。いくつ選んでもかまいません（例：<b>下行だけ＋ルート省略＋2音のメロディ</b>）。再生中に変えても、次の音から反映されます。</p>
+    <p class="sheetNote">チェックしたものだけが混ざって流れます。いくつ選んでもかまいません。内容や音階を変えると一時停止します。「はじめる」で、新しいキーの響きから再生します。</p>
     <button class="cls" id="lisShClose">閉じる</button>
   </div>
 </div>
@@ -2185,12 +2198,9 @@ const LIS_SRC = [
   {id:'dn',   g:'単音',      n:'下行だけ',            d:'ルートより下の音だけを流す',  pool:ALL12, dir:'down'},
   {id:'s6',   g:'単音',      n:'上行・下行ミックス',  d:'上と下をランダムに',          pool:ALL12, dir:'both'},
   {id:'s7',   g:'上級',      n:'ルート省略',          d:'ルートを鳴らさず課題音だけ',  pool:ALL12, noRoot:true},
-  {id:'m1',   g:'メロディ',  n:'2音',          d:'メジャー／マイナーの7音から2音',       mel:2, scales:['ion','aeo']},
-  {id:'m2',   g:'メロディ',  n:'3音',          d:'メジャー／マイナーの7音から3音',       mel:3, scales:['ion','aeo']},
-  {id:'m4',   g:'メロディ',  n:'4音',          d:'メジャー／マイナーの7音から4音',       mel:4, scales:['ion','aeo']},
-  {id:'m5',   g:'メロディ',  n:'5音',          d:'メジャー／マイナーの7音から5音',       mel:5, scales:['ion','aeo']},
-  {id:'m3',   g:'メロディ',  n:'3音・モード',  d:'ドリアン／ミクソリディアン等を含む3音', mel:3, scales:['ion','aeo','dor','mix','lyd']},
-  {id:'m6',   g:'メロディ',  n:'5音・モード',  d:'フリジアン／ブルース等を含む5音',       mel:5, scales:['ion','aeo','dor','mix','lyd','phr','hmin','mmin','blues']},
+  // 回答式と同じ定義から作り、追加した段階・出題範囲・動きをそろえる。
+  ...STAGES.filter(s=>s.gk==='mel').map(s=>({id:s.id,g:'メロディ',n:s.name,d:s.desc,
+    mel:s.mel,scales:s.scales,melRange:s.melRange,melMotion:s.melMotion})),
   {id:'c1',   g:'コード',    n:'メジャー / マイナー', d:'明るい ↔ 切ない',            chords:['maj','min']},
   {id:'c2',   g:'コード',    n:'トライアド',          d:'maj / min / sus4 / dim',     chords:['maj','min','sus4','dim']},
   {id:'c3',   g:'コード',    n:'セブンス',            d:'maj7 / 7th / m7 / m7♭5',    chords:['maj7','dom7','m7','m7b5']}
@@ -2258,7 +2268,7 @@ function validateProgress(j){
              noteName:'deg', singFirst:'off', melodyScale:'ion',
              cadEvery:'auto', speed:1, blockRep:0, rootEvery:1, scaleBtn:'on', traceAns:'off',
              reso:'down',
-             lis:{pick:['s3'], gap:'normal', reso:'down', keyEvery:4, sleep:0, cad:'key', speed:1, fixedKey:false, focus:[], focusOn:false, tonicMode:'each'},
+             lis:{pick:['s3'], gap:'normal', reso:'down', keyEvery:4, sleep:0, cad:'key', speed:1, fixedKey:false, focus:[], focusOn:false, tonicMode:'each', melodyScale:'ion'},
              conf:{}, daily:{}, dir:{up:[0,0], down:[0,0]},
              recentMiss:[], review:[], streak:{last:null, n:0}, stats:{}};
   const statKeyOk = k => typeof k === 'string' && (/^d(\d|1[01])$/.test(k) || !!CHORDS[k]);
@@ -2275,7 +2285,7 @@ function validateProgress(j){
     if(Number.isInteger(j.scaffold) && j.scaffold >= 0 && j.scaffold < SCAFFOLD.length) p.scaffold = j.scaffold;
     if(SESSIONS[j.sessionLen]) p.sessionLen = j.sessionLen;
     if(j.noteName === 'solfa') p.noteName = 'solfa';
-    if(['ion','aeo','mix'].includes(j.melodyScale)) p.melodyScale = j.melodyScale;
+    if(['ion','aeo','mix'].includes(j.melodyScale)){p.melodyScale = j.melodyScale;p.lis.melodyScale=j.melodyScale;}
     if(j.singFirst === 'on') p.singFirst = 'on';
     if(RESO_MODES.indexOf(j.reso) >= 0) p.reso = j.reso;
     if(typeof j.diagUnlock === 'string' && STAGES.some(s => s.id === j.diagUnlock && s.gk === 'mono')) p.diagUnlock = j.diagUnlock;
@@ -2306,6 +2316,7 @@ function validateProgress(j){
       if(SPEEDS.indexOf(L.speed) >= 0) p.lis.speed = L.speed;
       if(L.fixedKey === true) p.lis.fixedKey = true;
       if(L.tonicMode === 'memory') p.lis.tonicMode = 'memory';
+      if(['ion','aeo','mix'].includes(L.melodyScale)) p.lis.melodyScale=L.melodyScale;
       p.lis.focus = lisCleanFocus(L.focus);
       p.lis.focusOn = L.focusOn === true;
     }
@@ -2686,6 +2697,12 @@ function pickOf(a){ return a[rnd(a.length)]; }
 function melodyScaleSelectable(st){return !!(st && st.mel && st.scales.length===2 && st.scales.includes('ion') && st.scales.includes('aeo'));}
 function melodyScales(st){return melodyScaleSelectable(st) && progress.melodyScale!=='mix' ? [progress.melodyScale] : st.scales;}
 function melodyPool(st,scale){return st.melRange ? SCALES[scale].iv.slice(0,st.melRange) : SCALES[scale].iv;}
+function melodyFits(st,q){
+  if(!st.mel || st.mel!==q.cls.length || !st.scales.includes(q.scale))return false;
+  const pool=melodyPool(st,q.scale);
+  return q.cls.every(c=>pool.includes(c)) && (st.melMotion!=='small' || q.cls.every((c,i)=>
+    i===0 || (c!==q.cls[i-1] && Math.abs(pool.indexOf(c)-pool.indexOf(q.cls[i-1]))<=2)));
+}
 function currentMinor(){return stageMinor(curStage) || isMinorScale(roundScale);}
 function setMelodyScale(value){
   if(!['ion','aeo','mix'].includes(value) || (phase!=='select' && phase!=='idle'))return;
@@ -3647,7 +3664,7 @@ function cleanReview(items){
     const clean = {type:q.type,root:q.root};
     if(q.type === 'chord' && st.chords && st.chords.includes(q.chord)) clean.chord = q.chord;
     else if(q.type === 'mel' && st.mel && st.scales.includes(q.scale) && Array.isArray(q.cls)
-      && q.cls.length === st.mel && q.cls.every(c => Number.isInteger(c) && SCALES[q.scale].iv.includes(c))
+      && q.cls.length === st.mel && q.cls.every(c => Number.isInteger(c)) && melodyFits(st,q)
       && Array.isArray(q.offs) && q.offs.length === q.cls.length
       && q.offs.every((o,i) => Number.isInteger(o) && ((o%12)+12)%12 === q.cls[i] && q.root+o>=40 && q.root+o<=84)){
       clean.cls=q.cls.slice(); clean.offs=q.offs.slice(); clean.scale=q.scale;
@@ -3874,6 +3891,7 @@ function reviewListeningStep(){
 }
 
 // END SHARED REVIEW
+
 function degreeShortcut(c){
   return ['1','Shift+2','2','Shift+3','3','4','Shift+5','5','Shift+6','6','Shift+7','7'][c];
 }
@@ -4972,7 +4990,7 @@ function lisFocusKey(f){
 function lisFocusMatches(f, src, dynamic = false){
   const q = f.q;
   if(q.type === 'chord') return !!src.chords && src.chords.includes(q.chord);
-  if(q.type === 'mel') return src.mel === q.cls.length && src.scales.includes(q.scale);
+  if(q.type === 'mel') return melodyFits(src,q) && (!dynamic || lisMelodyScales(src).includes(q.scale));
   if(src.chords || src.mel) return false;
   const pool = src.weak ? (dynamic ? lisWeakPool() : ALL12) : src.pool;
   const rootMatches=dynamic ? (lisMemoryMode() || !!src.noRoot)===q.noRoot : (!src.noRoot || q.noRoot);
@@ -5098,7 +5116,7 @@ function renderLisFocus(){
 function lisFocusedItem(picks){
   if(!progress.lis.focusOn || !progress.lis.focus.length) return null;
   const eligible = progress.lis.focus.map(f => ({f, sources:picks.filter(s =>
-    lisFocusMatches(f, s, true) && (f.q.type !== 'mel' || !s.scales.includes(lisScale) || f.q.scale === lisScale))
+    lisFocusMatches(f, s, true) && (f.q.type !== 'mel' || !lisMelodyScales(s).includes(lisScale) || f.q.scale === lisScale))
   })).filter(v => v.sources.length);
   // 35%を登録した苦手に振り分け、残りは元の抽選をそのまま使う。
   if(!eligible.length || Math.random() >= 0.35) return null;
@@ -5112,12 +5130,44 @@ function lisFocusedItem(picks){
 // 選ばれたネタが使うスケールの中から1つ選ぶ
 function pickLisScale(picks){
   const set = {};
-  for(const v of picks) if(v.scales) for(const k of v.scales) set[k] = 1;
+  for(const v of picks) if(v.scales) for(const k of lisMelodyScales(v)) set[k] = 1;
   const ks = Object.keys(set);
   return ks.length ? pickOf(ks) : null;
 }
 
 function lisPicks(){ return LIS_SRC.filter(v => progress.lis.pick.indexOf(v.id) >= 0); }
+function lisMelodyScales(src){return melodyScaleSelectable(src) && progress.lis.melodyScale!=='mix' ? [progress.lis.melodyScale] : src.scales;}
+function resetLisContent(){
+  lisStop();lisCount=0;lisSince=0;lisScale=null;lisPrevCls=null;recentMel=[];lisCurrent=null;
+  $('lisTonic').disabled=true;$('lisKey').textContent='KEY —';$('lisDeg').textContent='—';
+  $('lisStaffWrap').hidden=true;
+  $('lisSrc').textContent='内容を変更しました。「はじめる」で再生します。';
+  setIconText($('lisToggle'),'play','はじめる');
+}
+function setLisMelodyScale(value){
+  if(lisReviewMode || !['ion','aeo','mix'].includes(value) || value===progress.lis.melodyScale)return;
+  resetLisContent();progress.lis.melodyScale=value;saveProgress();
+  renderLisMelodyControls();renderLisFocus();renderLisChips();
+}
+function renderLisMelodyControls(){
+  $('lisMelodyQuick').hidden=lisReviewMode;
+  const picks=lisPicks(), select=$('lisMelodyLevel');
+  select.innerHTML='<option value="">単音・コード・組み合わせ</option>'+LIS_SRC.filter(melodyScaleSelectable).map(s=>
+    '<option value="'+s.id+'">'+s.n+(s.melRange?'（5種類の音）':'')+'</option>').join('');
+  select.value=picks.length===1 && melodyScaleSelectable(picks[0]) ? picks[0].id : '';
+  for(const id of ['lisMelodyScale','lisSheetMelodyScale']){
+    const el=$(id);el.hidden=lisReviewMode || !picks.some(melodyScaleSelectable);if(el.hidden)continue;
+    el.innerHTML='<fieldset><legend>メロディの音階</legend><div class="melodyScaleButtons">'+
+      [['ion','メジャー'],['aeo','マイナー'],['mix','両方']].map(([value,label])=>
+        '<button type="button" data-lis-scale="'+value+'" aria-pressed="'+(progress.lis.melodyScale===value)+'">'+label+'</button>').join('')+
+      '</div></fieldset><p class="lisFocusNote">'+(progress.lis.melodyScale==='mix'?'キーの区切りごとに音階を選びます。':'メロディを選んだ音階だけで流します。')+
+      (picks.some(s=>s.mel && !melodyScaleSelectable(s))?' モード練習は専用の音階です。':'')+'</p>';
+    el.querySelectorAll('[data-lis-scale]').forEach(btn=>btn.addEventListener('click',()=>{
+      setLisMelodyScale(btn.dataset.lisScale);
+      el.querySelector('[data-lis-scale="'+progress.lis.melodyScale+'"]').focus();
+    }));
+  }
+}
 function lisMemoryMode(){return !lisReviewMode && progress.lis.tonicMode==='memory';}
 function setLisTonicMode(mode){
   if(lisReviewMode || !['each','memory'].includes(mode))return;
@@ -5184,9 +5234,9 @@ function lisMakeItem(){
   const pool = src.weak ? lisWeakPool() : src.pool;
   if(src.mel){
     // そのキーで決めたスケールを優先し、このネタが使わないスケールなら自前のものから選ぶ
-    const sc = (src.scales && src.scales.indexOf(lisScale) >= 0) ? lisScale
-             : (src.scales ? pickOf(src.scales) : null);
-    const cls = makeMelCls(sc ? SCALES[sc].iv : pool, src.mel);
+    const scales=lisMelodyScales(src);
+    const sc = scales.includes(lisScale) ? lisScale : pickOf(scales);
+    const cls = makeMelCls(melodyPool(src,sc), src.mel, src.melMotion);
     lisPrevCls = cls[cls.length - 1];
     return {src, q:{type:'mel', cls, offs: melOffsets(cls), root: lisRoot, scale: sc}};
   }
@@ -5217,7 +5267,7 @@ function lisPlayItem(q, t0, reso){
     playMelPhrase(q.root, q.cls, t0, offs);
     const tail = q.cls.length * melGap() + T(0.9);
     if(reso === 'off') return tail + T(0.7);
-    return tail + playReso(reso, q.root, offs[offs.length - 1], t0 + tail, false);
+    return tail + playReso(reso, q.root, offs[offs.length - 1], t0 + tail, isMinorScale(q.scale));
   }
   const off = degOffset(q.cls, q.down);
   if(q.noRoot){
@@ -5269,15 +5319,21 @@ function lisStep(){
     const minorKey = lisScale ? isMinorScale(lisScale) : picks.every(v => v.minor);
     if(memory){
       const d=playMemoryAnchor(lisRoot,minorKey,audioCtx.currentTime+.08);
-      $('lisSrc').textContent='主音を覚えてください。このあと4音、基準の音を省きます。';
+      $('lisSrc').textContent='主音を覚えてください。このあと4問、基準の音を省きます。';
       lisTimer=setTimeout(lisStep,Math.round((d+.3)*1000));
-    }else if(progress.lis.cad === 'off'){
-      playNote(lisRoot, audioCtx.currentTime + 0.08, 1.0, T(1.6));
-      $('lisSrc').textContent = 'キーのルート音';
-      lisTimer = setTimeout(lisStep, Math.round(T(2.4) * 1000));
     }else{
-      const d = playCadence(lisRoot, minorKey, audioCtx.currentTime + 0.08);
-      $('lisSrc').textContent = 'キーの響きを作っています';
+      let d;
+      if(progress.lis.cad==='off'){
+        playNote(lisRoot,audioCtx.currentTime+.08,1,T(1.6));d=T(2.1);
+        $('lisSrc').textContent='キーのルート音';
+      }else{
+        d=playCadence(lisRoot,minorKey,audioCtx.currentTime+.08);
+        $('lisSrc').textContent='キーの響きを作っています';
+      }
+      if(lisScale && picks.every(s=>s.mel) && picks.some(s=>s.melMotion==='small')){
+        d+=T(.2)+playScaleWalk(lisRoot,SCALES[lisScale].iv,false,audioCtx.currentTime+.08+d+T(.2));
+        $('lisSrc').textContent=SCALES[lisScale].n+'の音階を確認してから、メロディを流します。';
+      }
       lisTimer = setTimeout(lisStep, Math.round((d + 0.3) * 1000));
     }
     return;
@@ -5287,7 +5343,7 @@ function lisStep(){
   const t0 = audioCtx.currentTime + 0.06;
   // 「毎回」は1つずつ短いカデンツでキーを作り直す（聴き流していてもキーを見失わない）
   const lead = !memory && progress.lis.cad === 'each'
-             ? playShortCadence(lisRoot, lisScale ? isMinorScale(lisScale) : false, t0) + T(0.35) : 0;
+             ? playShortCadence(lisRoot, it.q.scale ? isMinorScale(it.q.scale) : !!it.q.minor, t0) + T(0.35) : 0;
   const dur = lisPlayItem(it.q, t0 + lead, memory ? 'off' : progress.lis.reso);
   $('lisDeg').textContent = '…';
   $('lisSrc').textContent = lisSrcLabel(it);
@@ -5355,7 +5411,9 @@ function lisReplay(i){
   stopAll();
   const q = Object.assign({}, h.q, {noRoot:false}); // 聴き直しではキーのルートも鳴らす
   useSpd(progress.lis.speed);
-  lisPlayItem(q, audioCtx.currentTime + 0.06, true);
+  const t0=audioCtx.currentTime+.06;
+  const lead=q.type==='mel'?playShortCadence(q.root,isMinorScale(q.scale),t0)+T(.2):0;
+  lisPlayItem(q, t0+lead, progress.lis.reso);
   $('lisKey').textContent = 'KEY ' + spellNote(h.q.root, false).name;
   $('lisDeg').textContent = lisAnsText(h.q);
   $('lisSrc').textContent = (i + 1) + 'つ前の音 ・ ' + h.name + (wasOn ? '（かけ流しは一時停止中）' : '');
@@ -5431,8 +5489,10 @@ function renderLisChips(){
     el.appendChild(sp);
   };
   const n = lisReviewMode ? reviewCandidates().length : progress.lis.pick.length;
-  if(lisMemoryMode())add('note','主音を覚えて聴く・4音ごと');
-  add('headphones', lisReviewMode ? '復習対象 '+n+'件' : n === 0 ? '流す内容が未選択' : n + '種類をミックス', n === 0 ? 'warn' : '');
+  if(lisMemoryMode())add('note','主音を覚えて聴く・4問ごと');
+  const picks=lisPicks(), only=picks.length===1?picks[0]:null;
+  const scaleLabel={ion:'メジャー',aeo:'マイナー',mix:'両方'}[progress.lis.melodyScale];
+  add('headphones', lisReviewMode ? '復習対象 '+n+'件' : n === 0 ? '流す内容が未選択' : only ? only.n+(melodyScaleSelectable(only)?'・'+scaleLabel:'') : n + '種類をミックス', n === 0 ? 'warn' : '');
   if(lisOn){
     if(lisWake) add('shield', '画面を消しません', 'hot');
     else if(lisWakeNG) add('x', '画面が消えると止まります', 'warn');
@@ -5473,6 +5533,7 @@ function showListen(){
 
 // ── 内容えらびシート ──
 function renderLisSrcList(){
+  renderLisMelodyControls();
   const el = $('lisSrcList');
   el.textContent = '';
   for(const g of LIS_GRP){
@@ -5484,6 +5545,7 @@ function renderLisSrcList(){
     for(const src of items){
       const b = document.createElement('button');
       b.className = 'ckRow' + (progress.lis.pick.indexOf(src.id) >= 0 ? ' on' : '');
+      b.setAttribute('aria-pressed',String(progress.lis.pick.includes(src.id)));
       const box = document.createElement('div');
       box.className = 'ckBox';
       box.appendChild(ico('check'));
@@ -5495,13 +5557,8 @@ function renderLisSrcList(){
       wrap.appendChild(nm); wrap.appendChild(ds);
       b.appendChild(box); b.appendChild(wrap);
       b.addEventListener('click', () => {
-        const i = progress.lis.pick.indexOf(src.id);
-        if(i >= 0) progress.lis.pick.splice(i, 1);
-        else progress.lis.pick.push(src.id);
-        saveProgress();
-        renderLisSrcList();
-        renderLisChips();
-        renderLisFocus();
+        const ids=progress.lis.pick.includes(src.id)?progress.lis.pick.filter(id=>id!==src.id):progress.lis.pick.concat(src.id);
+        lisSetPick(ids);
       });
       el.appendChild(b);
     }
@@ -5509,9 +5566,12 @@ function renderLisSrcList(){
 }
 
 function lisSetPick(ids){
+  if(lisReviewMode)return;
+  resetLisContent();
   progress.lis.pick = ids.slice();
   saveProgress();
   renderLisSrcList();
+  renderLisSeg();
   renderLisChips();
   renderLisFocus();
 }
@@ -5528,10 +5588,14 @@ lisTonicBtns.forEach(b=>b.addEventListener('click',()=>setLisTonicMode(b.dataset
 $('lisTonic').addEventListener('click',confirmLisTonic);
 
 function renderLisSeg(){
+  renderLisMelodyControls();
   const memory=lisMemoryMode();
+  const picks=lisPicks(), melodies=picks.length>0 && picks.every(s=>s.mel);
   lisTonicBtns.forEach(b=>{b.classList.toggle('active',b.dataset.tonic===progress.lis.tonicMode);b.setAttribute('aria-pressed',String(b.dataset.tonic===progress.lis.tonicMode));});
+  lisTonicBtns.forEach(b=>{if(b.dataset.tonic==='each')b.textContent=melodies?'キーを確認して聴く':'主音を毎回聴く';});
   $('lisTonicNote').textContent=lisReviewMode ? '復習では記録した出題条件を使い、問題ごとにキーを確認します。'
-    : memory ? '単音向け：主音を確認して4音。毎問の主音・音のあとのスケール再生は省きます。'
+    : memory ? '主音を確認して4問（メロディは4フレーズ）。毎問の主音・音のあとのスケール再生は省きます。'
+    : melodies ? (picks.some(s=>s.melMotion==='small')?'準備練習では、キーの区切りに音階を確認します。':'聴こえた順番に答えが表示されます。音階の選択は2〜5音に共通です。')
     : '単音は主音→問題の音の順に再生します（「ルート省略」を選んだ場合を除く）。';
   [...lisResoBtns,...lisCadBtns,...lisKeyBtns].forEach(b=>{b.disabled=memory;});
   lisGapBtns.forEach(b => b.classList.toggle('active', b.dataset.gap === progress.lis.gap));
@@ -5585,6 +5649,11 @@ function closeLisSheet(){ $('lisSheet').hidden = true; }
 $('lisBtn').addEventListener('click', showListen);
 $('lisBackBtn').addEventListener('click', () => { lisStop(); showSelect(); });
 $('lisSetBtn').addEventListener('click', openLisSheet);
+$('lisMelodyLevel').addEventListener('change',()=>{
+  const id=$('lisMelodyLevel').value;
+  if(id && LIS_SRC.some(s=>s.id===id && melodyScaleSelectable(s)))lisSetPick([id]);
+  else openLisSheet();
+});
 $('lisReviewExit').addEventListener('click', showListen);
 $('lisHomeBtn').addEventListener('click', showListen);
 $('lisMarkCurrent').addEventListener('click', () => lisToggleFocus(lisCurrent));

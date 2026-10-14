@@ -66,7 +66,7 @@ assert.equal(ev('progress.lis.focus.length'),1,'opening listening retains marks'
 assert.equal($('lisMarkCurrent').disabled,true,'no stale current question');
 
 // Melodies preserve the selected scale and offsets; chords respect the chosen pool.
-ev(`progress.lis.focus=lisCleanFocus([{srcId:'m1',q:{type:'mel',cls:[0,4],scale:'ion'}}]); lisScale='aeo';`);
+ev(`progress.lis.melodyScale='mix';progress.lis.focus=lisCleanFocus([{srcId:'m1',q:{type:'mel',cls:[0,4],scale:'ion'}}]); lisScale='aeo';`);
 assert.ok(ev('globalThis.drawFocus(true,["m1"],500)').every(q=>q.scale==='aeo'));
 ev('lisScale="ion"');
 const melodies=ev('globalThis.drawFocus(true,["m1"],500)');

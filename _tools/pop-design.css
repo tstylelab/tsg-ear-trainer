@@ -319,3 +319,9 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
 .melodyScaleButtons button:focus-visible{outline:3px solid #e14a39;outline-offset:2px;}
 .melodyChoice p{font-size:12px;line-height:1.6;color:var(--t2);margin:8px 0 0;}
 #quizMelodyChoice{width:100%;margin:0 0 14px;text-align:left;}
+.lisMelodyQuick{margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid #d5e5f0;}
+.lisMelodyQuick>label,.lisMelodyScale legend{font-size:13px;font-weight:700;color:var(--t1);}
+.lisMelodyQuick select{display:block;width:100%;min-height:44px;margin:7px 0 10px;padding:9px 10px;font:inherit;font-size:14px;color:var(--t1);background:#fff;border:1px solid #aac8de;border-radius:9px;}
+.lisMelodyScale fieldset{border:0;padding:0;margin:0;min-width:0;}
+.lisMelodyScale legend{padding:0;margin-bottom:7px;}
+#lisSheetMelodyScale{margin:16px 0;padding:14px;background:#edf5fb;border-radius:12px;}
