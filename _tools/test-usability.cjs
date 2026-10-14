@@ -20,7 +20,7 @@ assert.equal(ev('stageDone("m1")'),false,'Bulk range stays in selected course');
 ev('renderHeroCta()'); $('heroCta').onclick();
 assert.equal(ev('curStage.id'),'t1');
 ev('setMasteredThrough("t3");renderHeroCta()');$('heroCta').onclick();
-assert.equal(ev('curStage.id'),'m1','After all mono courses, recommend melody');
+assert.equal(ev('curStage.id'),'me1','After all mono courses, recommend the gentle melody entry');
 ev('setMasteredThrough("m6");setMasteredThrough("c3");renderHeroCta()');
 assert.equal($('heroCta').hidden,false,'All done still offers practice');
 assert.equal(ev('Object.keys(progress.bestRate).length'),0,'No manufactured scores');

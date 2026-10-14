@@ -308,3 +308,14 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
 .lisHistoryPanel .lisH{box-shadow:none;border:1px solid #d5e5f0;border-radius:10px;}
 @media(min-width:800px){.lisWorkspace{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;}.lisPlayer{position:sticky;top:calc(var(--hdrH,68px) + 18px);}}
 @media(max-width:420px){.lisPlayer .lisCard{padding:16px;}.lisSidebar .lisOptions,.lisHistoryPanel{padding:14px;}}
+
+/* Melody entry: one scale choice, retained when moving to longer phrases. */
+.melodyChoice{background:#fff;border:1px solid #c7ddeb;border-radius:14px;padding:14px 16px;margin:12px 0 8px;}
+.melodyChoice fieldset{border:0;padding:0;margin:0;min-width:0;}
+.melodyChoice legend{font-size:13px;font-weight:700;color:var(--t1);padding:0;margin-bottom:8px;}
+.melodyScaleButtons{display:flex;gap:6px;}
+.melodyScaleButtons button{flex:1;min-width:0;min-height:44px;padding:8px 10px;font-size:14px;font-weight:700;border:1px solid #bed6e7;border-radius:9px;background:#f6faff;color:var(--t1);box-shadow:none;}
+.melodyScaleButtons button[aria-pressed="true"]{background:#225e87;border-color:#225e87;color:#fff;}
+.melodyScaleButtons button:focus-visible{outline:3px solid #e14a39;outline-offset:2px;}
+.melodyChoice p{font-size:12px;line-height:1.6;color:var(--t2);margin:8px 0 0;}
+#quizMelodyChoice{width:100%;margin:0 0 14px;text-align:left;}

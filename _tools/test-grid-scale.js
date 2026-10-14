@@ -12,7 +12,7 @@ ok(J(mono.map(m=>m.id)) === J(['s1','s2','s3','s8','s9','s12','s13','s4','s5','s
 ok(mono.filter(m=>m.minor).map(m=>m.id).join() === 's12,s13,s4,s15,t2', 'minor detection ' + mono.filter(m=>m.minor).map(m=>m.id));
 ok(mono.slice(0,12).every(m=>m.fk||m.wide) && mono.slice(12).every(m=>!m.fk), 'fixedKey pattern');
 ok(mono.filter(m=>m.cls==='lv-e').length === 6 && mono.filter(m=>m.cls==='lv-d').length === 4, 'lv classes');
-ok(ev(`STAGES.length`) === 27, 'total stages');
+ok(ev(`STAGES.length`) === 29, 'total stages');
 ok(ev(`DIAG_UP.every(id => STAGES.some(s => s.id === id))`), 'DIAG_UP ids exist');
 ok(!ev(`STAGES.some(s => s.id === 's7')`), 's7 removed');
 

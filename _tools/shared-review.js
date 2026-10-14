@@ -182,7 +182,7 @@ function nextReviewQuestion(){
   if(qi>=reviewSession.n){showResult();return;}
   const r=reviewSession.queue[qi++];reviewSession.current=r;
   curStage=STAGES.find(s=>s.id===r.stageId);curQ=JSON.parse(JSON.stringify(r.q));
-  roundRoot=curQ.root;roundScale=curQ.scale || null;roundPool=roundScale?SCALES[roundScale].iv:null;
+  roundRoot=curQ.root;roundScale=curQ.scale || null;roundPool=roundScale?melodyPool(curStage,roundScale):null;
   phase='reviewReady';melInput=[];scaleUsed=false;
   $('singBtn').hidden=true;rootBtn.hidden=true;$('scaleBtn').hidden=true;
   if(curStage.tonicMemory){rootBtn.hidden=false;setIconText(rootBtn,'note','主音を確認');}
