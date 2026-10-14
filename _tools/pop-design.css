@@ -325,3 +325,17 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
 .lisMelodyScale fieldset{border:0;padding:0;margin:0;min-width:0;}
 .lisMelodyScale legend{padding:0;margin-bottom:7px;}
 #lisSheetMelodyScale{margin:16px 0;padding:14px;background:#edf5fb;border-radius:12px;}
+/* Clear return routes, with the same target size on every screen. */
+a.brand{color:inherit;text-decoration:none;min-height:48px;border-radius:6px;}
+a.brand:hover{opacity:.85;}
+a.brand:focus-visible{outline-color:#fff;}
+.courseBack,.qbar .navBtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:11px 18px;border:1px solid #245c80;border-radius:12px;background:#245c80;color:#fff;font-size:15px;font-weight:700;white-space:nowrap;box-shadow:0 2px 5px rgba(29,66,99,.12);}
+.courseBack:hover,.qbar .navBtn:hover{background:#19496b;}
+.courseBack .ic,.qbar .navBtn .ic{width:20px;height:20px;flex:none;}
+@media(max-width:430px){
+  #scrQuiz>.qbar{grid-template-columns:minmax(0,1fr) 80px;gap:6px 8px;}
+  #scrQuiz>.qbar>.navBtn{grid-column:1;grid-row:1;padding:11px 14px;gap:8px;justify-self:start;}
+  #scrQuiz #cadBtn{grid-column:2;grid-row:1;}
+  #scrQuiz #stageName{grid-column:1;grid-row:2;}
+  #scrQuiz #qNum{grid-column:2;grid-row:2;text-align:right;}
+}

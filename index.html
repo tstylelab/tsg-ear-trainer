@@ -1524,6 +1524,20 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
 .lisMelodyScale fieldset{border:0;padding:0;margin:0;min-width:0;}
 .lisMelodyScale legend{padding:0;margin-bottom:7px;}
 #lisSheetMelodyScale{margin:16px 0;padding:14px;background:#edf5fb;border-radius:12px;}
+/* Clear return routes, with the same target size on every screen. */
+a.brand{color:inherit;text-decoration:none;min-height:48px;border-radius:6px;}
+a.brand:hover{opacity:.85;}
+a.brand:focus-visible{outline-color:#fff;}
+.courseBack,.qbar .navBtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:11px 18px;border:1px solid #245c80;border-radius:12px;background:#245c80;color:#fff;font-size:15px;font-weight:700;white-space:nowrap;box-shadow:0 2px 5px rgba(29,66,99,.12);}
+.courseBack:hover,.qbar .navBtn:hover{background:#19496b;}
+.courseBack .ic,.qbar .navBtn .ic{width:20px;height:20px;flex:none;}
+@media(max-width:430px){
+  #scrQuiz>.qbar{grid-template-columns:minmax(0,1fr) 80px;gap:6px 8px;}
+  #scrQuiz>.qbar>.navBtn{grid-column:1;grid-row:1;padding:11px 14px;gap:8px;justify-self:start;}
+  #scrQuiz #cadBtn{grid-column:2;grid-row:1;}
+  #scrQuiz #stageName{grid-column:1;grid-row:2;}
+  #scrQuiz #qNum{grid-column:2;grid-row:2;text-align:right;}
+}
 
 </style>
 </head>
@@ -1560,7 +1574,7 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
 
 <header>
 <div class="hwrap">
-  <div class="brand">
+  <a class="brand" id="brandHome" href="./" aria-label="TSG Ear Trainer ホームに戻る" title="ホームに戻る">
     <div class="brand-main">
       <svg width="24" height="50" viewBox="0 0 38 78" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <rect x="14" y="0" width="10" height="10" rx="3" fill="#fff"/>
@@ -1581,7 +1595,7 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
       <div class="brand-sub1">Guitar School</div>
       <div class="brand-sub2">Ear Trainer</div>
     </div>
-  </div>
+  </a>
   <div class="hbtns">
     <button id="setBtn" class="iconBtn" title="設定" aria-label="設定"><svg class="ic"><use href="#i-sliders"/></svg></button>
     <button id="helpBtn" class="iconBtn" title="使い方" aria-label="使い方"><svg class="ic"><use href="#i-help"/></svg></button>
@@ -1620,7 +1634,7 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
 <button class="courseCard" data-course="mel" aria-controls="courseStages"><svg viewBox="0 0 56 56" fill="none" stroke-width="3" aria-hidden="true"><path d="M18 38V16l24-5v23" stroke="#559bd1" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="12" cy="40" rx="8" ry="6" fill="#69aee0" stroke="none"/><ellipse cx="36" cy="36" rx="8" ry="6" fill="#69aee0" stroke="none"/></svg><span class="courseCopy"><strong>メロディ</strong><span>音の流れをつかむ</span></span><span class="courseCount">6ステージ</span><svg class="ic"><use href="#i-right"/></svg></button>
 <button class="courseCard" data-course="chord" aria-controls="courseStages"><svg viewBox="0 0 56 56" fill="none" stroke-width="3" aria-hidden="true"><circle cx="28" cy="19" r="15" fill="#91c5e9" stroke="none"/><circle cx="18" cy="35" r="15" fill="#70b0df" fill-opacity=".8" stroke="none"/><circle cx="38" cy="35" r="15" fill="#347eae" fill-opacity=".8" stroke="none"/></svg><span class="courseCopy"><strong>コード</strong><span>響きの違いを聴く</span></span><span class="courseCount">3ステージ</span><svg class="ic"><use href="#i-right"/></svg></button></div></div>
       <div id="courseStages" hidden>
-        <button id="courseBack" class="courseBack"><svg class="ic"><use href="#i-left"/></svg>練習の種類を選ぶ</button>
+        <button id="courseBack" class="courseBack"><svg class="ic"><use href="#i-left"/></svg>ホームに戻る</button>
         <h2 id="courseTitle" class="sectionTitle" tabindex="-1"></h2>
         <details id="masteryPanel">
           <summary>開始レベル・習得済みの設定</summary>
@@ -1641,7 +1655,7 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
   <!-- マイレポート画面 -->
   <section id="scrReport" hidden>
     <div class="qbar">
-      <button id="repBackBtn" class="navBtn"><svg class="ic"><use href="#i-left"/></svg>もどる</button>
+      <button id="repBackBtn" class="navBtn"><svg class="ic"><use href="#i-left"/></svg>ホームに戻る</button>
       <span class="repTitle"><svg class="ic"><use href="#i-chart"/></svg>マイレポート</span>
     </div>
     <div id="repBody"></div>
@@ -1650,7 +1664,7 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
   <!-- かけ流し（受動リスニング）画面 -->
   <section id="scrListen" hidden>
     <div class="qbar">
-      <button id="lisBackBtn" class="navBtn"><svg class="ic"><use href="#i-left"/></svg>もどる</button>
+      <button id="lisBackBtn" class="navBtn"><svg class="ic"><use href="#i-left"/></svg>ホームに戻る</button>
       <span class="repTitle"><svg class="ic"><use href="#i-headphones"/></svg>かけ流し</span>
     </div>
     <div class="lisWorkspace">
@@ -1705,7 +1719,7 @@ main>p[style*="#fff3d9"]{background:transparent!important;padding:0 2px!importan
   <!-- クイズ画面 -->
   <section id="scrQuiz" hidden>
     <div class="qbar">
-      <button id="backBtn" class="navBtn"><svg class="ic"><use href="#i-left"/></svg>もどる</button>
+      <button id="backBtn" class="navBtn"><svg class="ic"><use href="#i-left"/></svg>練習選択に戻る</button>
       <span id="stageName"></span>
       <span id="qNum"></span>
       <button id="cadBtn" title="ラウンド開始時にキーの響き（カデンツ）を鳴らすか切り替え"><svg class="ic"><use href="#i-note"/></svg><span id="cadLbl">ON</span></button>
@@ -3060,7 +3074,7 @@ function chooseCourse(course){
   else document.querySelector('[data-course="mono"]').focus();
 }
 document.querySelectorAll('[data-course]').forEach(btn => btn.addEventListener('click', () => chooseCourse(btn.dataset.course)));
-$('courseBack').addEventListener('click', () => chooseCourse(null));
+$('courseBack').addEventListener('click', goHome);
 function renderStageList(){
   renderMelodyChoices();
   renderReviewEntries();
@@ -5647,7 +5661,7 @@ function closeLisSheet(){ $('lisSheet').hidden = true; }
 
 // ── イベント ──
 $('lisBtn').addEventListener('click', showListen);
-$('lisBackBtn').addEventListener('click', () => { lisStop(); showSelect(); });
+$('lisBackBtn').addEventListener('click', goHome);
 $('lisSetBtn').addEventListener('click', openLisSheet);
 $('lisMelodyLevel').addEventListener('change',()=>{
   const id=$('lisMelodyLevel').value;
@@ -5897,19 +5911,32 @@ function confirmQuizTonic(){
 rootBtn.addEventListener('click',confirmQuizTonic);
 
 nextBtn.addEventListener('click', onNext);
-$('backBtn').addEventListener('click', () => {
+function canLeavePractice(destination){
   // ラウンド途中の誤タップで進行が消えるのを防ぐ
   if(diag){
-    if(phase !== 'diagEnd' && !confirm('レベル診断の途中です。やめてステージ選択に戻りますか？')) return;
+    if(phase !== 'diagEnd' && !confirm('レベル診断の途中です。やめて'+destination+'に戻りますか？')) return false;
   }else if((phase === 'q' || phase === 'reveal') && qi > 0){
-    if(!confirm('ラウンドの途中です。ステージ選択に戻りますか？')) return;
+    if(!confirm('ラウンドの途中です。'+destination+'に戻りますか？')) return false;
   }
+  return true;
+}
+function goHome(){
+  if(!scrQuiz.hidden && !canLeavePractice('ホーム'))return;
+  selectedCourse=null;
   showSelect();
+  window.scrollTo(0,0);
+  $('heroCta').focus({preventScroll:true});
+}
+$('brandHome').addEventListener('click', event => {event.preventDefault();goHome();});
+$('backBtn').addEventListener('click', () => {
+  if(!canLeavePractice('練習選択'))return;
+  showSelect();
+  window.scrollTo(0,0);
 });
 $('againBtn').addEventListener('click', () => { if(reviewSession){startReview(reviewSession.n);return;} resetRoundUI(); startRound(); });
 $('selectBtn').addEventListener('click', showSelect);
 $('reportBtn').addEventListener('click', showReport);
-$('repBackBtn').addEventListener('click', showSelect);
+$('repBackBtn').addEventListener('click', goHome);
 
 // 同じ音のくり返し（ブロック練習・永続化）
 const blockBtns = [...document.querySelectorAll('#blockSeg button')];
@@ -6280,7 +6307,7 @@ window.addEventListener('resize', syncHdrH);
 // ── 下タブバー ────────────────────────────────
 // ホーム／かけ流し／レポート／設定。かけ流し・レポートのボタンは既存のIDをそのまま使っている。
 // どの画面にいるかは各 section の hidden を監視して決める（画面遷移の関数を触らずに済む）
-$('tabHome').addEventListener('click', () => { if(!scrQuiz.hidden) return; selectedCourse = null; lisStop(); showSelect(); });
+$('tabHome').addEventListener('click', goHome);
 $('reportBtn').addEventListener('click', () => lisStop());
 $('tabSet').addEventListener('click', () => $('setBtn').click());
 function syncTabbar(){

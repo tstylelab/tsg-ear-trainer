@@ -10,7 +10,7 @@ const stages = doc => code(doc).split('const STAGES = [')[1].split('const LIS_SR
   .split('\n').filter(line=>!line.includes('tonicMemory:true') && !/id:'me[12]'/.test(line)).join('\n')
   .replace(/(?:lv|name|desc):'[^']*',?/g,'').replace(/\s+/g,'');
 assert.equal(stages(html),stages(before),'Existing stage identities and question conditions retained; new entry courses are additive');
-const logo = doc => doc.slice(doc.indexOf('<div class="brand-main">'), doc.indexOf('id="setBtn"'));
+const logo = doc => doc.slice(doc.indexOf('<div class="brand-main">'), doc.indexOf('<div class="hbtns">')).replace(/\s*<\/(?:a|div)>\s*$/, '');
 assert(logo(html).length > 100, 'Logo found');
 assert.equal(logo(html), logo(before), 'Original logo retained');
 new Function(code(html));
