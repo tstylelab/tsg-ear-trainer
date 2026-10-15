@@ -1,0 +1,121 @@
+[
+  {
+    "midi": 36,
+    "name": "C2",
+    "sourceSha256": "7029a9e84f748433bc33d067ee13d37d0b866768f09ae6c7dac8e2e98e1e53ca",
+    "embeddedSha256": "0852163bcd3b895521647fbf8cfb27b17527d56d4cf1c0c7510d645c6f87507e",
+    "bytes": 39305
+  },
+  {
+    "midi": 39,
+    "name": "Ds2",
+    "sourceSha256": "a106cdec93aa4e767e36809fc9cdaa6b92453fb9f18d5fc28ac4eb0f9f239ecd",
+    "embeddedSha256": "0777886eebf9faf78158f3424e13a889fb39b06c3949bfb7ca41e24d27a5485d",
+    "bytes": 39540
+  },
+  {
+    "midi": 42,
+    "name": "Fs2",
+    "sourceSha256": "dd34c708274eeba35da1fd99fc31ef904e390ff02f6864aefe8a13261f8a8327",
+    "embeddedSha256": "3ad644676736fe255e40af30e5047e05813f5184caf6936681886ea7a5a783a6",
+    "bytes": 38626
+  },
+  {
+    "midi": 45,
+    "name": "A2",
+    "sourceSha256": "20601d890f44a3c22499c7b61f52e571795df1fe5a01fac553dded7b6379e1d4",
+    "embeddedSha256": "187dc0dfb4a815304b0e2c3e7bf79444506ad30cdba4473d2ed9f5207b80fd68",
+    "bytes": 39386
+  },
+  {
+    "midi": 48,
+    "name": "C3",
+    "sourceSha256": "bb70dd921d81b3dda561c19b5c029292ae5a6fba1947e364bf274218ce19a9d1",
+    "embeddedSha256": "06e487d6f913fd671eb42f596a16ca3e2d2aea14088585e1dbf055b852528ed1",
+    "bytes": 37203
+  },
+  {
+    "midi": 51,
+    "name": "Ds3",
+    "sourceSha256": "4fe73ea3f2c59a1dbfb35cff1d9d8a9e38cb12ef39a91a13083729544cdafed5",
+    "embeddedSha256": "b5a193a78d2243b28cfff92c58dfea6e9a277ef631b54e710caf3dd89a4962e5",
+    "bytes": 39129
+  },
+  {
+    "midi": 54,
+    "name": "Fs3",
+    "sourceSha256": "960fefd90f56608b7edf958dadfeca893cff5744ab9034d61e419401fe45ce9c",
+    "embeddedSha256": "62620bbe26382d52bf812eeda61908cd5ca0bf4280df98d655cea817530d1279",
+    "bytes": 37793
+  },
+  {
+    "midi": 57,
+    "name": "A3",
+    "sourceSha256": "8e108fe228e34e32f6b4e61efff732eec53058a9e6f05a8d8e719598b132c4f9",
+    "embeddedSha256": "4ac47a59f4ebe8940590ae6d650246842ed04c6199217242fb15e1786407a97c",
+    "bytes": 38528
+  },
+  {
+    "midi": 60,
+    "name": "C4",
+    "sourceSha256": "689eaa4c2fd7f29a2cc0e386eec462156d523a87d701269e5e2458e66056f4f6",
+    "embeddedSha256": "0887324181dbebc1ce49517e1f209d2b1f3372dd2f92940845e38419eabbead5",
+    "bytes": 39478
+  },
+  {
+    "midi": 63,
+    "name": "Ds4",
+    "sourceSha256": "663e8bb3e2d0fa23a30526dcd7ab0e42609c193c07025647ef46badcf81ec211",
+    "embeddedSha256": "52cbb5e1d511eda5873186a57b5f04fe3686e03f0e1336c778b8b4de2114c892",
+    "bytes": 34487
+  },
+  {
+    "midi": 66,
+    "name": "Fs4",
+    "sourceSha256": "613652f5c96e35736ce6a46bc4ddb6ba1076d1fb16a35a4c22c14e67efdde57c",
+    "embeddedSha256": "989637c6114ce81052ab24e4427e2c668acb0b215326772a5412b1028c3a8b15",
+    "bytes": 35039
+  },
+  {
+    "midi": 69,
+    "name": "A4",
+    "sourceSha256": "a62df24a2c84cea8d18c1fa8aca7c18c877ba2b76a00a591256fa74d3ce54ac3",
+    "embeddedSha256": "c57c9090b4a076d01192a248dca8839ba8523b060d6fa6534ad7d68ee1cfb7d3",
+    "bytes": 32694
+  },
+  {
+    "midi": 72,
+    "name": "C5",
+    "sourceSha256": "2f5b0f7422063010fb379e684bfdf2daa3911dcd2251413d79fa2a53029fdc30",
+    "embeddedSha256": "9d92b4a8895f793ea3be98510c54c99ea4350dfe49d8b26febfa4d9ea9911b26",
+    "bytes": 32066
+  },
+  {
+    "midi": 75,
+    "name": "Ds5",
+    "sourceSha256": "bf71096e653ab7ceca3914b9fd44d8c27fe83c162564c5db34bd06b94eb14b8c",
+    "embeddedSha256": "07cf9e4b18bd0cc4fc1deb0d1b0ae917e83375058f9f98675af3b548c3a08706",
+    "bytes": 29974
+  },
+  {
+    "midi": 78,
+    "name": "Fs5",
+    "sourceSha256": "ed2fdf543274ea72ddd4eb634a16356531a5f4040b2a60d34fb12a5c72cbf22f",
+    "embeddedSha256": "c7899b31446b7355104d544dec4f48eac1c66d8a2ba69f15fd02688d5b2b3542",
+    "bytes": 25650
+  },
+  {
+    "midi": 81,
+    "name": "A5",
+    "sourceSha256": "9e5cee1fe9cf68b7193623d46a27c8956e572c1ff234ca0e11599b556050dec6",
+    "embeddedSha256": "f5985177335ad2b541390a5d2c500f1476a694604f50401eb2b36d7f43f1bce8",
+    "bytes": 24165
+  },
+  {
+    "midi": 84,
+    "name": "C6",
+    "sourceSha256": "0d3232edd13ba69fd5caf4a295060ae0fd533b8a1433ae0a038644d70715c907",
+    "embeddedSha256": "48327b3ac3dadde7995936e70fee883d325a43f7f0ae8b7d65cca0edee256699",
+    "bytes": 22757
+  }
+]

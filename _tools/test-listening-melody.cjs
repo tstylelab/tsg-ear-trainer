@@ -3,8 +3,8 @@ const {ev,$,notes}=require('./headless.js');
 const originalRandom=Math.random;
 let seed=10414;Math.random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
 try{
-  assert.equal(ev('LIS_SRC.filter(s=>s.mel).length'),8);
-  for(const id of ['me1','me2','m1','m2','m4','m5'])for(const scale of ['ion','aeo']){
+  assert.equal(ev('LIS_SRC.filter(s=>s.mel).length'),12);
+  for(const id of ['me1','me2','m1','me3','me4','m2','me5','me6','m4','m5'])for(const scale of ['ion','aeo']){
     ev(`progress=validateProgress({lis:{pick:['${id}'],melodyScale:'${scale}'}});lisRoot=48;lisScale=pickLisScale(lisPicks());recentMel=[];`);
     assert.equal(ev('lisScale'),scale);
     const pool=ev('melodyPool(lisPicks()[0],lisScale)'),seen=new Set();let adjacent=0;
@@ -12,14 +12,16 @@ try{
       const q=ev('lisMakeItem().q');
       assert.equal(q.scale,scale);assert.equal(q.cls.length,ev('lisPicks()[0].mel'));
       for(const c of q.cls){assert.ok(pool.includes(c));seen.add(c);}
-      if(id==='me1'||id==='me2'){
-        const gap=Math.abs(pool.indexOf(q.cls[0])-pool.indexOf(q.cls[1]));
-        assert.ok(gap===1||gap===2);assert.ok(Math.abs(q.offs[1]-q.offs[0])<=4);
-        if(gap===1)adjacent++;
+      if(id.startsWith('me')){
+        for(let j=1;j<q.cls.length;j++){
+          const gap=Math.abs(pool.indexOf(q.cls[j-1])-pool.indexOf(q.cls[j]));
+          assert.ok(gap===1||gap===2);assert.ok(Math.abs(q.offs[j]-q.offs[j-1])<=4);
+          if(gap===1)adjacent++;
+        }
       }
     }
-    assert.equal(seen.size,id==='me1'?5:7);
-    if(id==='me1'||id==='me2')assert.ok(adjacent>220);
+    assert.equal(seen.size,ev('lisPicks()[0].melRange || 7'));
+    if(id.startsWith('me'))assert.ok(adjacent>220*(ev('lisPicks()[0].mel')-1));
     ev('saveProgress()');assert.equal(ev('loadProgress().lis.melodyScale'),scale);
     assert.deepEqual(ev('loadProgress().lis.pick'),[id]);
   }

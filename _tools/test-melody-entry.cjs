@@ -13,10 +13,10 @@ try{
   assert.equal(ev('loadProgress().bestRate.m2'),80);
   assert.equal(ev('loadProgress().mastered.m4'),true);
   assert.equal(ev('loadProgress().melodyScale'),'aeo');
-  for(const scale of ['ion','aeo'])for(const id of ['me1','me2','m1','m2','m4','m5']){
+  for(const scale of ['ion','aeo'])for(const id of ['me1','me2','m1','me3','me4','m2','me5','me6','m4','m5']){
     ev(`progress=validateProgress({melodyScale:'${scale}'});enterStage(STAGES.find(s=>s.id==='${id}'));`);
     assert.equal($('quizMelodyChoice').hidden,false);
-    assert.equal($('answers').children.filter(b=>!b.disabled).length,id==='me1'?5:7);
+    assert.equal($('answers').children.filter(b=>!b.disabled).length,ev('curStage.melRange || 7'));
     notes.length=0;ev('startRound();globalThis.flush()');
     assert.equal(ev('roundScale'),scale);
     assert.equal($('quizMelodyChoice').hidden,true,'hide choices during a round');
@@ -29,15 +29,17 @@ try{
       const q=ev('makeQuestion()');assert.equal(q.scale,scale);
       assert.equal(q.cls.length,ev('curStage.mel'));
       for(const c of q.cls){assert.ok(pool.includes(c));seen.add(c);}
-      if(id==='me1'||id==='me2'){
-        const step=Math.abs(pool.indexOf(q.cls[1])-pool.indexOf(q.cls[0]));
-        assert.ok(step>=1 && step<=2,'at most one skipped scale tone');
-        assert.ok(Math.abs(q.offs[1]-q.offs[0])<=4,'audible interval stays small');
-        if(step===1)small++;
+      if(id.startsWith('me')){
+        for(let j=1;j<q.cls.length;j++){
+          const step=Math.abs(pool.indexOf(q.cls[j])-pool.indexOf(q.cls[j-1]));
+          assert.ok(step>=1 && step<=2,'at most one skipped scale tone');
+          assert.ok(Math.abs(q.offs[j]-q.offs[j-1])<=4,'audible interval stays small');
+          if(step===1)small++;
+        }
       }
     }
     assert.equal(seen.size,pool.length,'all offered notes reachable');
-    if(id==='me1'||id==='me2')assert.ok(small>330,'mostly adjacent after repeat avoidance');
+    if(id.startsWith('me'))assert.ok(small>330*(ev('curStage.mel')-1),'mostly adjacent after repeat avoidance');
     notes.length=0;ev('nextQuestion()');
     assert.equal(notes[1][0]-root,scale==='aeo'?3:4,'second-question tonic chord matches scale');
     ev(`setMelodyScale('${scale==='ion'?'aeo':'ion'}')`);
@@ -78,5 +80,17 @@ try{
   $('nextStageBtn').onclick();
   assert.equal(ev('curStage.id'),'me2');
   assert.equal(ev('progress.melodyScale'),'aeo','next stage retains selected tonality');
+  for(const id of ['me3','me4','me5','me6']){
+    ev(`progress=validateProgress({melodyScale:'aeo'});enterStage(STAGES.find(s=>s.id==='${id}'));startRound();globalThis.flush();melInput=curQ.cls.map(()=>11);melJudge();globalThis.flush();`);
+    assert.equal(ev('loadProgress().review[0].stageId'),id);
+    ev('showSelect();startReview(5)');
+    assert.equal(ev('curQ.cls.length'),id==='me3'||id==='me4'?3:4);
+    assert.equal(ev('roundScale'),'aeo');
+    assert.equal(ev('poolOf().length'),id==='me3'||id==='me5'?5:7);
+    ev('showSelect()');
+  }
+  ev(`progress=validateProgress({unlockMode:'seq',unlockChosen:true,bestRate:{m2:90,m4:90},mastered:{m1:true}})`);
+  assert.equal(ev('isUnlocked(STAGES.find(s=>s.id==="m2"))'),true,'existing completed standard stays available');
+  assert.equal(ev('isUnlocked(STAGES.find(s=>s.id==="m4"))'),true);
 }finally{Math.random=originalRandom;}
 console.log('PASS: melody progression, range/motion, major/minor cadence, preference persistence, old scores, mode isolation and shared review');

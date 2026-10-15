@@ -36,9 +36,10 @@ const fn = new Function('document','window','localStorage','navigator','location
   code + '\n;return { ev: (src) => eval(src) };');
 const app = fn(document, window, localStorage, window.navigator, window.location, window.history, () => true, () => {}, () => ({getPropertyValue(){return ''}}), window.requestAnimationFrame, window.matchMedia);
 const ev = app.ev;
+const actualPlayNote=ev('playNote');
 globalThis.__notes = [];
 ev(`ensureAudio = () => { audioCtx = {currentTime: 0, state: 'running'}; masterGain = {}; };`);
 ev(`playNote = (m, t, g, d) => { globalThis.__notes.push([m, +Number(t).toFixed(2), +Number(d).toFixed(2)]); };`);
 ev(`later = () => {}; advance = () => {}; clearAdv = () => {}; startDrone = () => {}; stopDrone = () => {};`);
-module.exports = { ev, els, notes: globalThis.__notes, $: $id };
+module.exports = { ev, els, notes: globalThis.__notes, $: $id, actualPlayNote };
 if(require.main === module){ console.log('loaded OK; STAGES=' + ev('STAGES.length')); }
