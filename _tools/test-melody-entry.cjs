@@ -13,7 +13,7 @@ try{
   assert.equal(ev('loadProgress().bestRate.m2'),80);
   assert.equal(ev('loadProgress().mastered.m4'),true);
   assert.equal(ev('loadProgress().melodyScale'),'aeo');
-  for(const scale of ['ion','aeo'])for(const id of ['me1','me2','m1','me3','me4','m2','me5','me6','m4','m5']){
+  for(const scale of ['ion','aeo'])for(const id of ['me1','me2','m1','me3','me4','m2','me5','me6','m4','me7','me8','m5']){
     ev(`progress=validateProgress({melodyScale:'${scale}'});enterStage(STAGES.find(s=>s.id==='${id}'));`);
     assert.equal($('quizMelodyChoice').hidden,false);
     assert.equal($('answers').children.filter(b=>!b.disabled).length,ev('curStage.melRange || 7'));
@@ -80,13 +80,13 @@ try{
   $('nextStageBtn').onclick();
   assert.equal(ev('curStage.id'),'me2');
   assert.equal(ev('progress.melodyScale'),'aeo','next stage retains selected tonality');
-  for(const id of ['me3','me4','me5','me6']){
+  for(const id of ['me3','me4','me5','me6','me7','me8']){
     ev(`progress=validateProgress({melodyScale:'aeo'});enterStage(STAGES.find(s=>s.id==='${id}'));startRound();globalThis.flush();melInput=curQ.cls.map(()=>11);melJudge();globalThis.flush();`);
     assert.equal(ev('loadProgress().review[0].stageId'),id);
     ev('showSelect();startReview(5)');
-    assert.equal(ev('curQ.cls.length'),id==='me3'||id==='me4'?3:4);
+    assert.equal(ev('curQ.cls.length'),id==='me3'||id==='me4'?3:id==='me5'||id==='me6'?4:5);
     assert.equal(ev('roundScale'),'aeo');
-    assert.equal(ev('poolOf().length'),id==='me3'||id==='me5'?5:7);
+    assert.equal(ev('poolOf().length'),['me3','me5','me7'].includes(id)?5:7);
     ev('showSelect()');
   }
   ev(`progress=validateProgress({unlockMode:'seq',unlockChosen:true,bestRate:{m2:90,m4:90},mastered:{m1:true}})`);

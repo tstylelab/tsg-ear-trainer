@@ -10,7 +10,8 @@ Salamander Grand Piano — Yamaha C5, recorded by **Alexander Holm**.
 TSG Ear Trainer embeds 17 stereo MP3 samples, C2–C6 at minor-third intervals.
 Changes: trimmed to 4.2 seconds, last 150 ms faded, re-encoded with LAME VBR quality 3.
 At playback, the nearest sample is repitched by at most one semitone in the exercise range;
-gain and note-release envelopes are applied. No endorsement by the original author is implied.
+gain and note-release envelopes are applied. A gentle low shelf (-3 dB at 180 Hz)
+and high shelf (+2 dB at 2200 Hz) balance the playback tone without changing pitch. No endorsement by the original author is implied.
 The original recordings' license applies to the embedded piano samples.
 
 Rebuild with `_tools/build-piano.py`; source and embedded SHA-256 hashes are in

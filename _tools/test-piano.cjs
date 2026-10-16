@@ -12,6 +12,7 @@ const sources=[],gains=[];
 function param(){return {value:0,events:[],setValueAtTime(v,t){this.events.push(['set',v,t]);},linearRampToValueAtTime(v,t){this.events.push(['linear',v,t]);},exponentialRampToValueAtTime(v,t){this.events.push(['exp',v,t]);},cancelScheduledValues(){}};}
 function node(){return {connect(){},disconnect(){this.disconnected=true;}};}
 globalThis.__pianoContext={currentTime:0,destination:{},
+  createBiquadFilter(){return Object.assign(node(),{frequency:param(),gain:param()});},
   createGain(){const g=Object.assign(node(),{gain:param()});gains.push(g);return g;},
   createDynamicsCompressor(){return Object.assign(node(),Object.fromEntries(['threshold','knee','ratio','attack','release'].map(k=>[k,param()])));},
   createBufferSource(){const s=Object.assign(node(),{playbackRate:param(),start(t){this.startAt=t;},stop(t){this.stopAt=t;}});sources.push(s);return s;}

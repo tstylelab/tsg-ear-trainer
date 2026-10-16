@@ -1903,7 +1903,7 @@ a.brand:focus-visible{outline-color:#fff;}
     <div class="gsec">
       <div class="gsecTtl">🪜 ステージの並び</div>
       <div class="tip"><div class="tipT">単音は5段、各段の中は「上行 → 下行 → 上下」</div><div class="tipD">入門（3音・5音）→ 初級（メジャー7音）→ 中級（マイナー7音）→ 上級（12度数・オクターブをまたぐ）→ 実戦（キーが毎回変わる）。実戦まではキーC固定です。</div></div>
-      <div class="tip"><div class="tipT">🎵 2〜4音は「やさしい → 基本 → 標準」</div><div class="tipD">やさしいは5種類の音、基本は7種類の音で、小さな動きから練習。標準では離れた音にも挑戦します。メジャー／マイナーを選べ、かけ流しでも同じ段階を使えます。「スケールいろいろ」はモードの練習です。</div></div>
+      <div class="tip"><div class="tipT">🎵 2〜5音は「やさしい → 基本 → 標準」</div><div class="tipD">やさしいは5種類の音、基本は7種類の音で、小さな動きから練習。標準では離れた音にも挑戦します。メジャー／マイナーを選べ、かけ流しでも同じ段階を使えます。「スケールいろいろ」はモードの練習です。</div></div>
       <div class="tip"><div class="tipT">🎸 コードは響きの質を当てます</div><div class="tipD">メジャー／マイナー → トライアド4種 → セブンス4種。</div></div>
       <div class="tip"><div class="tipT">🔗 ステージのURLを生徒さんに送れます</div><div class="tipD">末尾に <b>?stage=s1</b>（単音 s1〜s16、s7は欠番）／<b>m1</b>〜<b>m6</b>（メロディ）／<b>c1</b>〜<b>c3</b>（コード）を付けると、そのステージが直接開きます。</div></div>
     </div>
@@ -2189,7 +2189,9 @@ const STAGES = [
   {gk:'mel', id:'me5', grp:'メロディ（4音）', lv:'初級', name:'4音・やさしい', desc:'5種類の音から4音／となりの音を中心に', mel:4, scales:['ion','aeo'], fixedKey:true, melRange:5, melMotion:'small'},
   {gk:'mel', id:'me6', grp:'メロディ（4音）', lv:'中級', name:'4音・基本', desc:'7種類の音から4音／小さな動きで練習', mel:4, scales:['ion','aeo'], fixedKey:true, melMotion:'small'},
   {gk:'mel', id:'m4', grp:'メロディ（4音）', lv:'中級', name:'4音・標準', desc:'7種類の音から4音／離れた音にも挑戦', mel:4, scales:['ion','aeo'], fixedKey:true},
-  {gk:'mel', id:'m5', grp:'メロディ（5音）', lv:'上級', name:'5音', desc:'5音／キーもラウンドごとに変化',    mel:5, scales:['ion','aeo']},
+  {gk:'mel', id:'me7', grp:'メロディ（5音）', lv:'中級', name:'5音・やさしい', desc:'5種類の音から5音／となりの音を中心に', mel:5, scales:['ion','aeo'], fixedKey:true, melRange:5, melMotion:'small'},
+  {gk:'mel', id:'me8', grp:'メロディ（5音）', lv:'中級', name:'5音・基本', desc:'7種類の音から5音／小さな動きで練習', mel:5, scales:['ion','aeo'], fixedKey:true, melMotion:'small'},
+  {gk:'mel', id:'m5', grp:'メロディ（5音）', lv:'上級', name:'5音・標準', desc:'5音／キーもラウンドごとに変化',    mel:5, scales:['ion','aeo']},
 
   // モード（教会旋法など）。ラウンドの頭にスケールを聴かせてから、その中だけで出題する。
   // 「今どのスケールにいるか」を掴んで音を当てる練習で、実際のアドリブ・耳コピに直結する
@@ -2433,7 +2435,11 @@ function connectPianoOutput(ctx){
   limiterNode=ctx.createDynamicsCompressor();
   limiterNode.threshold.value=-3;limiterNode.knee.value=3;
   limiterNode.ratio.value=12;limiterNode.attack.value=.003;limiterNode.release.value=.18;
-  masterGain.connect(limiterNode);limiterNode.connect(ctx.destination);
+  // 低音のこもりを軽く抑え、打鍵の輪郭を補う。音高・再生速度は変えない。
+  const body=ctx.createBiquadFilter(),clarity=ctx.createBiquadFilter();
+  body.type='lowshelf';body.frequency.value=180;body.gain.value=-3;
+  clarity.type='highshelf';clarity.frequency.value=2200;clarity.gain.value=2;
+  masterGain.connect(body);body.connect(clarity);clarity.connect(limiterNode);limiterNode.connect(ctx.destination);
 }
 
 // iOS対策: ユーザー操作の同期処理内で生成・resumeする（awaitを挟まない）
@@ -3689,7 +3695,7 @@ function cleanReview(items){
   for(const r of items.slice(0,512)){
     if(!r || !r.q) continue;
     const st = STAGES.find(s => s.id === r.stageId), q = r.q;
-    if(!st || !Number.isInteger(q.root) || q.root < 40 || q.root > 60) continue;
+    if(!st || !Number.isInteger(q.root) || q.root < 40 || q.root > (st.mel ? 66 : 60)) continue;
     const clean = {type:q.type,root:q.root};
     if(q.type === 'chord' && st.chords && st.chords.includes(q.chord)) clean.chord = q.chord;
     else if(q.type === 'mel' && st.mel && st.scales.includes(q.scale) && Array.isArray(q.cls)
@@ -4382,6 +4388,10 @@ function playStimulus(){
   }
 }
 
+// メロディは中央ドを中心に。キーC固定はC4、変調時はG3〜F#4を基準にする。
+// 実音はおおむねD#3〜F#5、カデンツもG#5以下。区切りの中では音域を変えない。
+function melodyRoot(fixedKey){return fixedKey ? 60 : 55 + rnd(12);}
+
 function startRound(){
   if(reviewSession){startReview(reviewSession.n);return;}
   ensureAudio();
@@ -4428,7 +4438,8 @@ function startRound(){
   // 入門〜初級（fixedKey）はキーC固定でじっくり響きを覚え、中級からはラウンドごとにランダム
   // 下行が出るステージはキーを高めに取る（1オクターブ下がってもギターの音域に収まるように）
   const hasDown = curStage.dir === 'down' || curStage.dir === 'both';
-  roundRoot = curStage.wide ? 52
+  roundRoot = curStage.mel ? melodyRoot(curStage.fixedKey)
+            : curStage.wide ? 52
             : curStage.fixedKey ? (hasDown ? 60 : 48)
             : hasDown ? 52 + rnd(9)
             : 45 + rnd(11);
@@ -5220,6 +5231,7 @@ function confirmLisTonic(){
 // キーの取り方。下行を含むときは1オクターブ下まで鳴るので、キー自体を高めに取って
 // ギターの音域（およびピアノ音源の MIDI 40〜74）から外れないようにする
 function lisPickRoot(picks){
+  if(picks.length && picks.every(s=>s.mel))return melodyRoot(progress.lis.fixedKey);
   const down = picks.some(v => v.dir === 'down' || v.dir === 'both');
   if(progress.lis.fixedKey) return down ? 60 : 48;   // キーC固定（下行ありは1オクターブ上のC）
   return down ? 52 + rnd(8) : 45 + rnd(11);
