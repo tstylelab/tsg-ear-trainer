@@ -14,7 +14,7 @@ assert(logo(html).length > 100, 'Logo found');
 assert.equal(logo(html), logo(before), 'Original logo retained');
 new Function(code(html));
 const {ev, $} = require('./headless.js');
-for(const [course, count] of [['mono',18],['mel',14],['chord',3]]){
+for(const [course, count] of [['mono',20],['mel',14],['chord',3]]){
   ev(`chooseCourse('${course}')`);
   assert.equal($('courseChooser').hidden, true);
   assert.equal($('courseStages').hidden, false);

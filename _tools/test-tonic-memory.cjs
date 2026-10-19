@@ -6,19 +6,21 @@ globalThis.drones=0;startDrone=()=>globalThis.drones++;
 globalThis.flush=()=>{let n=0;while(globalThis.pending.length){if(++n>30)throw Error('timer loop');globalThis.pending.shift()();}};`);
 assert.equal(ev('validateProgress({lis:{tonicMode:"junk"}}).lis.tonicMode'),'each');
 assert.equal(ev('validateProgress({lis:{tonicMode:"memory"}}).lis.tonicMode'),'memory');
-// All three new courses ignore conflicting global aids without overwriting preferences.
-for(const id of ['t1','t2','t3']){
+// All memory courses ignore conflicting global aids without overwriting preferences.
+for(const id of ['t1','t2','t3','t4','t5']){
   ev(`progress=validateProgress({scaffold:4,rootEvery:1,cadEvery:'each',traceAns:'on',playMode:'both'});
   enterStage(STAGES.find(s=>s.id==='${id}'));startRound();`);
   assert.equal(ev('phase'),'listen');
   assert.equal(ev('globalThis.drones'),0,'no drone during memory course');
   assert.equal($('rootBtn').hidden,false);
   ev('globalThis.flush()');
-  const root=ev('roundRoot');
-  for(let i=1;i<=9;i++){
+  const root=ev('roundRoot'),every=id==='t4'?6:4;
+  assert.equal(ev('tonicGap()'),every);
+  assert($('modeChip').children[0].children.at(-1).textContent.includes(every+'問'));
+  for(let i=1;i<=13;i++){
     if(i>1){notes.length=0;ev('nextQuestion()');}
-    if(i===5||i===9){
-      assert.equal(ev('phase'),'listen','new anchor at four-question boundary');
+    if(i>1 && (i-1)%every===0){
+      assert.equal(ev('phase'),'listen','anchor at course-specific boundary');
       const count=ev('answersLog.length');ev('answer(curQ.cls)');
       assert.equal(ev('answersLog.length'),count,'answer locked during anchor');
       assert.ok(notes.length>1,'cadence precedes boundary question');
@@ -73,4 +75,4 @@ try{
   notes.length=0;ev('lisPlayItem(lisMakeItem().q,0,"off")');assert.equal(notes.length,2,'normal mode root restored');
   ev('lisReviewMode=true;progress.lis.tonicMode="memory"');assert.equal(ev('lisMemoryMode()'),false,'mixed review preserves recorded conditions');
 }finally{global.setTimeout=oldSet;global.clearTimeout=oldClear;}
-console.log('PASS: 3 memory courses, four-question anchors, answer gate, assistance, stored conditions, listening scheduler, reference/pause, mode restoration and focus matching');
+console.log('PASS: 5 memory courses, four/six-question anchors, answer gate, assistance, stored conditions, listening scheduler, reference/pause, mode restoration and focus matching');

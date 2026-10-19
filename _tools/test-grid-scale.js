@@ -7,12 +7,12 @@ const J = x => JSON.stringify(x);
 // ── 1. ステージの格子 ──
 const mono = ev(`STAGES.filter(s => s.gk === 'mono').map(s => ({id:s.id, lv:s.lv, name:s.name, dir:s.dir||'up', fk:!!s.fixedKey, wide:!!s.wide, minor: stageMinor(s), cls: lvClass(s.lv)}))`);
 info.mono = mono.map(m => `${m.id}:${m.lv}:${m.dir}${m.fk?':C':''}${m.wide?':wide':''}${m.minor?':min':''}:${m.cls}`);
-ok(mono.length === 18, 'mono count ' + mono.length);
-ok(J(mono.map(m=>m.id)) === J(['s1','s2','s3','s8','s9','s12','s13','s4','s5','s10','s6','s11','s14','s15','s16','t1','t2','t3']), 'mono order');
+ok(mono.length === 20, 'mono count ' + mono.length);
+ok(J(mono.map(m=>m.id)) === J(['s1','s2','s3','s8','s9','s12','s13','s4','s5','s10','s6','s11','s14','s15','s16','t1','t2','t3','t4','t5']), 'mono order');
 ok(mono.filter(m=>m.minor).map(m=>m.id).join() === 's12,s13,s4,s15,t2', 'minor detection ' + mono.filter(m=>m.minor).map(m=>m.id));
 ok(mono.slice(0,12).every(m=>m.fk||m.wide) && mono.slice(12).every(m=>!m.fk), 'fixedKey pattern');
-ok(mono.filter(m=>m.cls==='lv-e').length === 6 && mono.filter(m=>m.cls==='lv-d').length === 4, 'lv classes');
-ok(ev(`STAGES.length`) === 35, 'total stages');
+ok(mono.filter(m=>m.cls==='lv-e').length === 8 && mono.filter(m=>m.cls==='lv-d').length === 4, 'lv classes');
+ok(ev(`STAGES.length`) === 37, 'total stages');
 ok(ev(`DIAG_UP.every(id => STAGES.some(s => s.id === id))`), 'DIAG_UP ids exist');
 ok(!ev(`STAGES.some(s => s.id === 's7')`), 's7 removed');
 
@@ -21,7 +21,7 @@ ev(`progress = validateProgress({unlockMode:'seq', unlockChosen:true, bestRate:{
 ok(ev(`validateProgress({}).unlockMode`) === 'free' && ev(`validateProgress({unlockMode:'seq'}).unlockMode`) === 'free' && ev(`validateProgress({unlockMode:'seq', unlockChosen:true}).unlockMode`) === 'seq', 'unlock default free / seq only when chosen');
 const chain = ev(`STAGES.filter(s=>s.gk==='mono').map(s => s.id + (isUnlocked(s)?'o':'x')).join(' ')`);
 info.chain = chain;
-ok(chain === 's1o s2o s3o s8o s9x s12x s13x s4x s5x s10x s6x s11x s14x s15x s16x t1o t2x t3x', 'unlock chain');
+ok(chain === 's1o s2o s3o s8o s9x s12x s13x s4x s5x s10x s6x s11x s14x s15x s16x t1o t2x t3x t4x t5x', 'unlock chain');
 const old = ev(`(() => { const p = validateProgress({bestRate:{s4:90, s7:100, s6:85}, lastStage:'s7', diagUnlock:'s7'}); return {s4:p.bestRate.s4, s7:p.bestRate.s7, s6:p.bestRate.s6, last:p.lastStage, du:p.diagUnlock, sb:p.scaleBtn, tr:p.traceAns, re:p.rootEvery}; })()`);
 ok(old.s4 === 90 && old.s7 === undefined && old.s6 === 85 && old.last === null && old.du === null, 'old data ' + J(old));
 ok(old.sb === 'on' && old.tr === 'off' && old.re === 1, 'defaults ' + J(old));
@@ -47,7 +47,7 @@ for(const m of mono){
       ev(`playScaleWalk(roundRoot, scalePoolFor(), !!curQ.down, 0)`);
       ev('answer(curQ.cls)');
     }
-    for(const [midi] of notes){ lo = Math.min(lo, midi); hi = Math.max(hi, midi); if(midi < 40 || midi > 74) bad++; }
+    for(const [midi] of notes){ lo = Math.min(lo, midi); hi = Math.max(hi, midi); if(midi < 40 || midi > (m.id==='t5'?84:74)) bad++; }
   }
   ranges[m.id] = {roots:[...roots].sort((a,b)=>a-b), lo, hi, up, down, wide, bad};
   ok(bad === 0, `${m.id} out of range lo=${lo} hi=${hi}`);
@@ -56,7 +56,7 @@ for(const m of mono){
   if(m.dir === 'both') ok(up > 0 && down > 0, `${m.id} should mix`);
   if(m.fk && !m.wide) ok(roots.size === 1, `${m.id} fixed key roots=${[...roots]}`);
   if(!m.fk && !m.wide) ok(roots.size > 1, `${m.id} random key roots=${[...roots]}`);
-  if(m.wide) ok(wide > 0 && roots.size === 1 && [...roots][0] === 52, `${m.id} wide`);
+  if(m.wide) ok(wide > 0 && (m.id==='t5'?roots.size>1:roots.size === 1 && [...roots][0] === 52), `${m.id} wide`);
 }
 info.ranges = ranges;
 
