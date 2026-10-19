@@ -2186,15 +2186,19 @@ const STAGES = [
   {gk:'mel', id:'me1', grp:'メロディ（2音）', lv:'入門', name:'2音・やさしい', desc:'5種類の音から2音／となりの音を中心に', mel:2, scales:['ion','aeo'], fixedKey:true, melRange:5, melMotion:'small'},
   {gk:'mel', id:'me2', grp:'メロディ（2音）', lv:'初級', name:'2音・基本', desc:'7種類の音から2音／小さな動きで練習', mel:2, scales:['ion','aeo'], fixedKey:true, melMotion:'small'},
   {gk:'mel', id:'m1', grp:'メロディ（2音）', lv:'初級', name:'2音・標準', desc:'7種類の音から2音／離れた音にも挑戦', mel:2, scales:['ion','aeo'], fixedKey:true},
+  {gk:'mel', id:'mm2', grp:'メロディ（2音）', lv:'応用', name:'2音・キーを覚えて答える', desc:'7種類の音／キーの確認は4問（4メロディ）ごと', mel:2, scales:['ion','aeo'], melodyMemory:true, fixedKey:true},
   {gk:'mel', id:'me3', grp:'メロディ（3音）', lv:'入門', name:'3音・やさしい', desc:'5種類の音から3音／となりの音を中心に', mel:3, scales:['ion','aeo'], fixedKey:true, melRange:5, melMotion:'small'},
   {gk:'mel', id:'me4', grp:'メロディ（3音）', lv:'初級', name:'3音・基本', desc:'7種類の音から3音／小さな動きで練習', mel:3, scales:['ion','aeo'], fixedKey:true, melMotion:'small'},
   {gk:'mel', id:'m2', grp:'メロディ（3音）', lv:'初級', name:'3音・標準', desc:'7種類の音から3音／離れた音にも挑戦', mel:3, scales:['ion','aeo'], fixedKey:true},
+  {gk:'mel', id:'mm3', grp:'メロディ（3音）', lv:'応用', name:'3音・キーを覚えて答える', desc:'7種類の音／キーの確認は4問（4メロディ）ごと', mel:3, scales:['ion','aeo'], melodyMemory:true, fixedKey:true},
   {gk:'mel', id:'me5', grp:'メロディ（4音）', lv:'初級', name:'4音・やさしい', desc:'5種類の音から4音／となりの音を中心に', mel:4, scales:['ion','aeo'], fixedKey:true, melRange:5, melMotion:'small'},
   {gk:'mel', id:'me6', grp:'メロディ（4音）', lv:'中級', name:'4音・基本', desc:'7種類の音から4音／小さな動きで練習', mel:4, scales:['ion','aeo'], fixedKey:true, melMotion:'small'},
   {gk:'mel', id:'m4', grp:'メロディ（4音）', lv:'中級', name:'4音・標準', desc:'7種類の音から4音／離れた音にも挑戦', mel:4, scales:['ion','aeo'], fixedKey:true},
+  {gk:'mel', id:'mm4', grp:'メロディ（4音）', lv:'応用', name:'4音・キーを覚えて答える', desc:'7種類の音／キーの確認は4問（4メロディ）ごと', mel:4, scales:['ion','aeo'], melodyMemory:true, fixedKey:true},
   {gk:'mel', id:'me7', grp:'メロディ（5音）', lv:'中級', name:'5音・やさしい', desc:'5種類の音から5音／となりの音を中心に', mel:5, scales:['ion','aeo'], fixedKey:true, melRange:5, melMotion:'small'},
   {gk:'mel', id:'me8', grp:'メロディ（5音）', lv:'中級', name:'5音・基本', desc:'7種類の音から5音／小さな動きで練習', mel:5, scales:['ion','aeo'], fixedKey:true, melMotion:'small'},
   {gk:'mel', id:'m5', grp:'メロディ（5音）', lv:'上級', name:'5音・標準', desc:'5音／キーもラウンドごとに変化',    mel:5, scales:['ion','aeo']},
+  {gk:'mel', id:'mm5', grp:'メロディ（5音）', lv:'応用', name:'5音・キーを覚えて答える', desc:'7種類の音／キーの確認は4問（4メロディ）ごと', mel:5, scales:['ion','aeo'], melodyMemory:true},
 
   // モード（教会旋法など）。ラウンドの頭にスケールを聴かせてから、その中だけで出題する。
   // 「今どのスケールにいるか」を掴んで音を当てる練習で、実際のアドリブ・耳コピに直結する
@@ -2226,7 +2230,7 @@ const LIS_SRC = [
     pool:s.pool,dir:s.dir,minor:s.id==='t2',tonicMemory:true,tonicEvery:s.tonicEvery,wide:s.wide})),
   // 回答式と同じ定義から作り、追加した段階・出題範囲・動きをそろえる。
   ...STAGES.filter(s=>s.gk==='mel').map(s=>({id:s.id,g:'メロディ',n:s.name,d:s.desc,
-    mel:s.mel,scales:s.scales,melRange:s.melRange,melMotion:s.melMotion})),
+    mel:s.mel,scales:s.scales,melRange:s.melRange,melMotion:s.melMotion,melodyMemory:s.melodyMemory,fixedKey:s.fixedKey})),
   {id:'c1',   g:'コード',    n:'メジャー / マイナー', d:'明るい ↔ 切ない',            chords:['maj','min']},
   {id:'c2',   g:'コード',    n:'トライアド',          d:'maj / min / sus4 / dim',     chords:['maj','min','sus4','dim']},
   {id:'c3',   g:'コード',    n:'セブンス',            d:'maj7 / 7th / m7 / m7♭5',    chords:['maj7','dom7','m7','m7b5']}
@@ -2780,7 +2784,7 @@ function renderMelodyChoices(){
     el.innerHTML='<fieldset><legend>練習する音階</legend><div class="melodyScaleButtons">'+
       [['ion','メジャー'],['aeo','マイナー'],['mix','両方']].map(([value,label])=>
         '<button type="button" data-melody-scale="'+value+'" aria-pressed="'+(progress.melodyScale===value)+'">'+label+'</button>').join('')+
-      '</div></fieldset><p>'+ (progress.melodyScale==='mix' ? '3問ごとにメジャーとマイナーを切り替え、キーを確認します。' : '選んだ音階で、2音から少しずつ長く練習できます。')+
+      '</div></fieldset><p>'+ (progress.melodyScale==='mix' ? (id==='quizMelodyChoice' && curStage.melodyMemory?'4問ごとに音階を切り替え、キーを確認します。':'両方を交互に練習。音階の切り替え時は必ずキーを確認します（通常3問・応用4問ごと）。') : '選んだ音階で、2音から少しずつ長く練習できます。')+
       (id==='courseMelodyChoice' ? ' 3種類をクリアすると段階完了。従来のベストは残ります。モード練習は専用の音階です。' : '')+'</p>';
     el.querySelectorAll('[data-melody-scale]').forEach(btn=>btn.addEventListener('click',()=>{
       setMelodyScale(btn.dataset.melodyScale);
@@ -3594,8 +3598,8 @@ function enterStage(st, keepLast = false){
   $('scrListen').hidden = true;
   scrQuiz.hidden = false;
   stageNameEl.textContent = st.lv + ' ' + st.name;
-  setIconText(rootBtn,'note',st.tonicMemory?'主音を確認':'ルート');
-  $('cadBtn').hidden = !!st.chords || !!st.tonicMemory;
+  setIconText(rootBtn,'note',(st.tonicMemory || st.melodyMemory)?'主音を確認':'ルート');
+  $('cadBtn').hidden = !!st.chords || !!st.tonicMemory || !!st.melodyMemory;
   renderScaffoldBtn();
   resetRoundUI();
 }
@@ -3700,7 +3704,8 @@ function renderModeChip(){
     el.appendChild(s);
   };
   if(tonicMemoryCourse()){
-    mk('note','主音を'+tonicGap()+'問ごとに確認',true);
+    mk('note',curStage.melodyMemory?'キーを4問（4メロディ）ごとに確認':'主音を'+tonicGap()+'問ごとに確認',true);
+    if(curStage.melodyMemory && roundScale)mk('target',SCALES[roundScale].n,true);
     mk(null,curStage.wide?'高さが違っても同じ度数で回答':'出題中の主音確認は補助あり',false);
     return;
   }
@@ -3905,7 +3910,7 @@ function nextReviewQuestion(){
   roundRoot=curQ.root;roundScale=curQ.scale || null;roundPool=roundScale?melodyPool(curStage,roundScale):null;
   phase='reviewReady';melInput=[];scaleUsed=false;
   $('singBtn').hidden=true;rootBtn.hidden=true;$('scaleBtn').hidden=true;
-  if(curStage.tonicMemory){rootBtn.hidden=false;setIconText(rootBtn,'note','主音を確認');}
+  if(curStage.tonicMemory || curStage.melodyMemory){rootBtn.hidden=false;setIconText(rootBtn,'note','主音を確認');}
   $('melBar').hidden=true;nextBtn.hidden=true;resultEl.hidden=true;answersEl.hidden=false;
   answersEl.classList.add('locked');renderAnswers();renderQNum();renderDots();
   stageNameEl.textContent='復習 '+qi+' / '+reviewSession.n;
@@ -4299,8 +4304,9 @@ function playShortCadence(root, minor, t0){
 
 // カデンツを鳴らし直す間隔（問題数・0なら最初だけ）。
 function tonicGap(st=curStage){return st && st.tonicEvery || 4;}
-function tonicMemoryCourse(){return !!(curStage && curStage.tonicMemory && !reviewSession && !diag);}
-function tonicMemoryAssistance(){return !!(curStage && curStage.tonicMemory && !diag);}
+function tonicMemoryCourse(){return !!(curStage && (curStage.tonicMemory || curStage.melodyMemory) && !reviewSession && !diag);}
+function tonicMemoryAssistance(){return !!(curStage && (curStage.tonicMemory || curStage.melodyMemory) && !diag);}
+function melodySwitchEvery(st=curStage){return st && st.melodyMemory ? 4 : 3;}
 // 同じ基準を保持するため、和音で調性を示してから最後に主音を単独提示する。
 function playMemoryAnchor(root,minor,t0){
   const d=playShortCadence(root,minor,t0);
@@ -4322,12 +4328,12 @@ function playQuestionWithKey(){
   useSpd(progress.speed);
   if(tonicMemoryCourse() && qi > 1 && (qi-1)%tonicGap()===0){
     ensureAudio();stopAll();phase='listen';answersEl.classList.add('locked');
-    const d=playMemoryAnchor(roundRoot,stageMinor(curStage),audioCtx.currentTime+0.06);
+    const d=playMemoryAnchor(roundRoot,currentMinor(),audioCtx.currentTime+0.06);
     setPlayLabel(tonicGap()+'問の区切りです。主音を覚えてください。',true);
     later(()=>{phase='q';answersEl.classList.remove('locked');playStimulus();applySingGate();},Math.round((d+.15)*1000));
     return true;
   }
-  if(melodyScaleSelectable(curStage) && roundMelodyMode==='mix' && qi>1 && (qi-1)%3===0){
+  if(melodyScaleSelectable(curStage) && roundMelodyMode==='mix' && qi>1 && (qi-1)%melodySwitchEvery()===0){
     ensureAudio();stopAll();phase='listen';answersEl.classList.add('locked');
     const t=audioCtx.currentTime+.06;
     const d=playShortCadence(roundRoot,currentMinor(),t);
@@ -4498,7 +4504,7 @@ function startRound(){
   let delay;
   if(tonicMemoryCourse()){
     delay=Math.round((playMemoryAnchor(roundRoot,minor,t0)+.15)*1000);
-    setPlayLabel('主音を覚えてください。このあと'+tonicGap()+'問、問題の音だけが鳴ります。',true);
+    setPlayLabel('キーを覚えてください。このあと'+tonicGap()+'問、'+(curStage.melodyMemory?'メロディだけ':'問題の音だけ')+'が鳴ります。',true);
     rootBtn.hidden=false;
   }else if(sc >= 3){
     playCadence(roundRoot, minor, t0);
@@ -4568,7 +4574,7 @@ function nextQuestion(){
   if(curSession.sec && Date.now() >= roundDeadline){ showResult(); return; }
   if(!curSession.endless && !curSession.sec && qi >= roundTotal){ showResult(); return; }
   qi++;
-  if(melodyScaleSelectable(curStage) && roundMelodyMode==='mix' && qi>1 && (qi-1)%3===0){
+  if(melodyScaleSelectable(curStage) && roundMelodyMode==='mix' && qi>1 && (qi-1)%melodySwitchEvery()===0){
     roundScale=roundScale==='ion'?'aeo':'ion';roundPool=melodyPool(curStage,roundScale);recentMel=[];renderAnswers();
   }
   melInput = [];
@@ -4794,7 +4800,9 @@ function replayForReveal(){
   setPlaying(true);
   const t0 = audioCtx.currentTime + 0.05;
   if(tonicMemoryCourse()){
-    playNote(curQ.root+degOffOf(curQ),t0,.95,T(1.6));return;
+    if(curQ.type==='mel')playMelPhrase(curQ.root,curQ.cls,t0,melOffsOf(curQ));
+    else playNote(curQ.root+degOffOf(curQ),t0,.95,T(1.6));
+    return;
   }
   if(curQ.type === 'chord'){
     playChordPhrase(curQ.root, curQ.chord, t0);
@@ -5286,10 +5294,10 @@ function renderLisMelodyControls(){
 // 応用は単独のコースとして選ぶ。通常のミックス設定を書き換えず条件を固定する。
 function normalizeLisPicks(ids){
   const valid=[...new Set(ids)].filter(id=>LIS_SRC.some(s=>s.id===id));
-  const course=valid.filter(id=>LIS_SRC.find(s=>s.id===id).tonicMemory).pop();
+  const course=valid.filter(id=>{const s=LIS_SRC.find(s=>s.id===id);return s.tonicMemory || s.melodyMemory;}).pop();
   return course?[course]:valid;
 }
-function lisMemoryCourse(){const picks=lisPicks();return !lisReviewMode && picks.length===1 && picks[0].tonicMemory?picks[0]:null;}
+function lisMemoryCourse(){const picks=lisPicks();return !lisReviewMode && picks.length===1 && (picks[0].tonicMemory || picks[0].melodyMemory)?picks[0]:null;}
 function lisMemoryEvery(){return tonicGap(lisMemoryCourse());}
 function lisMemoryMode(){return !lisReviewMode && (!!lisMemoryCourse() || progress.lis.tonicMode==='memory');}
 function setLisTonicMode(mode){
@@ -5314,6 +5322,7 @@ function confirmLisTonic(){
 // キーの取り方。下行を含むときは1オクターブ下まで鳴るので、キー自体を高めに取って
 // ギターの音域（およびピアノ音源の MIDI 40〜74）から外れないようにする
 function lisPickRoot(picks){
+  if(picks.length===1 && picks[0].melodyMemory)return melodyRoot(picks[0].fixedKey);
   if(picks.length===1 && picks[0].tonicMemory)return 52+rnd(9);
   if(picks.length && picks.every(s=>s.mel))return melodyRoot(progress.lis.fixedKey);
   const down = picks.some(v => v.dir === 'down' || v.dir === 'both');
@@ -5436,7 +5445,8 @@ function lisStep(){
   if(lisCount === 0 || (ke > 0 && lisSince >= ke)){
     lisRoot = lisPickRoot(picks);
     lisReferenceRoot=lisRoot;
-    lisScale = pickLisScale(picks); // このキーのあいだ使うスケールを決める
+    lisScale = picks.length===1 && picks[0].melodyMemory && progress.lis.melodyScale==='mix' && lisCount>0
+      ? (lisScale==='ion'?'aeo':'ion') : pickLisScale(picks); // このキーのあいだ使うスケールを決める
     $('lisKey').textContent = 'KEY ' + spellNote(lisRoot, false).name;
     $('lisTonic').disabled=false;
     $('lisDeg').textContent = '…';
@@ -5682,7 +5692,7 @@ function renderLisSrcList(){
       wrap.appendChild(nm); wrap.appendChild(ds);
       b.appendChild(box); b.appendChild(wrap);
       b.addEventListener('click', () => {
-        const ids=progress.lis.pick.includes(src.id)?progress.lis.pick.filter(id=>id!==src.id):src.tonicMemory?[src.id]:progress.lis.pick.filter(id=>!LIS_SRC.find(s=>s.id===id).tonicMemory).concat(src.id);
+        const ids=progress.lis.pick.includes(src.id)?progress.lis.pick.filter(id=>id!==src.id):(src.tonicMemory || src.melodyMemory)?[src.id]:progress.lis.pick.filter(id=>{const s=LIS_SRC.find(s=>s.id===id);return !s.tonicMemory && !s.melodyMemory;}).concat(src.id);
         lisSetPick(ids);
       });
       el.appendChild(b);
@@ -5721,6 +5731,7 @@ function renderLisSeg(){
   lisTonicBtns.forEach(b=>{b.classList.toggle('active',b.dataset.tonic===progress.lis.tonicMode);b.setAttribute('aria-pressed',String(b.dataset.tonic===progress.lis.tonicMode));});
   lisTonicBtns.forEach(b=>{if(b.dataset.tonic==='each')b.textContent=melodies?'キーを確認して聴く':'主音を毎回聴く';});
   $('lisTonicNote').textContent=lisReviewMode ? '復習では記録した出題条件を使い、問題ごとにキーを確認します。'
+    : course && course.melodyMemory ? 'キーを4問（4メロディ）ごとに確認します。「両方」はその区切りで音階も切り替えます。音のあとの音階再生は省きます。'
     : course ? '主音を'+lisMemoryEvery()+'問ごとに確認。キーは区切りごとに変わります。'+(course.wide?'オクターブをまたぐ高い音も含めて、12種類の度数を聴き分けます。':'毎問の主音・答えのあとの音階は省きます。')
     : memory ? '主音を確認して4問（メロディは4フレーズ）。毎問の主音・音のあとのスケール再生は省きます。'
     : melodies ? (picks.some(s=>s.melMotion==='small')?'準備練習では、キーの区切りに音階を確認します。':'聴こえた順番に答えが表示されます。音階の選択は2〜5音に共通です。')
@@ -5732,7 +5743,7 @@ function renderLisSeg(){
   lisSleepBtns.forEach(b => b.classList.toggle('active', +b.dataset.sl === progress.lis.sleep));
   lisCadBtns.forEach(b => b.classList.toggle('active', b.dataset.cad === (memory?'key':progress.lis.cad)));
   lisSpeedBtns.forEach(b => b.classList.toggle('active', +b.dataset.sp === progress.lis.speed));
-  lisKeyModeBtns.forEach(b => b.classList.toggle('active', (b.dataset.fk === '1') === (course?false:progress.lis.fixedKey)));
+  lisKeyModeBtns.forEach(b => b.classList.toggle('active', (b.dataset.fk === '1') === (course?!!course.fixedKey:progress.lis.fixedKey)));
 }
 
 lisSpeedBtns.forEach(b => b.addEventListener('click', () => {
@@ -5801,11 +5812,11 @@ $('lisPreLv').addEventListener('click', () => {
   const next = list.find(v => bestOf(v.id) < CLEAR_RATE && isUnlocked(v));
   if(next) ids.push(next.id);
   // かけ流しに同じネタが無いステージ（下行だけ等は別ネタで用意している）は除く
-  const ok = ids.filter(id => LIS_SRC.some(v => v.id === id && !v.tonicMemory));
+  const ok = ids.filter(id => LIS_SRC.some(v => v.id === id && !v.tonicMemory && !v.melodyMemory));
   lisSetPick(ok.length ? ok : ['s1', 's2']);
 });
 $('lisPreWeak').addEventListener('click', () => lisSetPick(['weak']));
-$('lisPreAll').addEventListener('click', () => lisSetPick(LIS_SRC.filter(v=>!v.tonicMemory).map(v => v.id)));
+$('lisPreAll').addEventListener('click', () => lisSetPick(LIS_SRC.filter(v=>!v.tonicMemory && !v.melodyMemory).map(v => v.id)));
 
 $('lisToggle').addEventListener('click', () => {
   ensureAudio();

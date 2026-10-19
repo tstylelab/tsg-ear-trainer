@@ -3,22 +3,22 @@ const {ev,$,notes}=require('./headless.js');
 ev(`globalThis.pending=[];later=fn=>globalThis.pending.push(fn);clearAdv=()=>{globalThis.pending=[];};
 globalThis.flush=()=>{let n=0;while(globalThis.pending.length){if(++n>40)throw Error('timer loop');globalThis.pending.shift()();}};`);
 const ids=ev('STAGES.filter(melodyScaleSelectable).map(s=>s.id)');
-assert.equal(ids.length,12);
+assert.equal(ids.length,16);
 for(const id of ids){
   ev(`progress=validateProgress({sessionLen:'q15',bestRate:{'${id}':93}});`);
   assert.equal(ev(`stageDone('${id}')`),false,'old aggregate is not evidence of all scales');
   for(const mode of ['ion','aeo','mix']){
     ev(`progress.melodyScale='${mode}';enterStage(STAGES.find(s=>s.id==='${id}'));startRound();flush();`);
-    const scales=[];
+    const scales=[], gap=ev('melodySwitchEvery()');
     for(let i=0;i<15;i++){
       scales.push(ev('curQ.scale'));
       assert.equal(ev('phase'),'q');
       assert.ok(ev('curQ.cls.every(c=>poolOf().includes(c))'));
       notes.length=0;
       ev('melInput=curQ.cls.slice();melJudge();nextQuestion();');
-      if(mode==='mix' && i<14 && (i+1)%3===0){
+      if(mode==='mix' && i<14 && (i+1)%gap===0){
         assert.equal(ev('phase'),'listen','answer gate during new tonal reference');
-        assert.ok(notes.length>=8,'audible scale context at switch');
+        assert.ok(notes.length>=8,'audible tonal context at switch');
       }
       ev('flush()');
     }
@@ -27,7 +27,7 @@ for(const id of ids){
     assert.equal(ev(`stageDone('${id}')`),mode==='mix');
     if(mode==='mix'){
       assert.equal(new Set(scales).size,2);
-      for(let i=1;i<15;i++)assert.equal(scales[i]===scales[i-1],i%3!==0);
+      for(let i=1;i<15;i++)assert.equal(scales[i]===scales[i-1],i%gap!==0);
       assert.equal(ev(`melodyNext('${id}')`),undefined);
     }
   }
