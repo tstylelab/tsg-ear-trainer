@@ -1539,7 +1539,12 @@ a.brand:focus-visible{outline-color:#fff;}
   #scrQuiz #qNum{grid-column:2;grid-row:2;text-align:right;}
 }
 
-.melodyProgress{font-size:13px;line-height:1.6;color:var(--t2);margin-top:5px;white-space:normal;}
+.melodyProgress{display:flex;flex-wrap:wrap;gap:5px;font-size:12px;line-height:1.5;color:var(--t2);margin-top:7px;}
+.melodyStatus{display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border-radius:6px;background:#f1f5f9;color:#52677e;}
+.melodyStatus.done{background:#dff3e9;color:#176044;border:1px solid #9ed5ba;font-weight:700;}
+.stageRow .bd.melodyCount{display:flex;flex-direction:column;gap:4px;align-items:center;white-space:nowrap;}
+.stageRow .bd.melodyCount.started{background:#e5f3ed;color:#176044;}
+.melodyBestNote{font-size:11px;font-weight:400;color:#52677e;}
 </style>
 </head>
 <body>
@@ -2266,7 +2271,7 @@ function isMastered(id){ return progress.mastered[id] === true; }
 function melodyBest(id, mode){ return progress.melodyBest?.[id]?.[mode] ?? -1; }
 function melodyDone(id,mode){return melodyBest(id,mode)>=CLEAR_RATE;}
 function melodyNext(id){return ['ion','aeo','mix'].find(m=>!melodyDone(id,m));}
-function melodyProgressText(id){return [['ion','メジャー'],['aeo','マイナー'],['mix','両方']].map(([m,n])=>n+' '+(melodyDone(id,m)?'✓':melodyBest(id,m)<0?'未':melodyBest(id,m)+'%')).join('　');}
+function melodyProgressText(id){return [['ion','メジャー'],['aeo','マイナー'],['mix','両方']].map(([m,n])=>n+' '+(melodyDone(id,m)?'✓ クリア':melodyBest(id,m)<0?'未挑戦':melodyBest(id,m)+'%')).join('　');}
 function stageDone(id){
   const st=STAGES.find(s=>s.id===id);
   return isMastered(id) || (melodyScaleSelectable(st) ? !melodyNext(id) : bestOf(id)>=CLEAR_RATE);
@@ -3204,7 +3209,14 @@ function renderStageList(){
     left.appendChild(nm); left.appendChild(ds);
     if(melodyScaleSelectable(st)){
       const checks=document.createElement('div');checks.className='melodyProgress';
-      checks.textContent=melodyProgressText(st.id);left.appendChild(checks);
+      for(const [mode,label] of [['ion','メジャー'],['aeo','マイナー'],['mix','両方']]){
+        const badge=document.createElement('span'), done=melodyDone(st.id,mode), rate=melodyBest(st.id,mode);
+        badge.className='melodyStatus'+(done?' done':'');
+        badge.textContent=(done?'✓ ':'')+label+' '+(done?'クリア':rate<0?'未挑戦':rate+'%');
+        badge.title=rate<0?'この音階の記録はまだありません':label+'のベスト '+rate+'%';
+        checks.appendChild(badge);
+      }
+      left.appendChild(checks);
     }
     const bd = document.createElement('div');
     bd.className = 'bd';
@@ -3216,8 +3228,13 @@ function renderStageList(){
       ds.textContent = '前のステージをクリアすると開きます';
       bd.appendChild(ico('lock'));
     }else if(melodyScaleSelectable(st)){
-      bd.textContent=isMastered(st.id)?'習得済み':stageDone(st.id)?'完了':best===undefined?'0 / 3':'ベスト '+best+'%';
-      bd.title='音階別の達成状況はカード内に表示。ベストは従来の記録も含みます。';
+      const count=['ion','aeo','mix'].filter(mode=>melodyDone(st.id,mode)).length;
+      bd.classList.add('melodyCount');if(count)bd.classList.add('started');
+      const achieved=document.createElement('span');
+      achieved.textContent=isMastered(st.id)?'習得済み':count===3?'全音階クリア！':count+' / 3 クリア';
+      bd.appendChild(achieved);
+      if(best!==undefined){const note=document.createElement('span');note.className='melodyBestNote';note.textContent='ベスト '+best+'%';bd.appendChild(note);}
+      bd.title='メジャー・マイナー・両方の達成数。ベストは従来の記録も含みます。';
     }else if(isMastered(st.id) && !(best >= CLEAR_RATE)){
       bd.textContent = '習得済み';
       bd.title = '自己申告。練習の成績は変更していません。';
