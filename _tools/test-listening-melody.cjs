@@ -3,7 +3,7 @@ const {ev,$,notes}=require('./headless.js');
 const originalRandom=Math.random;
 let seed=10414;Math.random=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/4294967296);
 try{
-  assert.equal(ev('LIS_SRC.filter(s=>s.mel).length'),18);
+  assert.equal(ev('LIS_SRC.filter(s=>s.mel).length'),26);
   for(const id of ['me1','me2','m1','me3','me4','m2','me5','me6','m4','me7','me8','m5'])for(const scale of ['ion','aeo']){
     ev(`progress=validateProgress({lis:{pick:['${id}'],melodyScale:'${scale}'}});lisRoot=48;lisScale=pickLisScale(lisPicks());recentMel=[];`);
     assert.equal(ev('lisScale'),scale);

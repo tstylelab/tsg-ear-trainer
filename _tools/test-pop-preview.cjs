@@ -6,7 +6,7 @@ const before = execFileSync('git', ['show', 'backup/pre-pop-20260914:index.html'
 const code = doc => doc.match(/<script>([\s\S]*?)<\/script>/)[1];
 // Audio changes are authorized as of 2026-10-15 and covered by test-piano.cjs.
 const stages = doc => code(doc).split('const STAGES = [')[1].split('const LIS_SRC = [')[0]
-  .split('\n').filter(line=>!line.includes('tonicMemory:true') && !line.includes('melodyMemory:true') && !/id:'me[1-8]'/.test(line)).join('\n')
+  .split('\n').filter(line=>!line.includes('tonicMemory:true') && !line.includes('melodyMemory:true') && !line.includes('chromatic:') && !/id:'me[1-8]'/.test(line)).join('\n')
   .replace(/(?:grp|lv|name|desc):'[^']*',?/g,'').replace(/\s+/g,'');
 assert.equal(stages(html),stages(before),'Existing stage identities and question conditions retained; new entry courses are additive');
 const logo = doc => doc.slice(doc.indexOf('<div class="brand-main">'), doc.indexOf('<div class="hbtns">')).replace(/\s*<\/(?:a|div)>\s*$/, '');
@@ -14,7 +14,7 @@ assert(logo(html).length > 100, 'Logo found');
 assert.equal(logo(html), logo(before), 'Original logo retained');
 new Function(code(html));
 const {ev, $} = require('./headless.js');
-for(const [course, count] of [['mono',20],['mel',18],['chord',3]]){
+for(const [course, count] of [['mono',20],['mel',26],['chord',3]]){
   ev(`chooseCourse('${course}')`);
   assert.equal($('courseChooser').hidden, true);
   assert.equal($('courseStages').hidden, false);

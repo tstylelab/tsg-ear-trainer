@@ -3,7 +3,7 @@ const {ev,$,notes}=require('./headless.js');
 ev(`globalThis.pending=[];later=fn=>globalThis.pending.push(fn);clearAdv=()=>{globalThis.pending=[];};
 globalThis.flush=()=>{let n=0;while(globalThis.pending.length){if(++n>40)throw Error('timer loop');globalThis.pending.shift()();}};`);
 const ids=ev('STAGES.filter(melodyScaleSelectable).map(s=>s.id)');
-assert.equal(ids.length,16);
+assert.equal(ids.length,24);
 for(const id of ids){
   ev(`progress=validateProgress({sessionLen:'q15',bestRate:{'${id}':93}});`);
   assert.equal(ev(`stageDone('${id}')`),false,'old aggregate is not evidence of all scales');
