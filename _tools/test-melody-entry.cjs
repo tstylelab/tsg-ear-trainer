@@ -78,8 +78,8 @@ try{
   assert.equal(ev('bestOf("me1")'),100);
   assert.equal($('nextStageBtn').hidden,false);
   $('nextStageBtn').onclick();
-  assert.equal(ev('curStage.id'),'me2');
-  assert.equal(ev('progress.melodyScale'),'aeo','next stage retains selected tonality');
+  assert.equal(ev('curStage.id'),'me1');
+  assert.equal(ev('progress.melodyScale'),'ion','next action targets missing tonality before advancing');
   for(const id of ['me3','me4','me5','me6','me7','me8']){
     ev(`progress=validateProgress({melodyScale:'aeo'});enterStage(STAGES.find(s=>s.id==='${id}'));startRound();globalThis.flush();melInput=curQ.cls.map(()=>11);melJudge();globalThis.flush();`);
     assert.equal(ev('loadProgress().review[0].stageId'),id);
